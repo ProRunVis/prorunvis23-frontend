@@ -1,0 +1,144 @@
+
+@import url('https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css');
+
+
+/* NAVBAR */
+
+.nav {  /* gesamte Navbar */
+  display: flex;
+  align-items: center; /* Zentriert die Inhalte vertikal */
+  background-color: rgb(4,7,18);
+  height: 120px;
+  padding: 30px 0;
+  width: 100%;
+  border-bottom: 2px solid #ffc7b1e7; /* weißer horizontaler Strich */
+  box-sizing: border-box;
+}
+
+.nav--logo_text { /* "ProVisRun" */
+  margin-right: auto;
+  color: #ffc7b1e7;
+  font-weight: 700;
+  font-size: 22px;
+}
+
+.nav--title {  /* "visualize your flow" */
+  color: #ffc7b1e7;
+  font-weight: 600;
+  margin-right: 50px;
+}
+
+.nav--icon {  /* Logo */
+  height: 50px;
+  margin-right: 15px;
+  margin-left: 20px;
+}
+
+/* middle part of webpage */
+
+.main-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Stellt die horizontale Zentrierung der Kinder sicher */
+  justify-content: flex-start; 
+  margin: 0;
+  padding: 50px 27px; 
+  min-height: 100vh;
+  background-color: black;
+  text-align: center;
+  box-sizing: border-box;
+}
+
+
+.text-box{    /* Describing what the project is about */
+  
+  border: 1px solid #ffc7b1e7;
+  padding: 10px;  
+  margin: 10px;  
+  margin-bottom: 25px; 
+  color: white;
+  background-color: rgb(4,7,18);
+}
+
+.main--title {
+  margin: 0;
+  color: #61DAFB;
+  font-size: 39px;
+  letter-spacing: -0.05em;
+}
+
+.postCodeField{
+  border: 1px solid #ffc7b1e7;
+  margin: 50px;
+  width: 80%;
+  height: 400px;
+  resize: both;
+}
+
+.upload-file-margin {
+  margin-top: 80px;
+
+
+}
+.texthere { width: 100%; 
+  height: 200px;
+  border: 1px solid #ffc7b1e7;
+  background-color: rgb(4,7,18);
+  text-align: center; 
+  line-height: 200px; 
+  color: white;
+  display: inline-block;
+  position: relative;
+  padding-left: 20px;
+  padding-right: 20px;
+  margin-bottom: 10px;
+  
+  
+}
+.textFieldAfterCompletion {
+  width: 490px; /* Feste Breite statt 80% */
+  height: 300px;
+  margin-top: 20px;
+  margin-left: auto;
+  margin-right: 30px;
+  display: inline-block;
+  position: relative;
+  border: 1px solid #ffc7b1e7;
+  padding: 10px; /* Abstand innen */
+  border-radius: 8px; /* Abgerundete Ecken */
+  overflow: auto; /* Ermöglicht Scrollen, wenn der Code den Bereich überschreitet */
+  background-color: rgb(4,7,18); /* Hintergrundfarbe */
+  color: white; /* Textfarbe */
+  font-family: 'Courier New', monospace; /* Schriftart für Code */
+  text-align: left; /* Linksbündiger Text */
+}
+
+
+
+.drop-pointer{  /* Text : success dropping */
+  display: inline-block;
+  position: relative;
+  margin-right: 80px;
+  color : white
+ 
+  
+}
+.uploadButton{
+  border: 1px solid #ffc7b1e7;
+  padding: 10px;  
+  margin: 10px;   
+  color: white;
+  background-color: rgb(4,7,18);
+
+}
+.dragAndDropCoverUp{
+
+ 
+  background-color: rgb(4,7,18); 
+  
+  width: 200px;
+ 
+}
+
+
+/* fooder */
