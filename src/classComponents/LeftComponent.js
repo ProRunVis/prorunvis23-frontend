@@ -1,7 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { JavaFileOpener } from './JavaFileOpener';
 
-export default function MainComponent() {
+export default function LeftComponent() {
   const [uploadedFileNames, setUploadedFileNames] = useState([]);
   const [openedJavaFileNames, setOpenedJavaFileNames] = useState([]);
   const [noFilesFound, setNoFilesFound] = useState(false);
@@ -52,11 +52,8 @@ export default function MainComponent() {
   };
 
   return (
-    <main className="main-container white-text">
-      <div className="text-box">
-        Discover the future of code visualization, offering a clear, intuitive display of the entire program run and all variable values. 
-        Effortlessly track every step of your code, from executed lines to conditional statements, and experience a new level of software development.
-      </div>
+    <main className="left-container white-text">
+      
 
       {/* Verstecktes Input-Element */}
       <input
@@ -70,7 +67,7 @@ export default function MainComponent() {
       {/* Benutzerdefinierte Schaltflächen */}
       <div className="button-container">
         <button onClick={openAndProcessJavaFiles} className="text-box button">
-          Eine Directory auswählen
+          Select Directory Or File
         </button>
       </div>
 

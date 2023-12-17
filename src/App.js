@@ -1,7 +1,7 @@
 import React from 'react';
 import './App.css';
 import Navbar from "./classComponents/Navbar";
-import MainComponent from './classComponents/MainComponent';
+import LeftComponent from './classComponents/LeftComponent';
 import Footer from './classComponents/Footer';
 
 
@@ -15,7 +15,7 @@ function App() {
       <header className="App-header">
         <div className ="container">
           <Navbar />
-          <MainComponent />          
+          <LeftComponent />          
           <Footer />
         </div>        
       </header>
