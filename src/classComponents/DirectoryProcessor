@@ -1,26 +1,34 @@
 export class DirectoryProcessor {
   static async listAllFilesAndDirs(dirHandle) {
     const files = [];
-    for await (const [name, handle] of dirHandle.entries()) {
-      const { kind } = handle;
-      files.push({ name, handle, kind });
-      if (kind === 'directory') {
-        const subdirFiles = await DirectoryProcessor.listAllFilesAndDirs(handle);
-        files.push(...subdirFiles);
+    try {
+      for await (const [name, handle] of dirHandle.entries()) {
+        const { kind } = handle;
+        files.push({ name, handle, kind });
+        if (kind === 'directory') {
+          const subdirFiles = await DirectoryProcessor.listAllFilesAndDirs(handle);
+          files.push(...subdirFiles);
+        }
       }
+    } catch (error) {
+      console.error('Error listing files and directories:', error);
     }
     return files;
   }
 
   static async processDirectory(dirHandle) {
     const javaFilesContent = [];
-    const entries = await DirectoryProcessor.listAllFilesAndDirs(dirHandle);
-    for (const entry of entries) {
-      if (entry.kind === 'file' && entry.name.endsWith('.java')) {
-        const file = await entry.handle.getFile();
-        const content = await file.text();
-        javaFilesContent.push({ name: entry.name, content });
+    try {
+      const entries = await DirectoryProcessor.listAllFilesAndDirs(dirHandle);
+      for (const entry of entries) {
+        if (entry.kind === 'file' && entry.name.endsWith('.java')) {
+          const file = await entry.handle.getFile();
+          const content = await file.text();
+          javaFilesContent.push({ name: entry.name, content });
+        }
       }
+    } catch (error) {
+      console.error('Error processing directory:', error);
     }
     return javaFilesContent;
   }
