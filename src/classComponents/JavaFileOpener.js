@@ -17,7 +17,6 @@ export class JavaFileOpener {
         }
 
         const directoryFile = directoryFiles[0];
-        const directoryName = directoryFile.name;
 
         const entries = await JavaFileOpener.listAllFilesAndDirs(directoryFile);
         for (const entry of entries) {

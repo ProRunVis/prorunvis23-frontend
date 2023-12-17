@@ -47,10 +47,6 @@ export default function LeftComponent() {
     }
   };
 
-  const triggerFileInput = () => {
-    fileInputRef.current.click();
-  };
-
   return (
     <main className="left-container white-text">
       
