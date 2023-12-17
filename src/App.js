@@ -8,7 +8,7 @@ import Footer from './classComponents/Footer';
 
 
 
-// Das ist die Runner Funktion die auf der Haupt
+// Das ist die Runner Funktion die auf der Hauptseite
 function App() {
   return (
     <div className="App">
