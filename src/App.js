@@ -8,7 +8,7 @@ import Footer from './classComponents/Footer';
 
 
 
-// Das ist die Runner Funktion die auf der Hauptseite
+// Runner Function that merges all components into site
 function App() {
   return (
     <div className="App">

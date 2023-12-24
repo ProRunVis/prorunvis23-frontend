@@ -4,7 +4,7 @@ import Modal from "react-modal";
 import ReadmeModal from "./ReadmeModal";
 
 Modal.setAppElement("#root");
-
+/* HelpButton mit reactModal */
 export default function HelpButton() {
   const [modalIsOpen, setModalIsOpen] = useState(false);
 

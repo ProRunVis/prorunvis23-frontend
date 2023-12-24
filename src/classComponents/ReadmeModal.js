@@ -1,5 +1,5 @@
 import React from "react";
-
+/*Der Readme-File als classComponent*/
 export default function ReadmeModal({ closeModal }) {
   return (
     <div className="modal-container">
