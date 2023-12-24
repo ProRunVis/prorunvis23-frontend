@@ -1,103 +1,105 @@
-import React, { useState, useRef } from 'react';
-import { JavaFileOpener } from './JavaFileOpener';
+import React, { useState } from 'react';
 
+// Konstante für die Java-Dateierweiterung
+export const JAVA_FILE_EXTENSION = '.java';
+
+// Funktion für das Rendern von Dateilisten
+function renderFileList(header, files) {
+  return (
+    <div>
+      <h2>{header}</h2>
+      <ul>
+        {files.map((fileName, index) => (
+          <li key={index}>{fileName}</li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+// Die Hauptkomponente für die Dateiverarbeitung
 export default function LeftComponent() {
-  const [uploadedFileNames, setUploadedFileNames] = useState([]);
+  const [uploadedFileNames] = useState([]);
   const [openedJavaFileNames, setOpenedJavaFileNames] = useState([]);
   const [noFilesFound, setNoFilesFound] = useState(false);
-  const [outputVisible, setOutputVisible] = useState(false); // Zustand für die Sichtbarkeit des Ausgabekastens
-  const [selectedPath, setSelectedPath] = useState(''); // Zustand für den ausgewählten Pfad ab dem Laufwerk
-  const fileInputRef = useRef(null);
+  const [outputVisible, setOutputVisible] = useState(false);
+  const [selectedPath, setSelectedPath] = useState('');
 
-  const handleFiles = async (event) => {
-    const files = Array.from(event.target.files);
-    if (files.length > 0) {
-      const fileNames = files.map(file => file.name);
-      setUploadedFileNames(fileNames);
-      setNoFilesFound(false);
-      setOutputVisible(true); // Anzeigen des Ausgabekastens, wenn Dateien hochgeladen wurden
-    }
+  // Funktion zum Verarbeiten von Java-Dateien
+  const processJavaFiles = async (files) => {
+    const javaFileNames = files
+      .filter(file => file.kind === 'file' && file.name.endsWith(JAVA_FILE_EXTENSION))
+      .map(file => file.name);
+
+    setOpenedJavaFileNames(javaFileNames);
+    setNoFilesFound(javaFileNames.length === 0);
+    setOutputVisible(true);
   };
 
+  // Handler für das Öffnen und Verarbeiten von Java-Dateien
   const openAndProcessJavaFiles = async () => {
     try {
       const directoryHandle = await window.showDirectoryPicker();
-      const files = await JavaFileOpener.listAllFilesAndDirs(directoryHandle);
+      const files = await listAllFilesAndDirs(directoryHandle);
 
       if (files.length === 0) {
         setNoFilesFound(true);
-        setOutputVisible(true); // Anzeigen des Ausgabekastens, wenn keine Dateien gefunden wurden
+        setOutputVisible(true);
         return;
       }
 
-      const javaFileNames = files
-        .filter(file => file.kind === 'file' && file.name.endsWith('.java'))
-        .map(file => file.name);
+      processJavaFiles(files);
 
-      setOpenedJavaFileNames(javaFileNames);
-      setNoFilesFound(javaFileNames.length === 0);
-      setOutputVisible(true); // Anzeigen des Ausgabekastens, wenn Java-Dateien gefunden wurden
-
-      // Erfassen und setzen Sie den ausgewählten Pfad ab dem Laufwerk
+      // Setzen des ausgewählten Pfads ab dem Laufwerk
       setSelectedPath(directoryHandle.name);
     } catch (error) {
       console.error('Fehler:', error);
       setNoFilesFound(true);
-      setOutputVisible(true); // Anzeigen des Ausgabekastens im Fehlerfall
+      setOutputVisible(true);
     }
+  };
+
+  // Funktion zum rekursiven Auflisten aller Dateien und Verzeichnisse
+  const listAllFilesAndDirs = async (dirHandle) => {
+    const files = [];
+    for await (const [name, handle] of dirHandle.entries()) {
+      const { kind } = handle;
+      files.push({ name, handle, kind });
+      if (kind === 'directory') {
+        const subdirFiles = await listAllFilesAndDirs(handle);
+        files.push(...subdirFiles);
+      }
+    }
+    return files;
   };
 
   return (
     <main className="left-container white-text">
-      
 
-      {/* Verstecktes Input-Element */}
-      <input
-        type="file"
-        multiple
-        onChange={handleFiles}
-        ref={fileInputRef}
-        style={{ display: 'none' }}
-      />
-
-      {/* Benutzerdefinierte Schaltflächen */}
+      {/* Benutzerdefinierte Schaltflächen für das Öffnen und Verarbeiten von Java-Dateien */}
       <div className="button-container">
-        <button onClick={openAndProcessJavaFiles} className="text-box button">
-          Select Directory Or File
-        </button>
+        <form onInput={openAndProcessJavaFiles} className="text-box button" enctype="multipart/form-data">
+          <input type="file" name="file" multiple="" webkitdirectory="" />
+        </form>
       </div>
 
-      {outputVisible && ( // Nur anzeigen, wenn outputVisible true ist
+      {/* Ausgabekasten nur anzeigen, wenn outputVisible true ist */}
+      {outputVisible && (
         <div className="output-box text-box">
-          {selectedPath && ( // Anzeigen des ausgewählten Pfads ab dem Laufwerk
+          {selectedPath && (
             <div>
               <h2>Ausgewählter oberster Ordner:</h2>
               <p>{selectedPath}</p>
             </div>
           )}
 
-          {!noFilesFound && uploadedFileNames.length > 0 && (
-            <div>
-              <h2>Hochgeladene Dateien:</h2>
-              <ul>
-                {uploadedFileNames.map((fileName, index) => (
-                  <li key={index}>{fileName}</li>
-                ))}
-              </ul>
-            </div>
-          )}
+          {/* Anzeigen der hochgeladenen Dateien, wenn vorhanden */}
+          {!noFilesFound && uploadedFileNames.length > 0 && renderFileList('Hochgeladene Dateien:', uploadedFileNames)}
 
-          {!noFilesFound && openedJavaFileNames.length > 0 && (
-            <div>
-              <h2>Hochgeladene Java-Dateien:</h2>
-              <ul>
-                {openedJavaFileNames.map((fileName, index) => (
-                  <li key={index}>{fileName}</li>
-                ))}
-              </ul>
-            </div>
-          )}
+          {/* Anzeigen der hochgeladenen Java-Dateien, wenn vorhanden */}
+          {!noFilesFound && openedJavaFileNames.length > 0 && renderFileList('Hochgeladene Java-Dateien:', openedJavaFileNames)}
 
+          {/* Anzeigen, wenn keine Dateien gefunden wurden */}
           {noFilesFound && <div>Keine Dateien gefunden.</div>}
         </div>
       )}
