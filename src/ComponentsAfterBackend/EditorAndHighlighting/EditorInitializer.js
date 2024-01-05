@@ -3,47 +3,6 @@ import jsonDaten from './test.json';
 
 class EditorInitializer {
 
-  static getLineDecoration(editor, lineIndex) {
-    const decorations = editor.getModel().getLineDecorations(lineIndex + 1);
-    for (const dec of decorations) {
-      if (dec.range.startLineNumber === lineIndex + 1) {
-        if (dec.options.className.includes('solid-line-decoration')) {
-          return 'green';
-        } else if (dec.options.className.includes('dotted-line-decoration')) {
-          return 'red';
-        }
-      }
-    }
-    return null;
-  }
-
-  static addCommentsToCode(editor, javaFileContent, jsonData) {
-    let lines = javaFileContent.split('\n');
-    jsonData.sort((a, b) => a.begin - b.begin);
-
-    jsonData.forEach(item => {
-      if (item.Type === 'if' || item.Type === 'else') {
-        let lineIndex = item.begin - 1;
-        let lineDecoration = this.getLineDecoration(editor, lineIndex);
-        let lineContent = lines[lineIndex].replace(/[\r\n]+$/, '');
-        let comment;
-
-        if (item.was_taken && lineDecoration === 'green') {
-          comment = " // result: true and path was taken";
-        } else if (!item.was_taken && lineDecoration === 'red') {
-          comment = " // result: false and path was not taken";
-        } else if (item.was_taken && lineDecoration === 'red') {
-          comment = " // result: true, but path was not taken";
-        }
-
-        if (comment) {
-          lines[lineIndex] = lineContent + '  ' + comment;
-        }
-      }
-    });
-
-    return lines.join('\n');
-  }
   static initializeEditor(containerRef, javaFileContent, highlightedLines, setEditor) {
     
     if (typeof javaFileContent !== 'string') {
@@ -131,20 +90,17 @@ class EditorInitializer {
         ],
       }
     });
-    javaFileContent = this.addCommentsToCode(editor, javaFileContent, jsonDaten);
-  editor.getModel().setValue(javaFileContent); // Aktualisiere den Inhalt des Editors
-
+    
     this.addDecorationsBasedOnJsonData(editor, jsonDaten);
-
     this.adjustEditorHeight(editor);
-
-    editor.onDidChangeModelContent(() => {
-      this.adjustEditorHeight(editor);
-    });
+    this.addCommentsToCode(editor,javaFileContent,jsonDaten);
+    
+    
 
 
     
     monaco.editor.setTheme('vs-dark');
+    
     setEditor(editor);
     return editor;
   }
@@ -204,6 +160,48 @@ class EditorInitializer {
     // Aktualisiere alle Dekorationen auf einmal
     editor.deltaDecorations([], decorations);
   }
+
+  static getLineDecoration(editor, lineIndex) {
+    const decorations = editor.getModel().getLineDecorations(lineIndex + 1);
+    for (const dec of decorations) {
+      if (dec.range.startLineNumber === lineIndex + 1) {
+        if (dec.options.className.includes('solid-line-decoration')) {
+          return 'green';
+        } else if (dec.options.className.includes('dotted-line-decoration')) {
+          return 'red';
+        }
+      }
+    }
+    return null;
+  }
+
+  static addCommentsToCode(editor, javaFileContent, jsonData) {
+    let lines = javaFileContent.split('\n');
+    console.log("Original lines:", lines);
+
+    jsonData.sort((a, b) => a.begin - b.begin);
+    let lineOffset = 0;
+
+    jsonData.forEach(item => {
+      if (item.FileName === "javaTestFile.java" && (item.Type === 'if' || item.Type === 'else' || item.Type === 'while')) {
+        let lineIndex = item.begin - 1 + lineOffset;
+        let comment = `   // was_taken: ${item.was_taken}`;
+        lines.splice(lineIndex + 1, 0, comment);
+        lineOffset++;
+        console.log(`Added comment at line ${lineIndex + 1}:`, comment);
+      }
+    });
+
+    // Definiere updatedContent hier, nachdem die Kommentare hinzugefügt wurden
+    let updatedContent = lines.join('\n');
+
+    // Verwenden Sie updatedContent, um den Editor-Inhalt zu aktualisieren
+    editor.getModel().setValue(updatedContent);
+
+    // Optional: Gib updatedContent zurück, wenn die Methode dazu verwendet wird
+    return updatedContent;
+}
+  
   
   static range(start, end) {
   return Array(end - start + 1).fill().map((_, idx) => start + idx);
