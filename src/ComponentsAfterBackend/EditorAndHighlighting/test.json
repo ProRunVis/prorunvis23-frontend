@@ -1,0 +1,51 @@
+[
+    {
+      "FileName": "javaTestFile.java",
+      "Type": "if",
+      "begin": 7,
+      "end": 9
+    },
+    {
+      "FileName": "Example.java",
+      "Type": "else",
+      "begin": 9,
+      "end": 18
+    },
+    {
+      "FileName": "Example.java",
+      "Type": "if",
+      "begin": 13,
+      "end": 15
+    },
+    {
+        "FileName": "Example.java",
+        "Type": "else",
+        "begin": 15,
+        "end": 17
+      },
+      {
+        "FileName": "Example.java",
+        "Type": "while",
+        "begin": 21,
+        "end": 31
+      },
+      {
+        "FileName": "Example.java",
+        "Type": "while",
+        "begin": 27,
+        "end": 30
+      },
+      {
+        "FileName": "Example.java",
+        "Type": "while",
+        "begin": 21,
+        "end": 24
+      },
+      {
+        "FileName": "Example.java",
+        "Type": "while",
+        "begin": 27,
+        "end": 30
+      }
+  ]
+  
