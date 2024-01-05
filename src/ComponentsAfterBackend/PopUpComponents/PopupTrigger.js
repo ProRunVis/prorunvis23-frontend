@@ -21,12 +21,12 @@ class PopupTrigger {
     
 
     const wordMessages = {
-      'for': 'Schokokuchen',
-      'int': 'Schwarzwälder Kirschtorte',
-      'if': 'New York Cheesecake',
-      'else': 'Tarte Tatin',
-      'while': 'Victoria Sponge Cake',
-      'class': 'Sacher-Torte'
+      'for': 'Das ist ein for',
+      'int': 'Das ist ein int',
+      'if': 'Das ist ein if',
+      'else': 'Das ist ein else',
+      'while': 'Das ist ein while',
+      'class': 'Das ist ein "class"'
     };
 
     if (word && word.word in wordMessages) {

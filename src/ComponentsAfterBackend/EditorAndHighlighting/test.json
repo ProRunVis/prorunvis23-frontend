@@ -3,49 +3,57 @@
       "FileName": "javaTestFile.java",
       "Type": "if",
       "begin": 7,
-      "end": 9
+      "end": 9,
+      "was_taken" : true
     },
     {
       "FileName": "Example.java",
       "Type": "else",
       "begin": 9,
-      "end": 18
+      "end": 18,
+      "was_taken" : false
     },
     {
       "FileName": "Example.java",
       "Type": "if",
       "begin": 13,
-      "end": 15
+      "end": 15,
+      "was_taken" : true
     },
     {
         "FileName": "Example.java",
         "Type": "else",
         "begin": 15,
-        "end": 17
+        "end": 17,
+        "was_taken" : false
       },
       {
         "FileName": "Example.java",
         "Type": "while",
         "begin": 21,
-        "end": 31
+        "end": 31,
+        "was_taken" : true
       },
       {
         "FileName": "Example.java",
         "Type": "while",
         "begin": 27,
-        "end": 30
+        "end": 30,
+        "was_taken" : false
       },
       {
         "FileName": "Example.java",
         "Type": "while",
         "begin": 21,
-        "end": 24
+        "end": 24,
+        "was_taken" : true
       },
       {
         "FileName": "Example.java",
         "Type": "while",
         "begin": 27,
-        "end": 30
+        "end": 30,
+        "was_taken" : false
       }
   ]
   
