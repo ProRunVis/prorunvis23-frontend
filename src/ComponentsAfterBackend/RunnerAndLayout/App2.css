@@ -163,7 +163,7 @@
 }
 .popup {
   position: absolute;
-  background-color: pink;
+  background-color: rgb(255, 255, 255);
   padding: 20px;
   border: 1px solid #ccc;
   box-shadow: 0 2px 10px rgba(0,0,0,0.5);

@@ -122,16 +122,17 @@ static addDecorationsBasedOnJsonData(editor, jsonData) {
 
   // Gehe jedes Element in jsonData durch
   sortedData.forEach(item => {
-    for (let i = item.begin; i <= item.end; i++) {
-      if (overlapMap.has(i)) {
-        // Wenn bereits eine Dekoration für die Zeile existiert, setze auf 'red'
-        overlapMap.set(i, 'red');
-      } else {
-        // Andernfalls setze die Dekoration basierend auf was_taken
-        overlapMap.set(i, item.was_taken ? 'green' : 'red');
-      }
-    }
-  });
+ for (let i = item.begin; i <= item.end; i++) {
+   if (overlapMap.has(i)) {
+     // Wenn bereits eine Dekoration für die Zeile existiert, setze auf 'rot' nur wenn was_taken wahr ist
+     overlapMap.set(i, item.was_taken ? 'red' : overlapMap.get(i));
+   } else {
+     // Andernfalls setze die Dekoration basierend auf was_taken
+     overlapMap.set(i, item.was_taken ? 'green' : 'red');
+   }
+ }
+});
+
 
   // Erzeuge die tatsächlichen Dekorationen basierend auf der Map
   let decorations = Array.from(overlapMap.entries()).map(([line, color]) => {

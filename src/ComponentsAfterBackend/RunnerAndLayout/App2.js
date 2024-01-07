@@ -1,62 +1,70 @@
-import './App2.css';
-import React, { useEffect, useRef, useState, useMemo } from 'react';
-import PopupManager from '../PopUpComponents/PopupManager';
-import EditorClickHandler from '../PopUpComponents/EditorClickHandler';
-import EditorInitializer from '../EditorAndHighlighting/EditorInitializer';
+import "./App2.css";
+import React, { useEffect, useRef, useState, useMemo } from "react";
+import PopupManager from "../PopUpComponents/PopupManager";
+import EditorClickHandler from "../PopUpComponents/EditorClickHandler";
+import EditorInitializer from "../EditorAndHighlighting/EditorInitializer";
 import Navbar2 from "./Navbar2";
-import Footer2 from './Footer2';
+import Footer2 from "./Footer2";
 
 function App2() {
-  // Referenz für den Editor-Container
-  const editorContainerRef = useRef(null);
 
-  // Zustände für den Editor, die hervorgehobenen Linien, den Inhalt der Java-Datei und die Popup-Nachricht
+  // Konstanten ------------------------------------------------------------------------------------------------------------------
+ 
+  const editorContainerRef = useRef(null);
   const [editor, setEditor] = useState(null);
   const [highlightedLines] = useState(new Set());
-  const [javaFileContent, setJavaFileContent] = useState('');
-  const [popupMessage, setPopupMessage] = useState('');
-
-  // Konstante für die Nachricht, die angezeigt wird, wenn das Wort "Schwarzwälderkirschtorte" gefunden wird
-  const FOR_WORD_MESSAGE = 'Schwarzwälderkirschtorte';
-
-  // Referenz für das Dialogfenster
+  const [javaFileContent, setJavaFileContent] = useState("");
+  const [popupMessage, setPopupMessage] = useState("");
   const dialogRef = useRef(null);
+  const [popupDistance, setPopupDistance] = useState(0);
 
-  // Memoisierung des PopupManagers
-  const popupManager = useMemo(() => new PopupManager(dialogRef, setPopupMessage), [dialogRef, setPopupMessage]);
 
-  // Funktion zum Laden der Java-Datei
+  const popupManager = useMemo(
+    () => new PopupManager(dialogRef, setPopupMessage, popupDistance),
+    [dialogRef, setPopupMessage, popupDistance]
+  );
   const loadJavaFile = async () => {
     try {
-      const response = await fetch('/JavaTestFile.java');
+      const response = await fetch("/JavaTestFile.java");
       const text = await response.text();
       setJavaFileContent(text);
     } catch (error) {
-      console.error('Fehler beim Laden der Java-Datei:', error);
+      console.error("Fehler beim Laden der Java-Datei:", error);
     }
   };
-
   const closePopup = () => {
-    setPopupMessage('');
+    setPopupMessage("");
   };
 
-  // Effekt, der ausgeführt wird, wenn der Inhalt der Java-Datei oder die hervorgehobenen Linien geändert werden
+
+
+
+// -------------------------------------------------------------------------------------------------------------------------
+//UseEffekte
+
+
+// Effekt, der ausgeführt wird, wenn der Inhalt der Java-Datei oder die hervorgehobenen Linien geändert werden
   useEffect(() => {
     if (javaFileContent && editorContainerRef.current) {
-      const newEditor = EditorInitializer.initializeEditor(editorContainerRef, javaFileContent, highlightedLines, setEditor);
+      const newEditor = EditorInitializer.initializeEditor(
+        editorContainerRef,
+        javaFileContent,
+        highlightedLines,
+        setEditor
+      );
       if (newEditor) {
         setEditor(newEditor);
       }
     }
   }, [javaFileContent, highlightedLines]);
 
-  // Effekt, der ausgeführt wird, wenn der Editor, der PopupManager oder die FOR_WORD_MESSAGE geändert werden
+  // Effekt, der ausgeführt wird, wenn der Editor, der PopupManager  geändert werden
   useEffect(() => {
     if (editor) {
-      const clickHandler = new EditorClickHandler(editor, popupManager, FOR_WORD_MESSAGE);
+      const clickHandler = new EditorClickHandler(editor, popupManager);
       clickHandler.handleMouseDown();
     }
-  }, [editor, popupManager, FOR_WORD_MESSAGE]);
+  }, [editor, popupManager]);
 
   // Effekt, der ausgeführt wird, wenn der Editor geändert wird
   useEffect(() => {
@@ -72,22 +80,25 @@ function App2() {
     loadJavaFile();
   }, []);
 
+
+  //-------------------------------------------------------------------------------------------------------------------
+
+  
   // Render-Funktion
   return (
     <div className="App2">
       <Navbar2 />
-      <div ref={editorContainerRef} className="editor-container">
-        {/* Editor-relevantes Markup */}
-      </div>
-      {/* Anzeige der Popup-Nachricht */}
-      {popupMessage && (
+      <div ref={editorContainerRef} className="editor-container"></div>
+      {popupMessage && (  //bedingte Rendering Anweisung für die gesamte Klammer, wird nur gerändert, wenn popupMessage != null
         <div ref={dialogRef} className="popup">
           {popupMessage}
           <br />
-          <button onClick={closePopup} className="popup-close-button">Schließen</button>
+          <button onClick={closePopup} className="popup-close-button">
+            Schließen
+          </button>
         </div>
       )}
-      <Footer2 /> 
+      <Footer2 />
     </div>
   );
 }

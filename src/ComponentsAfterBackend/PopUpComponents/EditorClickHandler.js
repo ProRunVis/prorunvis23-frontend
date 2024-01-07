@@ -2,11 +2,11 @@
 import PopupTrigger from './PopupTrigger'; 
 
 class EditorClickHandler {
-  constructor(editor, popupManager, message) {
+  constructor(editor, popupManager) {
     this.editor = editor;
     this.popupManager = popupManager;
-    this.message = message;
-    this.popupTrigger = new PopupTrigger(editor, popupManager, message);
+    
+    this.popupTrigger = new PopupTrigger(editor, popupManager);
   }
 
   handleMouseDown() {
