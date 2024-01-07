@@ -4,7 +4,7 @@
       "Type": "if",
       "begin": 7,
       "end": 9,
-      "was_taken" : true
+      "was_taken" : true 
     },
     {
       "FileName": "Example.java",
@@ -25,7 +25,7 @@
         "Type": "else",
         "begin": 15,
         "end": 17,
-        "was_taken" : false
+        "was_taken" : true
       },
       {
         "FileName": "Example.java",
@@ -39,7 +39,7 @@
         "Type": "while",
         "begin": 27,
         "end": 30,
-        "was_taken" : false
+        "was_taken" : true
       },
       {
         "FileName": "Example.java",
@@ -53,7 +53,7 @@
         "Type": "while",
         "begin": 27,
         "end": 30,
-        "was_taken" : false
+        "was_taken" : true
       }
   ]
   

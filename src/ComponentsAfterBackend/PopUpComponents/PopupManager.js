@@ -1,16 +1,25 @@
-let firstClick = true;
+
 
 class PopupManager {
-  constructor(dialogRef, setPopupMessage) {
+  constructor(dialogRef, setPopupMessage, popupDistance) {
     this.dialogRef = dialogRef;
     this.setPopupMessage = setPopupMessage;
+    this.popupDistance = popupDistance;
     this.closePopup = this.closePopup.bind(this);
-  }
+   }
 
   updateMessage(message) {
     this.setPopupMessage(message);
   }
-  
+  handleMouseDown(e) {
+    // Get the mouse position
+    const x = e.pageX;
+    const y = e.pageY;
+   
+    // Open the popup at the mouse position
+    this.popupManager.openPopupAtMousePosition(x, y);
+   }
+   
   openPopupAtMousePosition(x, y) {
     console.log("1- Mouse Position - X:", x, "Y:", y);
     
@@ -19,8 +28,8 @@ class PopupManager {
     console.log("1.5- Mouse Position - X:", x, "Y:", y);
     if (dialogElement) {
       dialogElement.style.position = 'absolute';
-      dialogElement.style.left = `${x}px`;
-      dialogElement.style.top = `${y}px`;
+      dialogElement.style.left = `${x + this.popupDistance}px`;
+      dialogElement.style.top = `${y + this.popupDistance}px`;
       dialogElement.style.display = 'block';
     }
   }
