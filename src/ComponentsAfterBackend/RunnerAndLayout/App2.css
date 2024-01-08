@@ -177,19 +177,24 @@
 }
 
 
-.solid-line-decoration {
+.solid-green-line-decoration {
   border-left: 2px solid rgb(0, 255, 115);
   margin-left: -35px; 
 }
 
-.dotted-line-decoration {
-  border-left: 6px dotted red;
-  margin-left: -25px; 
-}
-.true-background-decoration {
-  background-color: rgba(0, 255, 115, 0.1); /* Gelb mit Transparenz */
+.solid-red-line-decoration {
+  border-left: 2px solid rgb(255, 0, 0);
+  margin-left: -35px; 
 }
 
-.false-background-decoration {
-  background-color: rgba(255, 0, 0, 0.1); /* Rot mit Transparenz */
+
+.green-glyph-decoration {
+  content :'*'; /* Unicode-Kugel-Symbol */
+  color: green; /* Die Farbe des Symbols */
+  margin-left : -25px; /* Platz rechts vom Symbol */
+  font-size: 8px; /* Größe des Symbols */
+}
+
+.green-background-decoration {
+  background-color: rgba(22, 250, 1, 0.2); /* Rot mit Transparenz */
 }
