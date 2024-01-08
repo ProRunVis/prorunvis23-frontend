@@ -9,8 +9,8 @@
     {
         "file": "JavaTestFile.java",
         "codeType": "MethodCallExpr",
-        "start": 9,
-        "end": 17
+        "start": 7,
+        "end": 12
     },
 
 
