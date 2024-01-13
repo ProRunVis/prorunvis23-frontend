@@ -1,3 +1,10 @@
+
+/**
+ *  Bestimmt, ob ein Popup basierend auf der aktuellen 
+ *  Cursorposition im Editor angezeigt werden soll.
+ *  In der Reihenfolge die 2. Klasse die aufgerufen wird
+ */
+
 class PopupTrigger {
   constructor(editor, popupManager, message) {
     this.editor = editor;

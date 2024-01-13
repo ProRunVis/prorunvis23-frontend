@@ -1,5 +1,9 @@
 
 
+/**
+ * Kontrolliert das Öffnen, Positionieren und Schließen von Popups.
+ * In der Reihenfolge die 3. Klasse die aufgerufen wird
+ */
 class PopupManager {
   constructor(dialogRef, setPopupMessage, popupDistance) {
     this.dialogRef = dialogRef;
@@ -17,14 +21,14 @@ class PopupManager {
     const y = e.pageY;
    
     // Open the popup at the mouse position
-    this.popupManager.openPopupAtMousePosition(x, y);
-   }
+    this.openPopupAtMousePosition(x, y); // Ändern Sie dies
+  }
    
   openPopupAtMousePosition(x, y) {
     console.log("1- Mouse Position - X:", x, "Y:", y);
     
     const dialogElement = this.dialogRef.current;
-    console.log("dialogRef "+dialogElement)
+    console.log("dialogRef  "+this.dialogElement)
     console.log("1.5- Mouse Position - X:", x, "Y:", y);
     if (dialogElement) {
       dialogElement.style.position = 'absolute';

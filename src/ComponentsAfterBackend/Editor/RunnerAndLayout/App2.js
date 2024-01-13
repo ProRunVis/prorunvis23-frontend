@@ -1,7 +1,7 @@
 import "./App2.css";
 import React, { useEffect, useRef, useState, useMemo } from "react";
-import PopupManager from "../PopUpComponents/PopupManager";
-import EditorClickHandler from "../PopUpComponents/EditorClickHandler";
+import PopupManager from "../PopUpWindow/PopupManager";
+import EditorClickHandler from "../PopUpWindow/EditorClickHandler";
 import EditorInitializer from "../EditorAndHighlighting/EditorInitializer";
 import Navbar2 from "../../Navbar/Navbar2";
 import Footer2 from "../../Footer/Footer2";
@@ -16,7 +16,7 @@ function App2() {
   const [javaFileContent, setJavaFileContent] = useState("");
   const [popupMessage, setPopupMessage] = useState("");
   const dialogRef = useRef(null);
-  const [popupDistance, setPopupDistance] = useState(0);
+  const [popupDistance] = useState(0);
    // State für den Textinhalt der geladenen Datei der rechten Seite
    const [text, setText] = useState('');
 
@@ -34,6 +34,8 @@ function App2() {
       console.error("Fehler beim Laden der Java-Datei:", error);
     }
   };
+
+  
   const closePopup = () => {
     setPopupMessage("");
   };
@@ -44,45 +46,46 @@ function App2() {
 // -------------------------------------------------------------------------------------------------------------------------
 //UseEffekte
 
+useEffect(() => {
+  if (dialogRef.current) {
+    // Erstelle hier eine neue Instanz von PopupManager, wenn dialogRef verfügbar ist
+    const popupManagerInstance = new PopupManager(dialogRef, setPopupMessage, popupDistance);
+    // Führen Sie hier alle weiteren Aktionen mit popupManagerInstance aus
+  }
+}, [dialogRef, setPopupMessage, popupDistance]);
 
 // Effekt, der ausgeführt wird, wenn der Inhalt der Java-Datei oder die hervorgehobenen Linien geändert werden
-  useEffect(() => {
-    if (javaFileContent && editorContainerRef.current) {
-      const newEditor = EditorInitializer.initializeEditor(
-        editorContainerRef,
-        javaFileContent,
-        highlightedLines,
-        setEditor
-      );
-      if (newEditor) {
-        setEditor(newEditor);
-      }
-    }
-  }, [javaFileContent, highlightedLines]);
-
-  // Effekt, der ausgeführt wird, wenn der Editor, der PopupManager  geändert werden
-  useEffect(() => {
-    if (editor) {
-      const clickHandler = new EditorClickHandler(editor, popupManager);
+useEffect(() => {
+  if (javaFileContent && editorContainerRef.current) {
+    const newEditor = EditorInitializer.initializeEditor(
+      editorContainerRef,
+      javaFileContent,
+      highlightedLines,
+      setEditor
+    );
+    if (newEditor) {
+      setEditor(newEditor);
+      // Initialisiere den EditorClickHandler hier, nachdem der Editor erstellt wurde
+      const clickHandler = new EditorClickHandler(newEditor, popupManager);
       clickHandler.handleMouseDown();
     }
-  }, [editor, popupManager]);
+  }
+}, [javaFileContent, highlightedLines, popupManager]);
 
-  // Effekt, der ausgeführt wird, wenn der Editor geändert wird
-  useEffect(() => {
-    return () => {
-      if (editor) {
-        editor.dispose();
-      }
-    };
-  }, [editor]);
+useEffect(() => {
+  loadJavaFile();
+}, []);
 
-  // Effekt, der die Java-Datei lädt, wenn die Komponente zum ersten Mal gerendert wird
-  useEffect(() => {
-    loadJavaFile();
-  }, []);
+// Effekt, der ausgeführt wird, wenn der Editor geändert wird
+useEffect(() => {
+  return () => {
+    if (editor) {
+      editor.dispose();
+    }
+  };
+}, [editor]);
 
-
+  
   //-------------------------------------------------------------------------------------------------------------------
 
   
