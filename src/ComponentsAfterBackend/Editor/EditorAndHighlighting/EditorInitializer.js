@@ -14,7 +14,7 @@ class EditorInitializer {
     if (!containerRef.current) {
       return;
     }
-    const editor = monaco.editor.create(containerRef.current, {
+    const editor = monaco.editor.create(containerRef.current, {  //erstellt einen neuen Editor
       value: javaFileContent,
       language: 'java',
       theme: 'java-theme',
@@ -32,7 +32,7 @@ class EditorInitializer {
     // ----------------------------------Syntax Highlighting ------------------------------------
 
 
-    monaco.editor.defineTheme('java-theme', {
+    monaco.editor.defineTheme('java-theme', {  // Stil Eigenschaften des Editors
       base: 'vs-dark',
       inherit: true,
       rules: [
@@ -58,11 +58,9 @@ class EditorInitializer {
         'editor.selectionBackground': '#264F78',
         'editor.inactiveSelectionBackground': '#3A3D41',
       }
-    });
+    });    
 
-    monaco.languages.register({ id: 'java' });
-
-    monaco.languages.setMonarchTokensProvider('java', {
+    monaco.languages.setMonarchTokensProvider('java', {   // Syntax Highlighting
       tokenizer: {
         root: [
           [/\b(Integer|Double|Float|Long|Short|Byte|Boolean|Character|String)\b/, 'custom-wrapper-class'],
@@ -95,22 +93,30 @@ class EditorInitializer {
       }
     });
 
+    monaco.languages.register({ id: 'java' });   // meldet das Syntax Hightling an
    
-   
+// -------------------------------------  Aufruf aller weiteren Methoden für den Editor ----------------------------
 
 // Aktualisiere den Inhalt des Editors
 editor.getModel().setValue(javaFileContent); 
+
 // Striche und Punkte vor der Zeilennummer schreiben
 this.addDecorationsBasedOnJsonData(editor, jsonDaten);
+
 //Anpassung Editorhöhe
 this.adjustEditorHeight(editor);
 
+// Event-Listener, wenn sich Editor ändert für die Höhe
 editor.onDidChangeModelContent(() => {
 this.adjustEditorHeight(editor);
 });
+
+// setzt Dark Theme  für den Editor
 monaco.editor.setTheme('vs-dark');
-this.markUnvisitedStatements(editor, jsonDaten);
-setEditor(editor);
+
+// markiert ifStmt im Editor mit grünem Hintergrund. funktioniert noch nicht
+//this.markUnvisitedStatements(editor, jsonDaten);
+
 return editor
 }
 
@@ -125,11 +131,9 @@ editor.layout();
 }
 }
 
-// Hilfsfunktion, um unbesuchte if/else Statements zu markieren
-
 
 static addDecorationsBasedOnJsonData(editor, jsonData) {
-  this.markUnvisitedStatements(editor, jsonData);
+ // this.markUnvisitedStatements(editor, jsonData);
   // Ermittle die abgedeckten Zeilen
   const coveredLines = this.getCoveredLines(jsonData);
 
@@ -185,10 +189,28 @@ static getLineDecoration(editor, lineIndex) {
   }
   return null;
   }
+
+  // Definieren Sie die getCoveredLines Methode ebenfalls als statische Methode
+static getCoveredLines(jsonData) {
+  let coveredLines = new Set();
+  
+  jsonData.forEach(item => {
+    // Gehe durch jede Zeile von 'start' bis 'end' in jedem JSON-Element
+    for (let line = item.start; line <= item.end; line++) {
+      coveredLines.add(line);
+    }
+  });
+  
+  return coveredLines;
+  }
  
  
 
-static addCommentsToCode(editor, javaFileContent, jsonData) {
+  // --------------------------------------    has to be fixed or new evaluated --------------------------
+
+
+// currently not in use
+/*static addCommentsToCode(editor, javaFileContent, jsonData) {
   let lines = javaFileContent.split('\n');
   jsonData.sort((a, b) => a.begin - b.begin);
 
@@ -215,11 +237,17 @@ static addCommentsToCode(editor, javaFileContent, jsonData) {
 
   return lines.join('\n');
 }
+*/
 
+// currently not in use
+/*
 static range(start, end) {
 return Array(end - start + 1).fill().map((_, idx) => start + idx);
 }
+*/
 
+// currently not in use
+/*
 static markUnvisitedStatements(editor, jsonData) {
   let decorations = [];
   jsonData.forEach(item => {
@@ -239,20 +267,8 @@ static markUnvisitedStatements(editor, jsonData) {
   // Aktualisiere alle Dekorationen auf einmal
   editor.deltaDecorations([], decorations);
 }
+*/
 
-// Definieren Sie die getCoveredLines Methode ebenfalls als statische Methode
-static getCoveredLines(jsonData) {
-let coveredLines = new Set();
 
-jsonData.forEach(item => {
-  // Gehe durch jede Zeile von 'start' bis 'end' in jedem JSON-Element
-  for (let line = item.start; line <= item.end; line++) {
-    coveredLines.add(line);
-  }
-});
-
-return coveredLines;
 }
-}
-
 export default EditorInitializer;
