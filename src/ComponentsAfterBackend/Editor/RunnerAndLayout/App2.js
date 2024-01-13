@@ -3,8 +3,8 @@ import React, { useEffect, useRef, useState, useMemo } from "react";
 import PopupManager from "../PopUpComponents/PopupManager";
 import EditorClickHandler from "../PopUpComponents/EditorClickHandler";
 import EditorInitializer from "../EditorAndHighlighting/EditorInitializer";
-import Navbar2 from "./Navbar2";
-import Footer2 from "./Footer2";
+import Navbar2 from "../../Navbar/Navbar2";
+import Footer2 from "../../Footer/Footer2";
 
 function App2() {
 

@@ -1,7 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import App from './ComponentsBeforeBackend/App'; // Ensure this is the correct component for ProjectOne
-import App2 from './ComponentsAfterBackend/RunnerAndLayout/App2'; // Ensure this is the correct component for ProjectTwo
+import App2 from './ComponentsAfterBackend/Editor/RunnerAndLayout/App2'; // Ensure this is the correct component for ProjectTwo
 
 function RoutingClass() {
  return (
