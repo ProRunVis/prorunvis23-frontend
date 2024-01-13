@@ -5,42 +5,6 @@ import jsonDaten from './test2.json';
 
 class EditorInitializer {
 
-
-
-  static markUnvisitedStatements(editor, jsonData) {
-    let decorations = [];
-    jsonData.forEach(item => {
-      if (item.codeType === 'IfStmt' && item.was_visited) {
-        for (let line = item.start; line <= item.end; line++) {
-          decorations.push({
-            range: new monaco.Range(line, 1, line, 1),
-            options: {
-              isWholeLine: true,
-              className: 'green-background-decoration'
-            }
-          });
-        }
-      }
-    });
-
-    // Aktualisiere alle Dekorationen auf einmal
-    editor.deltaDecorations([], decorations);
-  }
-  
- // Definieren Sie die getCoveredLines Methode ebenfalls als statische Methode
- static getCoveredLines(jsonData) {
-  let coveredLines = new Set();
-
-  jsonData.forEach(item => {
-    // Gehe durch jede Zeile von 'start' bis 'end' in jedem JSON-Element
-    for (let line = item.start; line <= item.end; line++) {
-      coveredLines.add(line);
-    }
-  });
-
-  return coveredLines;
-}
-
   static initializeEditor(containerRef, javaFileContent, highlightedLines, setEditor) {
     if (typeof javaFileContent !== 'string') {
       console.error('javaFileContent must be a string');
@@ -254,6 +218,40 @@ static addCommentsToCode(editor, javaFileContent, jsonData) {
 
 static range(start, end) {
 return Array(end - start + 1).fill().map((_, idx) => start + idx);
+}
+
+static markUnvisitedStatements(editor, jsonData) {
+  let decorations = [];
+  jsonData.forEach(item => {
+    if (item.codeType === 'IfStmt' && item.was_visited) {
+      for (let line = item.start; line <= item.end; line++) {
+        decorations.push({
+          range: new monaco.Range(line, 1, line, 1),
+          options: {
+            isWholeLine: true,
+            className: 'green-background-decoration'
+          }
+        });
+      }
+    }
+  });
+
+  // Aktualisiere alle Dekorationen auf einmal
+  editor.deltaDecorations([], decorations);
+}
+
+// Definieren Sie die getCoveredLines Methode ebenfalls als statische Methode
+static getCoveredLines(jsonData) {
+let coveredLines = new Set();
+
+jsonData.forEach(item => {
+  // Gehe durch jede Zeile von 'start' bis 'end' in jedem JSON-Element
+  for (let line = item.start; line <= item.end; line++) {
+    coveredLines.add(line);
+  }
+});
+
+return coveredLines;
 }
 }
 
