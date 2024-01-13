@@ -17,6 +17,8 @@ function App2() {
   const [popupMessage, setPopupMessage] = useState("");
   const dialogRef = useRef(null);
   const [popupDistance, setPopupDistance] = useState(0);
+   // State für den Textinhalt der geladenen Datei der rechten Seite
+   const [text, setText] = useState('');
 
 
   const popupManager = useMemo(
@@ -88,7 +90,19 @@ function App2() {
   return (
     <div className="App2">
       <Navbar2 />
+
+      <div className="LeftAndRightWebsiteComponents">
       <div ref={editorContainerRef} className="editor-container"></div>
+      <div className="comment-container">
+          <textarea
+            value={text}
+            onChange={(e) => setText(e.target.value)}
+            placeholder="Text hier eingeben..."
+          />
+        </div>
+      </div>
+
+
       {popupMessage && (  //bedingte Rendering Anweisung für die gesamte Klammer, wird nur gerändert, wenn popupMessage != null
         <div ref={dialogRef} className="popup">
           {popupMessage}

@@ -1,26 +1,47 @@
 .App2 {
   text-align: left;
   background-color: black;
-  display: flex; /* Definiert den Container als Flex-Container */
- flex-direction: column;
- min-height: 100vh; /* Minimale Höhe ist 100% der Viewport-Höhe */
-  background-color: black;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh; /* Minimale Höhe ist 100% der Viewport-Höhe */
+}
+
+.LeftAndRightWebsiteComponents {
+  display: flex;
+  flex-grow: 1;
+  align-items: stretch; /* Streckt die Kinder, damit sie die gleiche Höhe haben */
 }
 
 .editor-container {
-  
-  min-height: 500px;
-  
-  width: 80%;
-  margin: 40px auto;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start; /* Korrigiert von 'right' zu 'flex-start' */
+  flex: 1; /* Passt die Größe dynamisch an */
+  justify-content: flex-start;
+  min-height: 500px; /* Mindesthöhe */
+  width: 50%; /* Angepasst für eine gleichmäßige Aufteilung */
+  margin: 20px auto; /* Zentriert den Container */
   border: 1px solid #ccc;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
   position: relative; /* Für absolut positionierte Kinder */
+}
+
+.comment-container {
+  flex: 1; /* Gleiche Flex-Basis wie editor-container */
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  background-color: black;
   
 }
 
-
- 
+.comment-container textarea {
+  flex-grow: 1; /* Nimmt den verfügbaren Platz im Container ein */
+  background-color: black;
+  color: white; /* Für bessere Sichtbarkeit auf schwarzem Hintergrund */
+  border: 1px solid; /* Optional: Entfernt den Standardrahmen */
+  font-size: 16px;
+}
 
 
 .my-loop-decoration {
