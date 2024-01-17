@@ -5,7 +5,7 @@
   display: flex;
   align-items: center; /* Zentriert die Inhalte vertikal */
   background-color: rgb(4,7,18);
-  height: 120px;
+  height: 10vh;
   padding: 30px 0;
   width: 100%;
   border-bottom: 2px solid #494bc4e7; /* weißer horizontaler Strich */
@@ -64,23 +64,33 @@
   align-items: right; /* aligns items right */
   justify-content: flex-start; 
   margin: 0;
-  padding: 50px 27px; 
-  min-height: 100vh;
+  padding: 25px 25px; 
+  min-height: 90vh;
   width: 33%;
   background-color: black;
   text-align: center;
   box-sizing: border-box;
 }
 
-
-
-.text-box{    /* Upload Box */
+ /* Upload Box */
+.text-box-button{   
   border: 1px solid #494bc4e7;
-  padding: 10px;  
-  margin: 10px;  
+  align-self: auto;
+  padding: 5px;  
+  margin: 5px;  
   margin-bottom: 25px; 
   color: rgb(255, 255, 255);
-  background-color: rgb(4,7,18);
+  background-color: #000000e7;
+  min-height: 2vh;
+  width: 100%;
+}
+/* Free Space for further Usage STC */
+.subUpload{
+  background-color: aqua;
+  color: blueviolet;
+  align-self: baseline;
+  min-height: 69vh;
+  width: 100%;
 }
 
 /* footer */
