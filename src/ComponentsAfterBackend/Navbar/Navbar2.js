@@ -1,6 +1,6 @@
 // classComponents/Navbar.js für ProjectTwo
 import React from "react";
-import logoImage from './tmp_logo2.png';
+import logoImage from './CDProRunVis.png';
 import HelpButton2 from "./HelpButton2"; 
 
 export default function Navbar2() {
