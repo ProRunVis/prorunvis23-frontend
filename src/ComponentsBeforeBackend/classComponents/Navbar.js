@@ -11,8 +11,7 @@ export default function Navbar() {
         className="nav--icon"
         alt="A debugger logo"
       />
-      <h3 className="nav--logo_text">ProRunVis</h3>
-      <h4 className="nav--title">Visualize your flow</h4>
+      <h1 className="nav--title">Visualize your flow</h1>
       <HelpButton />
     </nav>
   );
