@@ -6,6 +6,7 @@
  */
 class PopupManager {
   constructor(dialogRef, setPopupMessage, popupDistance) {
+    console.log("Ich bin ein DialogRef : "+dialogRef)
     this.dialogRef = dialogRef;
     this.setPopupMessage = setPopupMessage;
     this.popupDistance = popupDistance;

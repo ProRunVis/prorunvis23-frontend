@@ -23,7 +23,7 @@ class PopupTrigger {
     console.log("3 -Mouse Position - X:", event.posx, "Y:", event.posy); // Zum Debuggen
    // Die Koordinaten bis hier sind korrekt
     const model = this.editor.getModel();
-    console.log("FLLLL"+model)
+    
     const word = model.getWordAtPosition(position);
     
 
