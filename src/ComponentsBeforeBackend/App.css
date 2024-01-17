@@ -63,7 +63,6 @@
 }
 
 /* LeftComponent */
-
 .left-container {
   display:flex;
   flex-direction: column;
@@ -76,6 +75,8 @@
   background-color: black;
   text-align: center;
   box-sizing: border-box;
+  color:white
+
 }
 
 .text-box{    /* Describing what the project is about */
@@ -136,9 +137,7 @@
 .highlightedContent {
   white-space: pre-wrap;
 }
-.white-text {
-  color: white;
-}
+
 
 .output-box {
   border: 1px solid #ffc7b1e7;
@@ -146,6 +145,10 @@
   margin: 10px;
   color: white;
   background-color: rgb(4, 7, 18);
+}
+
+.button-container{
+  color: pink;
 }
 
 /* footer */
