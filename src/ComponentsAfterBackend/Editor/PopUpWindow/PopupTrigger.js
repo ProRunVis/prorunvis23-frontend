@@ -1,10 +1,3 @@
-
-/**
- *  Bestimmt, ob ein Popup basierend auf der aktuellen 
- *  Cursorposition im Editor angezeigt werden soll.
- *  In der Reihenfolge die 2. Klasse die aufgerufen wird
- */
-
 class PopupTrigger {
   constructor(editor, popupManager, message) {
     this.editor = editor;
@@ -13,20 +6,12 @@ class PopupTrigger {
   }
 
   handleWordAtPosition(position, event) {
-   
-      this.showPopup(position, event);
-    
+    this.showPopup(position, event);
   }
 
   showPopup(position, event) {
-
-    console.log("3 -Mouse Position - X:", event.posx, "Y:", event.posy); // Zum Debuggen
-   // Die Koordinaten bis hier sind korrekt
     const model = this.editor.getModel();
-    
     const word = model.getWordAtPosition(position);
-    
-
     const wordMessages = {
       'for': 'Das ist ein for',
       'int': 'Das ist ein int',
@@ -37,8 +22,6 @@ class PopupTrigger {
     };
 
     if (word && word.word in wordMessages) {
-    
-
       const mouseX = event.posx;
       const mouseY = event.posy;
       this.popupManager.updateMessage(wordMessages[word.word]);

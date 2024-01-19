@@ -7,41 +7,20 @@ import Navbar2 from "../../Navbar/Navbar2";
 import Footer2 from "../../Footer/Footer2";
 
 function App2() {
-
-  // Konstanten ------------------------------------------------------------------------------------------------------------------
  
-  // Referenz auf den Container des Editors, um darauf DOM-Operationen auszuführen.
 const editorContainerRef = useRef(null);
-
-// State für den Editor-Instanz. 'setEditor' wird verwendet, um den Editor-Status zu aktualisieren.
 const [editor, setEditor] = useState(null);
-
-// State für eine Menge von Zeilennummern, die hervorgehoben werden sollen. 
 const [highlightedLines] = useState(new Set());
-
-// State für den Inhalt der Java-Datei, der im Editor angezeigt wird.
 const [javaFileContent, setJavaFileContent] = useState("");
-
-// State für die Nachricht, die im Popup angezeigt wird. 'setPopupMessage' aktualisiert diese Nachricht.
 const [popupMessage, setPopupMessage] = useState("");
-
-// Referenz auf das Dialog-Element (Popup), um darauf DOM-Operationen auszuführen.
 const dialogRef = useRef(null);
-
-// State für den Abstand des Popups zur Mausposition.
-const [popupDistance] = useState(0);
-
-// State für den Textinhalt des Kommentarbereichs auf der rechten Seite.
 const [text, setText] = useState('');
 
-// Erzeugt eine Instanz von PopupManager und nutzt 'useMemo' für Performance-Optimierung. 
-// Die Instanz wird nur neu erstellt, wenn sich 'dialogRef', 'setPopupMessage', oder 'popupDistance' ändert.
 const popupManager = useMemo(
   () => new PopupManager(dialogRef, setPopupMessage, 10),
   [dialogRef, setPopupMessage]
 );
 
-// Asynchrone Funktion zum Laden des Inhalts der Java-Testdatei.
 const loadJavaFile = async () => {
   try {
     const response = await fetch("/JavaTestFile.java");
@@ -52,29 +31,10 @@ const loadJavaFile = async () => {
   }
 };
 
-// Funktion zum Schließen des Popups und Löschen der Popup-Nachricht.
 const closePopup = () => {
   popupManager.closePopup();
 };
 
-
-
-
-// -------------------------------------------------------------------------------------------------------------------------
-//UseEffekte
-
-//Dieser Effekt wird ausgeführt, wenn sich dialogRef, setPopupMessage oder popupDistance ändern.
-/*useEffect(() => {
-  // Das wird im Moment nicht ausgeführt
-  if (dialogRef.current) {
-    // Erstelle hier eine neue Instanz von PopupManager, wenn dialogRef verfügbar ist
-    const popupManagerInstance = new PopupManager(dialogRef, setPopupMessage, popupDistance);
-    // Führen Sie hier alle weiteren Aktionen mit popupManagerInstance aus
-  }
-}, [dialogRef, setPopupMessage, popupDistance]); */
-
-
-// Effekt, der ausgeführt wird, wenn der Inhalt der Java-Datei oder die hervorgehobenen Linien geändert werden
 useEffect(() => {
   if (javaFileContent && editorContainerRef.current) {
     const newEditor = EditorInitializer.initializeEditor(
@@ -85,7 +45,6 @@ useEffect(() => {
     );
     if (newEditor) {
       setEditor(newEditor);
-      // Initialisiere den EditorClickHandler hier, nachdem der Editor erstellt wurde
       const clickHandler = new EditorClickHandler(newEditor, popupManager);
       clickHandler.handleMouseDown();
     }
@@ -96,7 +55,6 @@ useEffect(() => {
   loadJavaFile();
 }, []);
 
-// Effekt, der ausgeführt wird, wenn der Editor geändert wird
 useEffect(() => {
   return () => {
     if (editor) {
@@ -105,18 +63,12 @@ useEffect(() => {
   };
 }, [editor]);
 
-  
-  //-------------------------------------------------------------------------------------------------------------------
-
-  
-  // Render-Funktion
   return (
     <div className="App2">
       <Navbar2 />
-
       <div className="LeftAndRightWebsiteComponents">
-      <div ref={editorContainerRef} className="editor-container"></div>
-      <div className="comment-container">
+        <div ref={editorContainerRef} className="editor-container"></div>
+        <div className="comment-container">
           <textarea
             value={text}
             onChange={(e) => setText(e.target.value)}
@@ -124,18 +76,13 @@ useEffect(() => {
           />
         </div>
       </div>
-      <div
-        className="popup"
-        ref={dialogRef}
-        style={{ display: 'none' }} // Standardmäßig versteckt
-      >
+      <div className="popup" ref={dialogRef} style={{ display: 'none' }}>
         {popupMessage}
         <br />
         <button onClick={closePopup} className="popup-close-button">
           Schließen
         </button>
       </div>
-      )}
       <Footer2 />
     </div>
   );
