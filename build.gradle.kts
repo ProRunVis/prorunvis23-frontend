@@ -7,6 +7,11 @@ plugins{
 
 apply(plugin = "base")
 
+node{
+    version = "20.11.0"
+    download = true
+}
+
 tasks.register<NpmTask>("appNpmInstall"){
     setWorkingDir(file("${project.projectDir}"))
     setArgs(listOf("install"))
