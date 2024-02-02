@@ -1,4 +1,18 @@
-.button-container{
 
-    background-color: green;
-}
+.left-container {
+    max-width: 36em;
+    margin-right:auto;
+    margin: auto;
+    font-family: Roboto, serif;
+    line-height: 1.5;
+  }
+  
+  .picker {
+    background-color: #eee;
+    padding: 1em;
+  }
+  
+  #listing li {
+    font-family: Roboto Mono, monospace;
+    font-size: 90%;
+  }

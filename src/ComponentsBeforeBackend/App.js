@@ -3,6 +3,7 @@ import './App.css';
 import Navbar from "./classComponents/Navbar";
 import LeftComponent from './classComponents/LeftComponent';
 import Footer from './classComponents/Footer';
+import RightComponent from './classComponents/RightComponent';
 
 
 
@@ -13,11 +14,14 @@ function App() {
   return (
     <div className="App">
       <header className="App-header">
-        <div className ="container">
-          <Navbar />
-          <LeftComponent />          
-          <Footer />
-        </div>        
+      <Navbar />
+        <div className ="content">
+          
+          <LeftComponent />   
+          <RightComponent />       
+        
+        </div>    
+        <Footer />    
       </header>
     </div>
   );

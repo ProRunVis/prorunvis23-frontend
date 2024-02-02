@@ -1,10 +1,9 @@
 import "./App2.css";
 import React, { useEffect, useRef, useState, useMemo } from "react";
-import PopupManager from "../PopUpWindow/PopupManager";
-import EditorClickHandler from "../PopUpWindow/EditorClickHandler";
-import EditorInitializer from "../EditorAndHighlighting/EditorInitializer";
-import Navbar2 from "../../Navbar/Navbar2";
-import Footer2 from "../../Footer/Footer2";
+import PopupManager from "./classComponents/PopupManager";
+import EditorClickHandler from "./classComponents/EditorClickHandler";
+import EditorInitializer from "./classComponents/EditorInitializer";
+
 
 function App2() {
 
@@ -112,18 +111,17 @@ useEffect(() => {
   // Render-Funktion
   return (
     <div className="App2">
-      <Navbar2 />
-
-      <div className="LeftAndRightWebsiteComponents">
-      <div ref={editorContainerRef} className="editor-container"></div>
-      <div className="comment-container">
+      
+      
+        <div ref={editorContainerRef} className="editor-container"></div>
+        <div className="comment-container">
           <textarea
             value={text}
             onChange={(e) => setText(e.target.value)}
             placeholder="Text hier eingeben..."
           />
         </div>
-      </div>
+      
       <div
         className="popup"
         ref={dialogRef}
@@ -135,10 +133,10 @@ useEffect(() => {
           Schließen
         </button>
       </div>
-      )}
-      <Footer2 />
+      
     </div>
   );
+  
 }
 
 export default App2;
