@@ -45,6 +45,29 @@
   margin-left: 20px;
 }
 
+/* Der Kasten, wenn man auf Help geklickt hat */
+.modal-container {
+  max-width: 600px;
+  margin: 50px auto;
+  padding: 20px;
+  background-color: white;
+  border-radius: 8px;
+}
+
+.modal-close-button {
+  background-color: #61DAFB;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.modal-content {
+  margin-top: 20px;
+}
+
+
 /* Left and Right Container */
 
 /* overall */
@@ -52,10 +75,9 @@
 .content {
   display: flex;
   flex-direction: row;
-  justify-content: space-between;
-  /* Verteilt den Raum zwischen den Komponenten */
+  justify-content: space-between;  
   align-items: stretch;
-  /* Streckt die Kinder, um die gleiche Höhe zu haben */
+  
 }
 
 /* LeftComponent */
@@ -71,10 +93,7 @@
   overflow: hidden;
   position: relative;
   border-right:2px solid #ffc7b1e7 ;
- 
-
 }
-
 .left-container.collapsed {
   width: 10%; /* Breite, um nur den Button zu zeigen */
   
@@ -100,16 +119,7 @@
 /* Stil für den FolderTree, wenn nötig */
 
 
-.right-container {
-  flex: 3; /* 3 mal mehr Platz als der linke Container einnehmen */
-  /* flex-basis auf einen prozentualen Wert setzen, um das Verhältnis anzugeben */
-  flex-basis: 75%; /* Oder ein anderes Verhältnis, z.B. 80% */
-  padding: 20px;
-  min-height: 100vh;
-  background-color: black;
-  color: white;
-  box-sizing: border-box;
-}
+
 .text-box {
   display: flex; /* Aktiviert Flexbox */
   justify-content: flex-end; /* Positioniert den Inhalt am Ende der Hauptachse (rechts) */
@@ -215,25 +225,43 @@
 
 /* Right Component*/
 
+.right-container {
+  display: flex;
+  flex-direction: column; /* Vertikale Ausrichtung der Kinder */
+  justify-content: flex-start; /* Startet die Ausrichtung am Anfang des Containers */
+  align-items: stretch; /* Streckt die Kinder, um die Breite des Containers zu füllen */
+  flex: 3;
+  flex-basis: 75%;
+ 
+  min-height: 100vh;
+  background-color:  rgba(0, 0, 0, 0.3);
+  color: white;
+  box-sizing: border-box;
 
+}
 
 
 
 .editor-container {
+  flex: 1;
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
-  /* Korrigiert von 'right' zu 'flex-start' */
-  flex: 1;
-  /* Passt die Größe dynamisch an */
   justify-content: flex-start;
+  align-items: stretch;
+  width: 96%;
+  flex-basis: 75%;
+  margin-top : 0px;
+  /* Korrigiert von 'right' zu 'flex-start' */
+  
+  /* Passt die Größe dynamisch an */
+  box-sizing: border-box;
   min-height: 500px;
   /* Mindesthöhe */
-  width: 80%;
+  
   /* Angepasst für eine gleichmäßige Aufteilung */
-  margin: 20px auto;
+  
   /* Zentriert den Container */
-  border: 1px solid #ccc;
+  
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
   position: relative;
   /* Für absolut positionierte Kinder */
