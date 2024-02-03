@@ -56,27 +56,31 @@ function LeftComponent() {
 
   return (
     <main className={`left-container ${isLeftContainerCollapsed ? 'collapsed' : ''}`} style={{width: isLeftContainerCollapsed ? '50px' : '280px'}}>
-      <button onClick={toggleLeftContainer}>{isLeftContainerCollapsed ? 'Open' : 'Close'}</button>
+      <button onClick={toggleLeftContainer}>{isLeftContainerCollapsed ? 'Open' : 'Close directory'}</button>
       {isLeftContainerCollapsed ? null : (
         <div>
           <div className="button-container">
-            <form className="text-box" encType="multipart/form-data">
-              <input
-                type="file"
-                name="file"
-                multiple
-                webkitdirectory=""
-                onChange={handleFileSelect}
-                className="picker"
-              />
-            </form>
+          <form className="text-box" encType="multipart/form-data">
+  <input
+    type="file"
+    name="file"
+    multiple
+    webkitdirectory=""
+    onChange={handleFileSelect}
+    className="picker"
+  />
+</form>
           </div>
           {folderTreeData && (
+            <div className="folder-tree-container">
             <FolderTree
               data={folderTreeData}
               showCheckbox={false}
               readOnly={true}
+              indentPixels={0}
+
             />
+            </div>
           )}
         </div>
       )}

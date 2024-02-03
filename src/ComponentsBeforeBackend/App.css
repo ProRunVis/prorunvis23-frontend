@@ -82,18 +82,24 @@
 
 /* LeftComponent */
 .left-container {
+  display: flex;
+  flex-direction: column; /* Stapelt die Kinder vertikal */
+  align-items: stretch; 
   transition: width 0.3s ease;
+  width: 280px;
   min-height: 100vh;
   background-color: black;
   color: white;
   overflow: hidden;
   position: relative;
   border-right:2px solid #ffc7b1e7 ;
+ 
 
 }
 
 .left-container.collapsed {
   width: 10%; /* Breite, um nur den Button zu zeigen */
+  
 }
 
 .left-container button {
@@ -103,9 +109,9 @@
   width: 100%; /* Button nimmt die volle Containerbreite ein */
   padding: 10px 0; /* Gibt dem Button etwas Raum */
   cursor: pointer;
-  background-color: #333; /* Hintergrundfarbe des Buttons */
+  background-color: black; /* Hintergrundfarbe des Buttons */
   color: white; /* Textfarbe des Buttons */
-  border: none; /* Keine Ränder */
+  border: none;
 }
 
 /* Stellen Sie sicher, dass keine anderen Stile die Farbe oder den Hintergrund des .left-container überschreiben. */
@@ -127,12 +133,12 @@
   box-sizing: border-box;
 }
 .text-box {
-  /* Describing what the project is about */
-
-  border: 1px solid #ffc7b1e7;
+  display: flex; /* Aktiviert Flexbox */
+  justify-content: flex-end; /* Positioniert den Inhalt am Ende der Hauptachse (rechts) */
+  align-items: center; /* Zentriert den Inhalt entlang der Kreuzachse (vertikal) */
+  width: 100%;
+  border: 2px solid #ffc7b1e7;
   padding: 10px;
-  margin: 10px;
-  margin-bottom: 25px;
   color: white;
   background-color: rgb(4, 7, 18);
 }
@@ -199,9 +205,25 @@
 }
 
 .button-container {
+  width: 100% ;
   color: pink;
   margin-top: 40px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center; /* Zentriert den Inhalt vertikal */
+  align-items: center; /* Zentriert den Inhalt horizontal */
+  padding-right: 20px;
+  
  
+}
+.picker {
+  margin-right: 20px; /* Oder einen anderen Wert, um den gewünschten Abstand zu schaffen */
+}
+
+.folder-tree-container {
+  margin-top: 1px; /* Setzen Sie den gewünschten Abstand */
+  width : 100%;
+
 }
 
 
