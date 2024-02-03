@@ -1,7 +1,7 @@
 
 
 
-import "../App2.css";
+import "../App.css";
 import React, { useEffect, useRef, useState, useMemo } from "react";
 import PopupManager from "./PopupManager";
 import EditorClickHandler from "./EditorClickHandler";
@@ -46,7 +46,7 @@ function RightComponent() {
   // Asynchrone Funktion zum Laden des Inhalts der Java-Testdatei.
   const loadJavaFile = async () => {
     try {
-      const response = await fetch("/JavaTestFile.java");
+      const response = await fetch("./JavaTestFile.java");
       const text = await response.text();
       setJavaFileContent(text);
     } catch (error) {
@@ -113,18 +113,8 @@ function RightComponent() {
     
     // Render-Funktion
     return (
-      <div className="App2">
-        
-        <div className="LeftAndRightWebsiteComponents">
-          <div ref={editorContainerRef} className="editor-container"></div>
-          <div className="comment-container">
-            <textarea
-              value={text}
-              onChange={(e) => setText(e.target.value)}
-              placeholder="Text hier eingeben..."
-            />
-          </div>
-        </div>
+      <main className="right-container">
+        <div ref={editorContainerRef} className="editor-container"></div>
         <div
           className="popup"
           ref={dialogRef}
@@ -136,8 +126,7 @@ function RightComponent() {
             Schließen
           </button>
         </div>
-        
-      </div>
+      </main>
     );
     
   }
