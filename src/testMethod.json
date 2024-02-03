@@ -1,0 +1,23 @@
+{
+    "name": "root",  
+    "childs": [{
+        "name": "main", 
+        "range": {"start": { "line": 3, "character": 4 },"end": { "line": 10, "character": 5 }},
+        
+        "childs": [{
+                    "name": "testMethod",
+                    "range": {"start": { "line": 27, "character": 4 },"end": { "line": 29, "character": 5 }},
+                    "link": { "line": 27, "character": 20 },  // bringt mich zur Implementierung
+                    "outlink": { "line": 8, "character": 24 }, // für return anweisungen oder whatever wieder zurück zum Aufrufer
+                    "out": "main", // namentlich, welche Methode aufgerufen hat
+                    "childs": []
+                    }],
+        
+        "parent": "root",
+        "link": null,
+        "outlink": null,
+        "out": null
+      }
+    ]
+  }
+  

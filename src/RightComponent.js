@@ -1,6 +1,3 @@
-
-
-
 import "./App.css";
 import React, { useEffect, useRef, useState, useMemo } from "react";
 import PopupManager from "./PopupManager";
@@ -46,7 +43,7 @@ function RightComponent() {
   // Asynchrone Funktion zum Laden des Inhalts der Java-Testdatei.
   const loadJavaFile = async () => {
     try {
-      const response = await fetch("./JavaTestFile.java");
+      const response = await fetch("./MethodCallTesting.java");
       const text = await response.text();
       setJavaFileContent(text);
     } catch (error) {

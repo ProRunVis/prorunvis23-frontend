@@ -234,7 +234,7 @@
   flex-basis: 75%;
  
   min-height: 100vh;
-  background-color:  rgba(0, 0, 0, 0.3);
+  background-color:  black;
   color: white;
   box-sizing: border-box;
 
@@ -262,7 +262,7 @@
   
   /* Zentriert den Container */
   
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 0 10px black;
   position: relative;
   /* Für absolut positionierte Kinder */
 }
@@ -513,4 +513,6 @@
 .popup-close-button {
   /* Fügen Sie hier Ihren Stil für den Schließ-Button hinzu */
 }
+
+.my-green-background-class { background-color: rgba(76, 175, 80, 0.3); }
 
