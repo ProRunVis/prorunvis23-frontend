@@ -1,5 +1,4 @@
 /* NAVBAR */
-
 .nav {
   /* gesamte Navbar */
   display: flex;
@@ -19,7 +18,7 @@
   margin-right: auto;
   color: #ffc7b1e7;
   font-weight: 700;
-  font-size: 22px;
+  font-size: 18px;
 }
 
 .nav--title {
@@ -29,30 +28,9 @@
   margin-right: 50px;
 }
 
-.modal-container {
-  max-width: 600px;
-  margin: 50px auto;
-  padding: 20px;
-  background-color: white;
-  border-radius: 8px;
-}
-
-.modal-close-button {
-  background-color: #61DAFB;
-  color: white;
-  border: none;
-  padding: 10px 20px;
-  font-size: 16px;
-  cursor: pointer;
-}
-
-.modal-content {
-  margin-top: 20px;
-}
-
 .nav--help-button {
-  background-color: #61DAFB;
-  color: white;
+  background-color: #ffc7b1e7;
+  color: black;
   border: none;
   padding: 10px 20px;
   font-size: 16px;
