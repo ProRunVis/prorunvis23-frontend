@@ -1,9 +1,9 @@
 import React, { useEffect, useRef } from 'react';
 import './App.css';
-import Navbar from "./classComponents/Navbar";
-import LeftComponent from './classComponents/LeftComponent';
-import Footer from './classComponents/Footer';
-import RightComponent from './classComponents/RightComponent';
+import Navbar from "./Navbar";
+import LeftComponent from './LeftComponent';
+import Footer from './Footer';
+import RightComponent from './RightComponent';
 
 // Überwacht Left&RightContainer, dass diese richtig resized werden. Kommt ansonsten zu RuntimeErrors weil zu viele resizes an DOM geschickt werden
 const debounce = (func, wait) => {

@@ -8,7 +8,7 @@ import { createRoot } from 'react-dom/client';
 import './index.css';
 
 // Importiert die App-Komponente aus der Datei App.js.
-import App from './ComponentsBeforeBackend/App.js';
+import App from './App.js';
 
 // Importiert die Funktion reportWebVitals, die für die Leistungsmessung der Webanwendung verwendet wird.
 import reportWebVitals from './reportWebVitals';
