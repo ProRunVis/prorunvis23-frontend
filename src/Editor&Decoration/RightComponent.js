@@ -1,8 +1,9 @@
-import "../styling/App.css";
+
 import React, { useEffect, useRef, useState, useMemo } from "react";
 import PopupManager from "./PopupManager";
 import EditorClickHandler from "./EditorClickHandler";
 import EditorInitializer from "./EditorInitializer";
+import "../styling/RightComponent.css"
 
 
 
@@ -15,9 +16,6 @@ function RightComponent() {
   // State für den Editor-Instanz. 'setEditor' wird verwendet, um den Editor-Status zu aktualisieren.
   const [editor, setEditor] = useState(null);
 
-  // State für eine Menge von Zeilennummern, die hervorgehoben werden sollen. 
-  //const [highlightedLines] = useState(new Set());
-
   // State für den Inhalt der Java-Datei, der im Editor angezeigt wird.
   const [javaFileContent, setJavaFileContent] = useState("");
 
@@ -26,12 +24,6 @@ function RightComponent() {
 
   // Referenz auf das Dialog-Element (Popup), um darauf DOM-Operationen auszuführen.
   const dialogRef = useRef(null);
-
-  // State für den Abstand des Popups zur Mausposition.
-  //const [popupDistance] = useState(0);
-
-  // State für den Textinhalt des Kommentarbereichs auf der rechten Seite.
-  //const [text, setText] = useState('');
 
   // Erzeugt eine Instanz von PopupManager und nutzt 'useMemo' für Performance-Optimierung. 
   // Die Instanz wird nur neu erstellt, wenn sich 'dialogRef', 'setPopupMessage', oder 'popupDistance' ändert.
@@ -124,12 +116,5 @@ function RightComponent() {
 export default RightComponent;
 
 
-/*useEffect(() => {
-  // Das wird im Moment nicht ausgeführt
-  if (dialogRef.current) {
-    // Erstelle hier eine neue Instanz von PopupManager, wenn dialogRef verfügbar ist
-    const popupManagerInstance = new PopupManager(dialogRef, setPopupMessage, popupDistance);
-    // Führen Sie hier alle weiteren Aktionen mit popupManagerInstance aus
-  }
-}, [dialogRef, setPopupMessage, popupDistance]); */
+
 

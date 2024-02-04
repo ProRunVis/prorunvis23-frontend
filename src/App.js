@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import './styling/App.css';
+
 import Navbar from "./Navbar&Upload/Navbar";
 import LeftComponent from './Navbar&Upload/LeftComponent';
 
