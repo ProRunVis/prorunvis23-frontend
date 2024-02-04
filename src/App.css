@@ -4,7 +4,7 @@
   display: flex;
   align-items: center;
   /* Zentriert die Inhalte vertikal */
-  background-color: rgb(4, 7, 18);
+  background-color: black;
   height: 120px;
   padding: 30px 0;
   width: 100%;
@@ -96,6 +96,7 @@
 }
 .left-container.collapsed {
   width: 10%; /* Breite, um nur den Button zu zeigen */
+  background-color: rgb(31, 29, 29);;
   
 }
 
@@ -104,9 +105,9 @@
   top: 0; /* Oben am Container */
   left: 0; /* Links am Container */
   width: 100%; /* Button nimmt die volle Containerbreite ein */
-  padding: 10px 0; /* Gibt dem Button etwas Raum */
+  padding: 12px 0; /* Gibt dem Button etwas Raum */
   cursor: pointer;
-  background-color: black; /* Hintergrundfarbe des Buttons */
+  background-color: rgb(31, 29, 29); /* Hintergrundfarbe des Buttons */
   color: white; /* Textfarbe des Buttons */
   border: none;
 }
@@ -128,7 +129,7 @@
   border: 2px solid #ffc7b1e7;
   padding: 10px;
   color: white;
-  background-color: rgb(4, 7, 18);
+  background-color: black;
 }
 
 .left--title {
