@@ -1,4 +1,4 @@
-import "./App.css";
+import "./styling/App.css";
 import React, { useEffect, useRef, useState, useMemo } from "react";
 import PopupManager from "./PopupManager";
 import EditorClickHandler from "./EditorClickHandler";
@@ -16,7 +16,7 @@ function RightComponent() {
   const [editor, setEditor] = useState(null);
 
   // State für eine Menge von Zeilennummern, die hervorgehoben werden sollen. 
-  const [highlightedLines] = useState(new Set());
+  //const [highlightedLines] = useState(new Set());
 
   // State für den Inhalt der Java-Datei, der im Editor angezeigt wird.
   const [javaFileContent, setJavaFileContent] = useState("");
@@ -28,10 +28,10 @@ function RightComponent() {
   const dialogRef = useRef(null);
 
   // State für den Abstand des Popups zur Mausposition.
-  const [popupDistance] = useState(0);
+  //const [popupDistance] = useState(0);
 
   // State für den Textinhalt des Kommentarbereichs auf der rechten Seite.
-  const [text, setText] = useState('');
+  //const [text, setText] = useState('');
 
   // Erzeugt eine Instanz von PopupManager und nutzt 'useMemo' für Performance-Optimierung. 
   // Die Instanz wird nur neu erstellt, wenn sich 'dialogRef', 'setPopupMessage', oder 'popupDistance' ändert.
@@ -76,7 +76,7 @@ function RightComponent() {
       const newEditor = EditorInitializer.initializeEditor(
         editorContainerRef,
         javaFileContent,
-        highlightedLines,
+        
         setEditor
       );
       if (newEditor) {
@@ -86,7 +86,7 @@ function RightComponent() {
         clickHandler.handleMouseDown();
       }
     }
-  }, [javaFileContent, highlightedLines, popupManager]);
+  }, [javaFileContent, popupManager]);
 
   // Effekt, der ausgeführt wird, wenn der Editor geändert wird
   useEffect(() => {

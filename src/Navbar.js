@@ -2,6 +2,7 @@
 import React from "react";
 import HelpButton from "./HelpButton";
 import logoImage from "./CDProRunVis.png"
+import "./styling/Navbar.css"
 
 export default function Navbar() {
   return (

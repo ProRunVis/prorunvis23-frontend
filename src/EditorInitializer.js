@@ -5,7 +5,7 @@ import jsonDaten from './test2.json';
 
 class EditorInitializer {
 
-  static initializeEditor(containerRef, javaFileContent, highlightedLines) {
+  static initializeEditor(containerRef, javaFileContent) {
     if (typeof javaFileContent !== 'string') {
       console.error('javaFileContent must be a string');
       return;
@@ -18,7 +18,7 @@ class EditorInitializer {
       value: javaFileContent,
       language: 'java',
       theme: 'java-theme',
-      lineNumbers: lineNumber => highlightedLines.has(lineNumber) ? `<span style="color: red">${lineNumber}</span>` : `${lineNumber}`,
+      
       glyphMargin: true,
       scrollBeyondLastLine: false,
       minimap: { enabled: false },

@@ -2,6 +2,7 @@
 import React, { useState } from "react";
 import Modal from "react-modal";
 import ReadmeModal from "./ReadmeModal";
+import "./styling/HelpButton.css"
 
 Modal.setAppElement("#root");
 /* HelpButton mit reactModal */

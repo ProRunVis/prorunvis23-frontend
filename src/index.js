@@ -5,7 +5,7 @@ import React from 'react';
 import { createRoot } from 'react-dom/client';
 
 // Importiert die CSS-Datei für globale Stilrichtlinien.
-import './index.css';
+import './styling/index.css';
 
 // Importiert die App-Komponente aus der Datei App.js.
 import App from './App.js';

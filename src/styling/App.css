@@ -1,0 +1,184 @@
+
+
+.content {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;  
+  align-items: stretch;
+  
+}
+
+/* LeftComponent */
+
+
+
+/* Right Component */
+
+
+
+
+/* footer */
+
+
+/* Right Component*/
+
+.right-container {
+  display: flex;
+  flex-direction: column; /* Vertikale Ausrichtung der Kinder */
+  justify-content: flex-start; /* Startet die Ausrichtung am Anfang des Containers */
+  align-items: stretch; /* Streckt die Kinder, um die Breite des Containers zu füllen */
+  flex: 3;
+  flex-basis: 75%;
+ 
+  min-height: 100vh;
+  background-color:  black;
+  color: white;
+  box-sizing: border-box;
+
+}
+
+
+
+.editor-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: stretch;
+  width: 96%;
+  flex-basis: 75%;
+  margin-top : 0px;
+  /* Korrigiert von 'right' zu 'flex-start' */
+  
+  /* Passt die Größe dynamisch an */
+  box-sizing: border-box;
+  min-height: 500px;
+  /* Mindesthöhe */
+  
+  /* Angepasst für eine gleichmäßige Aufteilung */
+  
+  /* Zentriert den Container */
+  
+  box-shadow: 0 0 10px black;
+  position: relative;
+  /* Für absolut positionierte Kinder */
+}
+
+
+
+.comment-container textarea {
+  flex-grow: 1;
+  /* Nimmt den verfügbaren Platz im Container ein */
+  background-color: black;
+  color: white;
+  /* Für bessere Sichtbarkeit auf schwarzem Hintergrund */
+  border: 1px solid;
+  /* Optional: Entfernt den Standardrahmen */
+  font-size: 16px;
+}
+
+
+.my-loop-decoration {
+  background-color: pink;
+  opacity: 0.7;
+}
+
+.my-glyph-margin-class {
+  width: 4px;
+  background-color: pink;
+  margin-left: 4px;
+}
+
+.for-loop-decoration {
+  position: absolute;
+  border-left: 4px solid pink;
+  margin-left: -50px;
+}
+
+.if-statement-decoration {
+  position: absolute;
+  border-left: 4px solid rgb(12, 158, 85);
+  margin-left: -45px;
+}
+
+.else-statement-decoration {
+  position: absolute;
+  border-left: 4px solid rgb(237, 235, 240);
+  margin-left: -40px;
+}
+
+.while-loop-decoration {
+  position: absolute;
+  border-left: 4px solid rgb(203, 229, 8);
+  margin-left: -35px;
+}
+
+.begin-line-highlight {
+  background-color: rgba(245, 10, 10, 0.3);
+}
+
+.my-line-numbers {
+  color: red !important;
+}
+
+.monaco-editor.token.keyword {
+  color: #C792EA;
+  font-weight: bold;
+}
+
+.monaco-editor.token.function {
+  color: #C3E88D;
+}
+
+.monaco-editor.token.type {
+  color: #FFCB6B;
+}
+
+.monaco-editor.token.identifier {
+  color: #D6DEEB;
+}
+
+.monaco-editor.token.string {
+  color: #C3E88D;
+}
+
+.monaco-editor.token.number {
+  color: #F78C6C;
+}
+
+.monaco-editor.token.operator {
+  color: #89DDFF;
+}
+
+.monaco-editor.token.annotation {
+  color: #82AAFF;
+}
+
+.monaco-editor.token.regex {
+  color: #ECC48D;
+}
+
+.monaco-editor.token.delimiter {
+  color: #89DDFF;
+}
+
+.monaco-editor.token.invalid {
+  background-color: #FF5370;
+  color: #ffffff;
+}
+
+.monaco-editor .monaco-editor-hover {
+  z-index: 1000;
+  position: fixed;
+  visibility: visible;
+}
+
+.monaco-editor-hover .monaco-editor-hover-content {
+  background-color: white;
+  color: black;
+  border: 1px solid grey;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  padding: 5px;
+}
+
+
