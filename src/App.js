@@ -3,7 +3,7 @@ import './styling/App.css';
 import Navbar from "./Navbar";
 import LeftComponent from './LeftComponent';
 import Footer from './Footer';
-import RightComponent from './RightComponent';
+import RightComponent from './Editor&Decoration/RightComponent';
 
 // Überwacht Left&RightContainer, dass diese richtig resized werden. Kommt ansonsten zu RuntimeErrors weil zu viele resizes an DOM geschickt werden
 const debounce = (func, wait) => {

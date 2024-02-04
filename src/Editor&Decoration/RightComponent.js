@@ -1,4 +1,4 @@
-import "./styling/App.css";
+import "../styling/App.css";
 import React, { useEffect, useRef, useState, useMemo } from "react";
 import PopupManager from "./PopupManager";
 import EditorClickHandler from "./EditorClickHandler";

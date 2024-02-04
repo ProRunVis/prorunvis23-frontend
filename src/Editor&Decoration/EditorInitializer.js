@@ -1,5 +1,5 @@
 import * as monaco from 'monaco-editor/esm/vs/editor/editor.api';
-import jsonDaten from './test2.json';
+import jsonDaten from '../test2.json';
 
 
 
