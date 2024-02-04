@@ -11,7 +11,7 @@ import './styling/index.css';
 import App from './App.js';
 
 // Importiert die Funktion reportWebVitals, die für die Leistungsmessung der Webanwendung verwendet wird.
-import reportWebVitals from './reportWebVitals';
+import reportWebVitals from './Navbar&Upload/reportWebVitals.js';
 
 // Ermittelt das DOM-Element mit der ID 'root', das als Einhängepunkt für die React-Anwendung dient.
 const rootElement = document.getElementById('root');

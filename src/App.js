@@ -1,8 +1,8 @@
 import React, { useEffect, useRef } from 'react';
 import './styling/App.css';
-import Navbar from "./Navbar";
-import LeftComponent from './LeftComponent';
-import Footer from './Footer';
+import Navbar from "./Navbar&Upload/Navbar";
+import LeftComponent from './Navbar&Upload/LeftComponent';
+
 import RightComponent from './Editor&Decoration/RightComponent';
 
 // Überwacht Left&RightContainer, dass diese richtig resized werden. Kommt ansonsten zu RuntimeErrors weil zu viele resizes an DOM geschickt werden
@@ -44,7 +44,7 @@ function App() {
           <LeftComponent />
           <RightComponent />
         </div>
-        <Footer />
+        
       </header>
     </div>
   );

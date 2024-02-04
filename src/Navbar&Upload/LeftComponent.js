@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import FolderTree from 'react-folder-tree';
 import 'react-folder-tree/dist/style.css';
-import './styling/App.css';
-import "./styling/LeftComponent.css"
+import '../styling/App.css';
+import "../styling/LeftComponent.css"
 
 function LeftComponent() {
   const [files, setFiles] = useState([]);
