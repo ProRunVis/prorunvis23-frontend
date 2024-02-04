@@ -1,0 +1,45 @@
+.nav {
+    /* gesamte Navbar */
+    display: flex;
+    align-items: center;
+    /* Zentriert die Inhalte vertikal */
+    background-color: black;
+    height: 120px;
+    padding: 30px 0;
+    width: 100%;
+    border-bottom: 2px solid #ffc7b1e7;
+    /* weißer horizontaler Strich */
+    box-sizing: border-box;
+  }
+  
+  .nav--logo_text {
+    /* "ProRunVis" */
+    margin-right: auto;
+    color: #ffc7b1e7;
+    font-weight: 700;
+    font-size: 18px;
+  }
+  
+  .nav--title {
+    /* "visualize your flow" */
+    color: #ffc7b1e7;
+    font-weight: 600;
+    margin-right: 50px;
+  }
+  
+  .nav--help-button {
+    background-color: #ffc7b1e7;
+    color: black;
+    border: none;
+    padding: 10px 20px;
+    font-size: 16px;
+    margin-left: auto;
+    cursor: pointer;
+  }
+  
+  .nav--icon {
+    /* Logo */
+    height: 50px;
+    margin-right: 15px;
+    margin-left: 20px;
+  }

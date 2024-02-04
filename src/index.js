@@ -5,13 +5,13 @@ import React from 'react';
 import { createRoot } from 'react-dom/client';
 
 // Importiert die CSS-Datei für globale Stilrichtlinien.
-import './index.css';
+import './styling/index.css';
 
 // Importiert die App-Komponente aus der Datei App.js.
-import RoutingClass from './RoutingClass';
+import App from './App.js';
 
 // Importiert die Funktion reportWebVitals, die für die Leistungsmessung der Webanwendung verwendet wird.
-import reportWebVitals from './reportWebVitals';
+import reportWebVitals from './Navbar&Upload/reportWebVitals.js';
 
 // Ermittelt das DOM-Element mit der ID 'root', das als Einhängepunkt für die React-Anwendung dient.
 const rootElement = document.getElementById('root');
@@ -25,7 +25,7 @@ if (rootElement) {
     // <React.StrictMode> wird verwendet, um zusätzliche Prüfungen und Warnungen für die App zu aktivieren.
     root.render(
       <React.StrictMode>
-        <RoutingClass />
+        <App />
       </React.StrictMode>
     );
 }

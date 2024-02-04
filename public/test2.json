@@ -12,16 +12,7 @@
         "start": 7,
         "end": 12
     },
-
-
-
-
-
-
-
-
-
-   
+  
     {
         "file": "JavaTestFile.java",
         "codeType": "WhileStmt",

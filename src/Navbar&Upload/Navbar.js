@@ -1,7 +1,8 @@
 // classComponents/Navbar.js
 import React from "react";
 import HelpButton from "./HelpButton";
-import logoImage from "./CDProRunVis.png"
+import logoImage from "../images/CDProRunVis.png"
+import "../styling/Navbar.css"
 
 export default function Navbar() {
   return (
@@ -11,8 +12,8 @@ export default function Navbar() {
         className="nav--icon"
         alt="A debugger logo"
       />
-      <h3 className="nav--logo_text">ProRunVis</h3>
-      <h4 className="nav--title">Visualize your flow</h4>
+      <h3 className="nav--logo_text">Visualize your flow</h3>
+      <h4 className="nav--title"></h4>
       <HelpButton />
     </nav>
   );
