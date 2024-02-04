@@ -1,86 +1,84 @@
-
 import React, { useEffect, useRef, useState, useMemo } from "react";
 import PopupManager from "./PopupManager";
 import EditorClickHandler from "./EditorClickHandler";
 import EditorInitializer from "./EditorInitializer";
 import "../styling/RightComponent.css"
 
-
-
+/**
+ * Represents the right component of the application, primarily responsible for
+ * displaying the code editor and managing code interactions such as displaying
+ * popups based on editor events. This component initializes the editor with
+ * Java file content, handles editor events, and manages popup messages.
+ */
 function RightComponent() {
-  // Konstanten ------------------------------------------------------------------------------------------------------------------
+  // Constants ------------------------------------------------------------------------------------------------------------------
 
-  // Referenz auf den Container des Editors, um darauf DOM-Operationen auszuführen.
+  // Reference to the editor's container for performing DOM operations.
   const editorContainerRef = useRef(null);
 
-  // State für den Editor-Instanz. 'setEditor' wird verwendet, um den Editor-Status zu aktualisieren.
+  // State for the editor instance. 'setEditor' is used to update the editor state.
   const [editor, setEditor] = useState(null);
 
-  // State für den Inhalt der Java-Datei, der im Editor angezeigt wird.
+  // State for the content of the Java file to be displayed in the editor.
   const [javaFileContent, setJavaFileContent] = useState("");
 
-  // State für die Nachricht, die im Popup angezeigt wird. 'setPopupMessage' aktualisiert diese Nachricht.
+  // State for the message to be displayed in the popup. 'setPopupMessage' updates this message.
   const [popupMessage, setPopupMessage] = useState("");
 
-  // Referenz auf das Dialog-Element (Popup), um darauf DOM-Operationen auszuführen.
+  // Reference to the dialog element (popup) for performing DOM operations.
   const dialogRef = useRef(null);
 
-  // Erzeugt eine Instanz von PopupManager und nutzt 'useMemo' für Performance-Optimierung. 
-  // Die Instanz wird nur neu erstellt, wenn sich 'dialogRef', 'setPopupMessage', oder 'popupDistance' ändert.
+  // Creates an instance of PopupManager and uses 'useMemo' for performance optimization.
+  // The instance is recreated only if 'dialogRef', 'setPopupMessage', or 'popupDistance' changes.
   const popupManager = useMemo(
     () => new PopupManager(dialogRef, setPopupMessage, 10),
     [dialogRef, setPopupMessage]
   );
 
-  // Asynchrone Funktion zum Laden des Inhalts der Java-Testdatei.
+  // Asynchronous function to load the content of the Java test file.
   const loadJavaFile = async () => {
     try {
       const response = await fetch("./MethodCallTesting.java");
       const text = await response.text();
       setJavaFileContent(text);
     } catch (error) {
-      console.error("Fehler beim Laden der Java-Datei:", error);
+      console.error("Error loading the Java file:", error);
     }
   };
 
-  // Funktion zum Schließen des Popups und Löschen der Popup-Nachricht.
+  // Function to close the popup and clear the popup message.
   const closePopup = () => {
     popupManager.closePopup();
   };
 
-
-
-
   // -------------------------------------------------------------------------------------------------------------------------
-  //UseEffekte
+  // UseEffects
 
-  //Dieser Effekt wird ausgeführt, wenn sich dialogRef, setPopupMessage oder popupDistance ändern.
+  // This effect is executed when dialogRef, setPopupMessage, or popupDistance changes.
 
-  // Das wird das erstes aufgerufen, wenn eine JavaDatei geladen wird
+  // This is called first when a Java file is loaded.
   useEffect(() => {
     loadJavaFile();
   }, []);
 
-  // Das als 2. um die Datei dem Konstruktur des Editors zu übergeben
-  // Effekt, der ausgeführt wird, wenn der Inhalt der Java-Datei oder die hervorgehobenen Linien geändert werden
+  // This is called second to pass the file to the editor's constructor.
+  // Effect executed when the content of the Java file or the highlighted lines change.
   useEffect(() => {
     if (javaFileContent && editorContainerRef.current) {
       const newEditor = EditorInitializer.initializeEditor(
         editorContainerRef,
-        javaFileContent,
-        
-        setEditor
+        javaFileContent
       );
       if (newEditor) {
         setEditor(newEditor);
-        // Initialisiere den EditorClickHandler hier, nachdem der Editor erstellt wurde
+        // Initialize the EditorClickHandler here, after the editor has been created.
         const clickHandler = new EditorClickHandler(newEditor, popupManager);
         clickHandler.handleMouseDown();
       }
     }
   }, [javaFileContent, popupManager]);
 
-  // Effekt, der ausgeführt wird, wenn der Editor geändert wird
+  // Effect executed when the editor changes.
   useEffect(() => {
     return () => {
       if (editor) {
@@ -89,32 +87,23 @@ function RightComponent() {
     };
   }, [editor]);
 
-
-  //-------------------------------------------------------------------------------------------------------------------
-
-
-  // Render-Funktion
+  // Render function
   return (
     <main className="right-container">
       <div ref={editorContainerRef} className="editor-container"></div>
       <div
         className="popup"
         ref={dialogRef}
-        style={{ display: 'none' }} // Standardmäßig versteckt
+        style={{ display: 'none' }} // Hidden by default
       >
         {popupMessage}
         <br />
         <button onClick={closePopup} className="popup-close-button">
-          Schließen
+          Close
         </button>
       </div>
     </main>
   );
-
 }
 
 export default RightComponent;
-
-
-
-

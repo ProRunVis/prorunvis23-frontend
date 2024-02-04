@@ -2,9 +2,25 @@ import * as monaco from 'monaco-editor/esm/vs/editor/editor.api';
 
 
 
-
+/**
+ * Initializes the Monaco Editor with specific settings for editing Java files.
+ * This class provides static methods to configure the editor, including setting
+ * up the theme, syntax highlighting, and adjusting the editor's height based on its content.
+ * It also demonstrates how to use Monaco Editor's API to create a more interactive
+ * and user-friendly code editor environment.
+ */
 class EditorInitializer {
 
+  /**
+   * Initializes the Monaco Editor in the provided container with the given Java file content.
+   * This method sets up the editor with predefined options such as language, theme, and various
+   * editor behaviors like word wrapping and automatic layout adjustments. It also defines a custom
+   * theme and syntax highlighting rules specifically tailored for Java code.
+   *
+   * @param containerRef A reference to the container DOM element where the editor will be instantiated.
+   * @param javaFileContent The initial Java code content to be loaded into the editor.
+   * @return The initialized Monaco Editor instance, or undefined if initialization fails.
+   */
   static initializeEditor(containerRef, javaFileContent) {
     if (typeof javaFileContent !== 'string') {
       console.error('javaFileContent must be a string');
@@ -120,6 +136,14 @@ class EditorInitializer {
     return editor
   }
 
+   /**
+   * Adjusts the height of the Monaco Editor's container based on the content's line count.
+   * This method calculates the total height required to display all lines without scrolling
+   * and updates the editor's container height accordingly. It ensures that the editor
+   * fully displays its content up to a maximum height, beyond which scrolling is enabled.
+   *
+   * @param editor The Monaco Editor instance whose height needs to be adjusted.
+   */
   static adjustEditorHeight(editor) {
     const lineHeight = editor.getOption(monaco.editor.EditorOption.lineHeight);
     const lineCount = editor.getModel().getLineCount();
