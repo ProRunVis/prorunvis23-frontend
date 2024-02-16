@@ -1,11 +1,8 @@
-image: gradle:8.3.0-jdk17
-
-variables:
-  GIT_SUBMODULE_STRATEGY: recursive
+image: node:latest
 
 build:
   stage: build
-  script: gradle build npm i react-folder-tree --force npm start
+  script: npm i react-folder-tree --force npm start
   cache:
     key: "$CI_COMMIT_REF_NAME"
     policy: push
