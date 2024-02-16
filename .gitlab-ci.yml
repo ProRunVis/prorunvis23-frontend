@@ -1,0 +1,18 @@
+image: gradle:8.3.0-jdk17
+
+variables:
+  GIT_SUBMODULE_STRATEGY: recursive
+
+build:
+  stage: build
+  script: gradle build
+    npm i react-folder-tree --force npm start
+  cache:
+    key: "$CI_COMMIT_REF_NAME"
+    policy: push
+    paths:
+      - build
+      - .gradle
+  rules:
+    - if: $CI_PIPELINE_SOURCE == 'push'
+    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
