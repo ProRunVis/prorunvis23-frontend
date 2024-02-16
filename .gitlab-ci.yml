@@ -5,14 +5,14 @@ variables:
 
 build:
   stage: build
-  script: gradle build
-    npm i react-folder-tree --force npm start
+  script: gradle build npm i react-folder-tree --force npm start
   cache:
     key: "$CI_COMMIT_REF_NAME"
     policy: push
     paths:
       - build
       - .gradle
+      - npm
   rules:
     - if: $CI_PIPELINE_SOURCE == 'push'
     - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
