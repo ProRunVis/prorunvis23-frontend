@@ -7,7 +7,7 @@ build:
     key: "$CI_COMMIT_REF_NAME"
     policy: push
     paths:
-      - npm
+      - "npm"
     rules:
     - if: $CI_PIPELINE_SOURCE == 'push'
     - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
