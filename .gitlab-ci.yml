@@ -7,8 +7,6 @@ build:
     key: "$CI_COMMIT_REF_NAME"
     policy: push
     paths:
-      - build
-      - .gradle
       - npm
   rules:
     - if: $CI_PIPELINE_SOURCE == 'push'
