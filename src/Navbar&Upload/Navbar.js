@@ -1,9 +1,15 @@
 // classComponents/Navbar.js
 import React from "react";
 import HelpButton from "./HelpButton";
-import logoImage from "../images/CDProRunVis.png"
-import "../styling/Navbar.css"
+import logoImage from "../images/CDProRunVis.png";
+import "../styling/Navbar.css";
 
+/**
+ * Represents the navigation bar at the top of the application. It includes a logo,
+ * application title "Visualize your flow", and a HelpButton component that opens
+ * a modal with additional information or instructions for the user. The Navbar
+ * is styled with CSS for visual appeal and user interaction.
+ */
 export default function Navbar() {
   return (
     <nav className="nav">
