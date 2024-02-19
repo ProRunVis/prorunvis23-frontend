@@ -10,20 +10,6 @@ public class MethodCallTesting {
         System.out.println(result);
 
     }
-
-
-    /*
-     * Viel
-     * Text
-     * den
-     * keiner
-     * lesen
-     * wird 
-     */
-    
-    
-    
-    
     public static int testMethod(int x, int y){
         return x+y;
     }

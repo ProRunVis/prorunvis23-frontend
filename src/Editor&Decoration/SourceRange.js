@@ -1,4 +1,4 @@
-class TraceNode{
+class TraceNode {
     constructor(typ, ranges, childs, parent, link, outlinks, out, iteration) {
         this.typ = typ;
         this.range = ranges;
@@ -11,7 +11,7 @@ class TraceNode{
     }
 }
 
-class SourceRange {
+export class SourceRange {
     constructor(startcol, endcol, startrow, endrow, file) {
         this.startcol = startcol;
         this.endcol = endcol;

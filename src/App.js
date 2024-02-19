@@ -36,14 +36,15 @@ const debounce = (func, wait) => {
  *         is monitored for size changes, demonstrating dynamic resize handling.
  */
 function App() {
-  const contentRef = useRef(null); 
+  const contentRef = useRef(null);
+  document.body.style.overflow = "hidden";
 
   useEffect(() => {
     
     const handleResize = debounce(() => {
       console.log('Containergröße hat sich geändert');
       
-    }, 100); 
+    }, 100);
 
     const observer = new ResizeObserver(handleResize);
     if(contentRef.current) {
@@ -59,7 +60,8 @@ function App() {
         <Navbar />
         <div ref={contentRef} className="content">
           <LeftComponent />
-          <RightComponent />
+          <RightComponent filepath = {"./MethodCallTesting.java"} />
+
         </div>
         
       </header>

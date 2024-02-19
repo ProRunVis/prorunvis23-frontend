@@ -33,14 +33,13 @@ class EditorInitializer {
       value: javaFileContent,
       language: 'java',
       theme: 'java-theme',
-      
       glyphMargin: true,
-      scrollBeyondLastLine: false,
+      scrollBeyondLastLine: true,
       minimap: { enabled: false },
       wordWrap: 'off',
       automaticLayout: true,
       scrollbar: {
-        alwaysConsumeMouseWheel: false
+        alwaysConsumeMouseWheel: true
       },
     });
 
@@ -120,12 +119,12 @@ class EditorInitializer {
     //this.addDecorationsBasedOnJsonData(editor, jsonDaten);
       
     //Anpassung Editorhöhe
-    this.adjustEditorHeight(editor);
+    //this.adjustEditorHeight(editor);
 
     // Event-Listener, wenn sich Editor ändert für die Höhe
-    editor.onDidChangeModelContent(() => {
-      this.adjustEditorHeight(editor);
-    });
+   // editor.onDidChangeModelContent(() => {
+    //  this.adjustEditorHeight(editor);
+    //});
 
     // setzt Dark Theme  für den Editor
     monaco.editor.setTheme('vs-dark');
@@ -136,6 +135,9 @@ class EditorInitializer {
     return editor
   }
 
+
+
+
    /**
    * Adjusts the height of the Monaco Editor's container based on the content's line count.
    * This method calculates the total height required to display all lines without scrolling
@@ -144,7 +146,7 @@ class EditorInitializer {
    *
    * @param editor The Monaco Editor instance whose height needs to be adjusted.
    */
-  static adjustEditorHeight(editor) {
+  /*static adjustEditorHeight(editor) {
     const lineHeight = editor.getOption(monaco.editor.EditorOption.lineHeight);
     const lineCount = editor.getModel().getLineCount();
     const height = lineHeight * (lineCount + 2);
@@ -153,8 +155,7 @@ class EditorInitializer {
       editorDomNode.style.height = `${height}px`;
       editor.layout();
     }
-  }
-
+  }*/
 
 
 
@@ -246,7 +247,5 @@ class EditorInitializer {
     editor.deltaDecorations([], decorations);
   }
   */
-
-
 }
 export default EditorInitializer;

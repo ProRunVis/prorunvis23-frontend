@@ -10,7 +10,7 @@ import "../styling/RightComponent.css"
  * popups based on editor events. This component initializes the editor with
  * Java file content, handles editor events, and manages popup messages.
  */
-function RightComponent() {
+export function RightComponent({filepath}) {
   // Constants ------------------------------------------------------------------------------------------------------------------
 
   // Reference to the editor's container for performing DOM operations.
@@ -28,23 +28,24 @@ function RightComponent() {
   // Reference to the dialog element (popup) for performing DOM operations.
   const dialogRef = useRef(null);
 
-  // Creates an instance of PopupManager and uses 'useMemo' for performance optimization.
-  // The instance is recreated only if 'dialogRef', 'setPopupMessage', or 'popupDistance' changes.
-  const popupManager = useMemo(
-    () => new PopupManager(dialogRef, setPopupMessage, 10),
-    [dialogRef, setPopupMessage]
-  );
-
-  // Asynchronous function to load the content of the Java test file.
-  const loadJavaFile = async () => {
+  const loadJavaFile = async (string) => {
     try {
-      const response = await fetch("./MethodCallTesting.java");
+      const response = await fetch(string);
+
       const text = await response.text();
-      setJavaFileContent(text);
+      setJavaFileContent(filepath);
     } catch (error) {
       console.error("Error loading the Java file:", error);
     }
   };
+
+  // Creates an instance of PopupManager and uses 'useMemo' for performance optimization.
+  // The instance is recreated only if 'dialogRef', 'setPopupMessage', or 'popupDistance' changes.
+  const popupManager = useMemo(
+      () => new PopupManager(dialogRef, setPopupMessage, 10),
+      [dialogRef, setPopupMessage]
+  );
+  // Asynchronous function to load the content of the Java test file.
 
   // Function to close the popup and clear the popup message.
   const closePopup = () => {
@@ -58,7 +59,7 @@ function RightComponent() {
 
   // This is called first when a Java file is loaded.
   useEffect(() => {
-    loadJavaFile();
+    loadJavaFile(filepath);
   }, []);
 
   // This is called second to pass the file to the editor's constructor.
@@ -66,8 +67,8 @@ function RightComponent() {
   useEffect(() => {
     if (javaFileContent && editorContainerRef.current) {
       const newEditor = EditorInitializer.initializeEditor(
-        editorContainerRef,
-        javaFileContent
+          editorContainerRef,
+          javaFileContent
       );
       if (newEditor) {
         setEditor(newEditor);
@@ -89,20 +90,20 @@ function RightComponent() {
 
   // Render function
   return (
-    <main className="right-container">
-      <div ref={editorContainerRef} className="editor-container"></div>
-      <div
-        className="popup"
-        ref={dialogRef}
-        style={{ display: 'none' }} // Hidden by default
-      >
-        {popupMessage}
-        <br />
-        <button onClick={closePopup} className="popup-close-button">
-          Close
-        </button>
-      </div>
-    </main>
+      <main className="right-container">
+        <div ref={editorContainerRef} className="editor-container"></div>
+        <div
+            className="popup"
+            ref={dialogRef}
+            style={{display: 'none'}} // Hidden by default
+        >
+          {popupMessage}
+          <br/>
+          <button onClick={closePopup} className="popup-close-button">
+            Close
+          </button>
+        </div>
+      </main>
   );
 }
 
