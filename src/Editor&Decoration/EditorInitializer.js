@@ -9,7 +9,7 @@ import * as monaco from 'monaco-editor/esm/vs/editor/editor.api';
  * It also demonstrates how to use Monaco Editor's API to create a more interactive
  * and user-friendly code editor environment.
  */
-class EditorInitializer {
+export class EditorInitializer {
 
   /**
    * Initializes the Monaco Editor in the provided container with the given Java file content.

@@ -44,7 +44,7 @@ class EditorClickHandler {
         //console.log("posx:", e.event.posx, "posy:", e.event.posy); // Debugging
         //this.popupTrigger.handleWordAtPosition(position, e.event);
         this.jumpTo(new Position(152, 1));
-        RightComponent("./MethodCallTesting2");
+        //RightComponent("./MethodCallTesting2");
       }
     });
   }

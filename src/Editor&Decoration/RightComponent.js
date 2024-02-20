@@ -10,7 +10,7 @@ import "../styling/RightComponent.css"
  * popups based on editor events. This component initializes the editor with
  * Java file content, handles editor events, and manages popup messages.
  */
-export function RightComponent({filepath}) {
+function RightComponent() {
   // Constants ------------------------------------------------------------------------------------------------------------------
 
   // Reference to the editor's container for performing DOM operations.
@@ -28,16 +28,7 @@ export function RightComponent({filepath}) {
   // Reference to the dialog element (popup) for performing DOM operations.
   const dialogRef = useRef(null);
 
-  const loadJavaFile = async (string) => {
-    try {
-      const response = await fetch(string);
 
-      const text = await response.text();
-      setJavaFileContent(filepath);
-    } catch (error) {
-      console.error("Error loading the Java file:", error);
-    }
-  };
 
   // Creates an instance of PopupManager and uses 'useMemo' for performance optimization.
   // The instance is recreated only if 'dialogRef', 'setPopupMessage', or 'popupDistance' changes.
@@ -45,7 +36,17 @@ export function RightComponent({filepath}) {
       () => new PopupManager(dialogRef, setPopupMessage, 10),
       [dialogRef, setPopupMessage]
   );
+
   // Asynchronous function to load the content of the Java test file.
+  const loadJavaFile = async (javafile) => {
+    try {
+      const response = await fetch(javafile);
+      const text = await response.text();
+      setJavaFileContent(text);
+    } catch (error) {
+      console.error("Error loading the Java file:", error);
+    }
+  };
 
   // Function to close the popup and clear the popup message.
   const closePopup = () => {
@@ -59,7 +60,7 @@ export function RightComponent({filepath}) {
 
   // This is called first when a Java file is loaded.
   useEffect(() => {
-    loadJavaFile(filepath);
+    loadJavaFile("./MethodCallTesting.java");
   }, []);
 
   // This is called second to pass the file to the editor's constructor.
@@ -95,10 +96,10 @@ export function RightComponent({filepath}) {
         <div
             className="popup"
             ref={dialogRef}
-            style={{display: 'none'}} // Hidden by default
+            style={{ display: 'none' }} // Hidden by default
         >
           {popupMessage}
-          <br/>
+          <br />
           <button onClick={closePopup} className="popup-close-button">
             Close
           </button>
