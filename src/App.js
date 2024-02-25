@@ -3,6 +3,7 @@ import React, { useEffect, useRef } from 'react';
 import Navbar from "./Navbar&Upload/Navbar";
 import LeftComponent from './Navbar&Upload/LeftComponent';
 import RightComponent from './Editor&Decoration/RightComponent';
+import ContainerRightLeft from "./ContainerRightLeft";
 
 
 // Observes Left&RightContainer for correct resizing. Prohibits sending too many requests to DOM, which causes a Runtime Error
@@ -58,8 +59,7 @@ function App() {
         <header className="App-header">
           <Navbar />
           <div ref={contentRef} className="content">
-            <LeftComponent />
-            <RightComponent />
+            <ContainerRightLeft />
           </div>
 
         </header>

@@ -9,19 +9,22 @@ import "../styling/LeftComponent.css"
  * filters out Java files, and displays these files in a structured folder tree view.
  * Users can collapse or expand the left container to show or hide the folder tree.
  */
-function LeftComponent() {
-  // State for the list of files selected by the user.
+function LeftComponent({getFile}) {
+  // State for the list of files uploaded by the user.
   const [files, setFiles] = useState([]);
   // State for the structured data used by FolderTree to display the directory and files.
   const [folderTreeData, setFolderTreeData] = useState(null);
   // State to manage the collapsed or expanded state of the left container.
   const [isLeftContainerCollapsed, setIsLeftContainerCollapsed] = useState(false);
+  // State for the file selected by the user
+  const [currentFile, setCurrentFile] = useState([]);
+  const [activeFile, setActiveFile] = useState([]);
 
   /**
-   * Handles the selection of files, filters for Java files, and constructs the folder tree data.
+   * Handles the upload of files, filters for Java files, and constructs the folder tree data.
    * @param {Event} event - The file input change event.
    */
-  const handleFileSelect = (event) => {
+  const handleFileUpload = (event) => {
     const filteredFiles = Array.from(event.target.files).filter(file =>
       file.webkitRelativePath.endsWith('.java')
     );
@@ -52,7 +55,15 @@ function LeftComponent() {
           let existingNode = currentLevel.children.find(child => child.name === nodeName);
           
           const isDirectory = index < splitPath.length - 1; // Determine if it's a directory
-          if (!existingNode) {
+          if(!isDirectory && !existingNode){
+            existingNode = {
+              name: nodeName,
+              realPath: file.webkitRelativePath,
+              children: isDirectory ? [] : undefined // Add children only for directories
+            };
+            currentLevel.children.push(existingNode);
+          }
+          else if (!existingNode) {
             existingNode = {
               name: nodeName,
               children: isDirectory ? [] : undefined // Add children only for directories
@@ -63,7 +74,7 @@ function LeftComponent() {
         }
       });
     });
-
+    console.log(root);
     return root;
   };
 
@@ -72,6 +83,15 @@ function LeftComponent() {
    */
   const toggleLeftContainer = () => {
     setIsLeftContainerCollapsed(!isLeftContainerCollapsed);
+  };
+
+// custom event handler for node name click
+  const onNameClick = ({ nodeData }) => {
+    const {
+      // internal data
+      path, name, checked, isOpen, realPath }
+        = nodeData;
+    getFile({realPath});
   };
 
   return (
@@ -86,7 +106,7 @@ function LeftComponent() {
                 name="file"
                 multiple
                 webkitdirectory=""
-                onChange={handleFileSelect}
+                onChange={handleFileUpload}
                 className="picker"
               />
             </form>
@@ -95,6 +115,7 @@ function LeftComponent() {
             <div className="folder-tree-container">
               <FolderTree
                 data={folderTreeData}
+                onNameClick={onNameClick}
                 showCheckbox={false}
                 readOnly={true}
                 indentPixels={0}
@@ -106,5 +127,16 @@ function LeftComponent() {
     </main>
   );
 }
+/*const addPath = node => {
+  const fakeUrl = `root/${node.name}`;
+  if (node.children) {
+    node.url = fakeUrl;
+    node.children = node.children.map(c => addPath(c));
+  } else {
+    node.url = fakeUrl;
+  }
+
+  return node;
+};*/
 
 export default LeftComponent;

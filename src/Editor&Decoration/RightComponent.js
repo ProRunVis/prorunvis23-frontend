@@ -10,7 +10,7 @@ import "../styling/RightComponent.css"
  * popups based on editor events. This component initializes the editor with
  * Java file content, handles editor events, and manages popup messages.
  */
-function RightComponent() {
+function RightComponent({javaFilePath}, {getFile}) {
   // Constants ------------------------------------------------------------------------------------------------------------------
 
   // Reference to the editor's container for performing DOM operations.
@@ -19,16 +19,11 @@ function RightComponent() {
   // State for the editor instance. 'setEditor' is used to update the editor state.
   const [editor, setEditor] = useState(null);
 
-  // State for the content of the Java file to be displayed in the editor.
-  const [javaFileContent, setJavaFileContent] = useState("");
-
   // State for the message to be displayed in the popup. 'setPopupMessage' updates this message.
   const [popupMessage, setPopupMessage] = useState("");
 
   // Reference to the dialog element (popup) for performing DOM operations.
   const dialogRef = useRef(null);
-
-
 
   // Creates an instance of PopupManager and uses 'useMemo' for performance optimization.
   // The instance is recreated only if 'dialogRef', 'setPopupMessage', or 'popupDistance' changes.
@@ -36,17 +31,22 @@ function RightComponent() {
       () => new PopupManager(dialogRef, setPopupMessage, 10),
       [dialogRef, setPopupMessage]
   );
+  // State for the content of the Java file to be displayed in the editor.
+  const [javaFileContent, setJavaFileContent] = useState("");
+
 
   // Asynchronous function to load the content of the Java test file.
-  const loadJavaFile = async (javafile) => {
+  const loadJavaFile = async () => {
     try {
-      const response = await fetch(javafile);
+      const response = await fetch(javaFilePath);
       const text = await response.text();
       setJavaFileContent(text);
     } catch (error) {
       console.error("Error loading the Java file:", error);
     }
   };
+
+
 
   // Function to close the popup and clear the popup message.
   const closePopup = () => {
@@ -60,7 +60,7 @@ function RightComponent() {
 
   // This is called first when a Java file is loaded.
   useEffect(() => {
-    loadJavaFile("./MethodCallTesting.java");
+    loadJavaFile();
   }, []);
 
   // This is called second to pass the file to the editor's constructor.
