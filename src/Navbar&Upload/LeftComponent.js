@@ -11,7 +11,7 @@ import "../styling/LeftComponent.css"
  */
 function LeftComponent({getFile}) {
   // State for the list of files uploaded by the user.
-  const [files, setFiles] = useState([]);
+  const [uploadedFiles, setUploadedFiles] = useState([]);
   // State for the structured data used by FolderTree to display the directory and files.
   const [folderTreeData, setFolderTreeData] = useState(null);
   // State to manage the collapsed or expanded state of the left container.
@@ -28,7 +28,7 @@ function LeftComponent({getFile}) {
     const filteredFiles = Array.from(event.target.files).filter(file =>
       file.webkitRelativePath.endsWith('.java')
     );
-    setFiles(filteredFiles);
+    setUploadedFiles(filteredFiles);
     if (filteredFiles.length > 0) {
       const directoryName = filteredFiles[0].webkitRelativePath.split('/')[0];
       const treeData = buildFolderTree(filteredFiles, directoryName);
@@ -44,7 +44,7 @@ function LeftComponent({getFile}) {
    */
   const buildFolderTree = (fileList, directoryName) => {
     const root = { name: directoryName, isOpen: true, children: [] };
-
+    let i = 0;
     fileList.forEach(file => {
       const splitPath = file.webkitRelativePath.split('/');
       let currentLevel = root;
@@ -59,8 +59,10 @@ function LeftComponent({getFile}) {
             existingNode = {
               name: nodeName,
               realPath: file.webkitRelativePath,
+              index: i,
               children: isDirectory ? [] : undefined // Add children only for directories
             };
+            i++;
             currentLevel.children.push(existingNode);
           }
           else if (!existingNode) {
@@ -89,9 +91,10 @@ function LeftComponent({getFile}) {
   const onNameClick = ({ nodeData }) => {
     const {
       // internal data
-      path, name, checked, isOpen, realPath }
+      path, name, checked, isOpen, realPath, index }
         = nodeData;
-    getFile({realPath});
+    //console.log(path);
+    getFile(uploadedFiles[index]);
   };
 
   return (
