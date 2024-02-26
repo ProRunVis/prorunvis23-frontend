@@ -1,5 +1,5 @@
-import LeftComponent from "./Navbar&Upload/LeftComponent";
-import RightComponent from "./Editor&Decoration/RightComponent";
+import LeftComponent from "./NavbarUpload-Left/LeftComponent";
+import RightComponent from "./Editor-Right/RightComponent";
 import {useState} from "react";
 
 function ContainerRightLeft(){

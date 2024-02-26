@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import Modal from "react-modal";
 import ReadmeModal from "./ReadmeModal";
-import "../styling/HelpButton.css"
+import "../Css/HelpButton.css"
 
 // Sets the app element for accessibility reasons, which helps screen readers.
 Modal.setAppElement("#root");

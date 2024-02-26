@@ -1,9 +1,7 @@
 import PopupTrigger from './PopupTrigger';
 import {Position} from "monaco-editor";
-import '../styling/Decorate.css';
+import '../Css/Decorate.css';
 import * as monaco from 'monaco-editor/esm/vs/editor/editor.api';
-import RightComponent from "./RightComponent";
-import  {SourceRange} from './SourceRange'
 
 
 /**

@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState, useMemo } from "react";
 import PopupManager from "./PopupManager";
 import EditorClickHandler from "./EditorClickHandler";
 import EditorInitializer from "./EditorInitializer";
-import "../styling/RightComponent.css"
+import "../Css/RightComponent.css"
 
 /**
  * Represents the right component of the application, primarily responsible for

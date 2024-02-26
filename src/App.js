@@ -1,8 +1,8 @@
 import React, { useEffect, useRef } from 'react';
 
-import Navbar from "./Navbar&Upload/Navbar";
-import LeftComponent from './Navbar&Upload/LeftComponent';
-import RightComponent from './Editor&Decoration/RightComponent';
+import Navbar from "./NavbarUpload-Left/Navbar";
+import LeftComponent from './NavbarUpload-Left/LeftComponent';
+import RightComponent from './Editor-Right/RightComponent';
 import ContainerRightLeft from "./ContainerRightLeft";
 
 

@@ -1,8 +1,7 @@
-// classComponents/Navbar.js
 import React from "react";
 import HelpButton from "./HelpButton";
 import logoImage from "../images/CDProRunVis.png";
-import "../styling/Navbar.css";
+import "../Css/Navbar.css";
 
 /**
  * Represents the navigation bar at the top of the application. It includes a logo,

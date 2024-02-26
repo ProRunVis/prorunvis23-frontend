@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import FolderTree from 'react-folder-tree';
 import 'react-folder-tree/dist/style.css';
-import "../styling/LeftComponent.css"
+import "../Css/LeftComponent.css"
 
 /**
  * Represents the left component of the application, which is primarily responsible for
