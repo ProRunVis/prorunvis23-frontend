@@ -9,16 +9,13 @@ import "../Css/LeftComponent.css"
  * filters out Java files, and displays these files in a structured folder tree view.
  * Users can collapse or expand the left container to show or hide the folder tree.
  */
-function LeftComponent({getFile}) {
+function LeftComponent({getActiveFile}) {
   // State for the list of files uploaded by the user.
   const [uploadedFiles, setUploadedFiles] = useState([]);
   // State for the structured data used by FolderTree to display the directory and files.
   const [folderTreeData, setFolderTreeData] = useState(null);
   // State to manage the collapsed or expanded state of the left container.
   const [isLeftContainerCollapsed, setIsLeftContainerCollapsed] = useState(false);
-  // State for the file selected by the user
-  const [currentFile, setCurrentFile] = useState([]);
-  const [activeFile, setActiveFile] = useState([]);
 
   /**
    * Handles the upload of files, filters for Java files, and constructs the folder tree data.
@@ -93,8 +90,7 @@ function LeftComponent({getFile}) {
       // internal data
       path, name, checked, isOpen, realPath, index }
         = nodeData;
-    //console.log(path);
-    getFile(uploadedFiles[index]);
+    getActiveFile(uploadedFiles[index]);
   };
 
   return (
@@ -130,16 +126,4 @@ function LeftComponent({getFile}) {
     </main>
   );
 }
-/*const addPath = node => {
-  const fakeUrl = `root/${node.name}`;
-  if (node.children) {
-    node.url = fakeUrl;
-    node.children = node.children.map(c => addPath(c));
-  } else {
-    node.url = fakeUrl;
-  }
-
-  return node;
-};*/
-
 export default LeftComponent;

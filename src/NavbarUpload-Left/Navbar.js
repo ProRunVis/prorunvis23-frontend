@@ -1,6 +1,6 @@
 import React from "react";
 import HelpButton from "./HelpButton";
-import logoImage from "../images/CDProRunVis.png";
+import logoImage from "../Images/CDProRunVis.png";
 import "../Css/Navbar.css";
 
 /**

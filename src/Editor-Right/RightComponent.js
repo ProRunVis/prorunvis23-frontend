@@ -10,7 +10,7 @@ import "../Css/RightComponent.css"
  * popups based on editor events. This component initializes the editor with
  * Java file content, handles editor events, and manages popup messages.
  */
-function RightComponent({setFile}, {getFile}) {
+function RightComponent({fileInEditor}) {
   // Constants ------------------------------------------------------------------------------------------------------------------
 
   // Reference to the editor's container for performing DOM operations.
@@ -33,7 +33,7 @@ function RightComponent({setFile}, {getFile}) {
   );
   // State for the content of the Java file to be displayed in the editor.
   const [javaFileContent, setJavaFileContent] = useState("");
-  //console.log(setFile);
+
   // Function to close the popup and clear the popup message.
   const closePopup = () => {
     popupManager.closePopup();
@@ -41,17 +41,25 @@ function RightComponent({setFile}, {getFile}) {
 
   // Asynchronous function to load the content of the Java test file.
   const loadJavaFile = async () => {
-    //console.log("test");
-    try {
-      //const response = await fetch("./MethodCallTesting.java");
-      const text = await setFile.text();
-      setJavaFileContent(text);
-    } catch (error) {
-      console.error("Error loading the Java file:", error);
+    if(fileInEditor) {
+      try {
+        const text = await fileInEditor.text();
+        setJavaFileContent(text);
+      } catch (error) {
+        console.error("Error loading the Java file:", error);
+      }
     }
+    else{
+      try {
+        const response = await fetch("./Default.java");
+        const text = await response.text();
+        setJavaFileContent(text);
+      } catch (error) {
+        console.error("Error loading the Java file:", error);
 
+      }
+    }
   };
-  //loadJavaFile();
   // -------------------------------------------------------------------------------------------------------------------------
   // UseEffects
 
@@ -60,7 +68,7 @@ function RightComponent({setFile}, {getFile}) {
   // This is called first when a Java file is loaded.
   useEffect(() => {
     loadJavaFile();
-  }, [setFile]);
+  }, [fileInEditor]);
 
   // This is called second to pass the file to the editor's constructor.
   // Effect executed when the content of the Java file or the highlighted lines change.
@@ -82,15 +90,6 @@ function RightComponent({setFile}, {getFile}) {
     }
   }, [javaFileContent, popupManager]);
 
-  // Effect executed when the editor changes.
- /* useEffect(() => {
-    return () => {
-      if (editor) {
-        editor.dispose();
-      }
-    };
-  }, [setFile]);*/
-
   // Render function
   return (
       <main className="right-container">
@@ -109,6 +108,4 @@ function RightComponent({setFile}, {getFile}) {
       </main>
   );
 }
-
-
 export default RightComponent;

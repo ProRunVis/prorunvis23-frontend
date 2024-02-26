@@ -5,14 +5,13 @@ import {useState} from "react";
 function ContainerRightLeft(){
     const [currentFile, setCurrentFile] = useState();
 
-    function getCurrentFile(file){
+    function getActiveFile(file){
         setCurrentFile(file);
-        //console.log(currentFile);
     }
 
     return <>
-    <LeftComponent getFile={getCurrentFile}/>
-    <RightComponent setFile={currentFile} getFile={getCurrentFile} />
+    <LeftComponent getActiveFile={getActiveFile}/>
+    <RightComponent fileInEditor={currentFile}/>
     </>
 }
 export default ContainerRightLeft;
