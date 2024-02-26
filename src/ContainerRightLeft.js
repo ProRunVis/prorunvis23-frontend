@@ -4,14 +4,20 @@ import RightComponent from "./Right-Editor/RightComponent";
 
 function ContainerRightLeft(){
     const [currentFile, setCurrentFile] = useState();
+    const [activeFile, setActiveFile] = useState();
 
-    function getActiveFile(file){
+    function jump(file){
         setCurrentFile(file);
+        setActiveFile(file);
+    }
+
+    function setCurrentToActive(){
+        setCurrentFile(activeFile);
     }
 
     return <>
-    <LeftComponent getActiveFile={getActiveFile}/>
-    <RightComponent fileInEditor={currentFile}/>
+    <LeftComponent onFileClick={setCurrentFile} reset={setCurrentToActive}/>
+    <RightComponent fileInEditor={currentFile} setFile={jump}/>
     </>
 }
 export default ContainerRightLeft;

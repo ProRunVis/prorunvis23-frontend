@@ -12,7 +12,7 @@ import PropTypes from "prop-types";
  * popups based on editor events. This component initializes the editor with
  * Java file content, handles editor events, and manages popup messages.
  */
-function RightComponent({fileInEditor}) {
+function RightComponent({fileInEditor}, {setFile}) {
   // Constants ------------------------------------------------------------------------------------------------------------------
 
   // Reference to the editor's container for performing DOM operations.
@@ -111,6 +111,7 @@ function RightComponent({fileInEditor}) {
   );
 }
 RightComponent.propTypes = {
-  fileInEditor: PropTypes.instanceOf(File)
+  fileInEditor: PropTypes.instanceOf(File),
+  setFile: PropTypes.instanceOf(Function),
 };
 export default RightComponent;

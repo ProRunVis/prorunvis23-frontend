@@ -12,7 +12,7 @@ import PropTypes from "prop-types";
  * filters out Java files, and displays these files in a structured folder tree view.
  * Users can collapse or expand the left container to show or hide the folder tree.
  */
-function LeftComponent({getActiveFile}) {
+function LeftComponent({onFileClick}, {reset}) {
   // State for the list of files uploaded by the user.
   const [uploadedFiles, setUploadedFiles] = useState([]);
   // State for the structured data used by FolderTree to display the directory and files.
@@ -95,44 +95,49 @@ function LeftComponent({getActiveFile}) {
     }
         = nodeData;
     if (realPath != null){
-      getActiveFile(uploadedFiles[index]);
+      onFileClick(uploadedFiles[index]);
     }
   };
 
   return (
-    <main className={`left-container ${isLeftContainerCollapsed ? 'collapsed' : ''}`} style={{width: isLeftContainerCollapsed ? '50px' : '280px'}}>
-      <button onClick={toggleLeftContainer}>{isLeftContainerCollapsed ? 'Open' : 'Close directory'}</button>
-      {isLeftContainerCollapsed ? null : (
-        <div>
-          <div className="button-container">
-            <form className="text-box" encType="multipart/form-data">
-              <input
-                type="file"
-                name="file"
-                multiple
-                webkitdirectory=""
-                onChange={handleFileUpload}
-                className="picker"
-              />
-            </form>
-          </div>
-          {folderTreeData && (
-            <div className="folder-tree-container">
-              <FolderTree
-                data={folderTreeData}
-                onNameClick={onNameClick}
-                showCheckbox={false}
-                readOnly={true}
-                indentPixels={0}
-              />
+      <main className={`left-container ${isLeftContainerCollapsed ? 'collapsed' : ''}`} style={{width: isLeftContainerCollapsed ? '50px' : '280px'}}>
+        <button onClick={toggleLeftContainer}>{isLeftContainerCollapsed ? 'Open' : 'Close directory'}</button>
+        {isLeftContainerCollapsed ? null : (
+            <div>
+              <button onClick={reset}>{'Jump to active function'} </button>
+              <div className="upload-button-container">
+                <form className="text-box" encType="multipart/form-data">
+                  <input
+                      type="file"
+                      name="file"
+                      multiple
+                      webkitdirectory=""
+                      onChange={handleFileUpload}
+                      className="picker"
+                  />
+                </form>
+              </div>
+
+              {folderTreeData && (
+                  <div className="folder-tree-container">
+                    <FolderTree
+                        data={folderTreeData}
+                        onNameClick={onNameClick}
+                        showCheckbox={false}
+                        readOnly={true}
+                        indentPixels={10}
+                    />
+                  </div>
+              )}
             </div>
-          )}
-        </div>
-      )}
-    </main>
+        )}
+      </main>
   );
+
 }
+
 LeftComponent.propTypes = {
-  getActiveFile: PropTypes.instanceOf(Function)
+  getActiveFile: PropTypes.instanceOf(Function),
+  reset: PropTypes.instanceOf(Function)
 };
 export default LeftComponent;

@@ -18,7 +18,7 @@
   }
   
   .left-container button {
-    position: absolute; /* Positioniert den Button absolut */
+    position: sticky; /* Positioniert den Button absolut */
     top: 0; /* Oben am Container */
     left: 0; /* Links am Container */
     width: 100%; /* Button nimmt die volle Containerbreite ein */
@@ -26,7 +26,10 @@
     cursor: pointer;
     background-color: rgb(31, 29, 29); /* Hintergrundfarbe des Buttons */
     color: white; /* Textfarbe des Buttons */
-    border: none;
+    border-color: #ffc7b1e7;
+    border-left-width: 0px;
+    border-right-width: 0px;
+    border-top-width: 0px;
   }
   
   /* Stellen Sie sicher, dass keine anderen Stile die Farbe oder den Hintergrund des .left-container überschreiben. */
@@ -44,6 +47,7 @@
     align-items: center; /* Zentriert den Inhalt entlang der Kreuzachse (vertikal) */
     width: 100%;
     border: 2px solid #ffc7b1e7;
+    border-top-width: 0;
     padding: 10px;
     color: white;
     background-color: black;
@@ -110,10 +114,10 @@
     background-color: rgb(4, 7, 18);
   }
   
-  .button-container {
+  .upload-button-container {
     width: 100% ;
     color: pink;
-    margin-top: 40px;
+    margin-top: 0px;
     display: flex;
     flex-direction: column;
     justify-content: center; /* Zentriert den Inhalt vertikal */
@@ -122,6 +126,19 @@
     
    
   }
+
+.reset-button-container {
+  width: 100% ;
+  color: white;
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center; /* Zentriert den Inhalt vertikal */
+  align-items: center; /* Zentriert den Inhalt horizontal */
+  padding-right: 20px;
+
+}
+
   .picker {
     margin-right: 20px; /* Oder einen anderen Wert, um den gewünschten Abstand zu schaffen */
   }
