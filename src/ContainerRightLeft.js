@@ -1,6 +1,6 @@
-import LeftComponent from "./NavbarUpload-Left/LeftComponent";
-import RightComponent from "./Editor-Right/RightComponent";
-import {useState} from "react";
+import React, { useEffect, useRef, useState, useMemo } from "react";
+import LeftComponent from "./Left-NavbarUpload/LeftComponent";
+import RightComponent from "./Right-Editor/RightComponent";
 
 function ContainerRightLeft(){
     const [currentFile, setCurrentFile] = useState();

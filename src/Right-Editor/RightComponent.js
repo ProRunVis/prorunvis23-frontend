@@ -1,8 +1,10 @@
+/* eslint-disable react/prop-types */
 import React, { useEffect, useRef, useState, useMemo } from "react";
 import PopupManager from "./PopupManager";
 import EditorClickHandler from "./EditorClickHandler";
 import EditorInitializer from "./EditorInitializer";
 import "../Css/RightComponent.css"
+import PropTypes from "prop-types";
 
 /**
  * Represents the right component of the application, primarily responsible for
@@ -108,4 +110,7 @@ function RightComponent({fileInEditor}) {
       </main>
   );
 }
+RightComponent.propTypes = {
+  fileInEditor: PropTypes.instanceOf(File)
+};
 export default RightComponent;

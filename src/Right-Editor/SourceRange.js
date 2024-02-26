@@ -1,3 +1,4 @@
+import React, { useEffect, useRef, useState, useMemo } from "react";
 class TraceNode {
     constructor(typ, ranges, childs, parent, link, outlinks, out, iteration) {
         this.typ = typ;

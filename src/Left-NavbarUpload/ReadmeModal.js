@@ -1,3 +1,7 @@
+/* eslint-disable react/prop-types */
+import React from "react";
+import PropTypes from "prop-types";
+import RightComponent from "../Right-Editor/RightComponent";
 /**
  * Defines a modal component that displays readme or help information to the user.
  * This functional component renders a modal dialog containing a title and a message
@@ -9,7 +13,7 @@
  * @param {Object} props - Component props.
  * @param {Function} props.closeModal - Function to close the modal.
  */
-export default function ReadmeModal({ closeModal }) {
+export default function ReadmeModal({closeModal}) {
   return (
     <div className="modal-container">
       <button className="modal-close-button" onClick={closeModal}>
@@ -22,3 +26,6 @@ export default function ReadmeModal({ closeModal }) {
     </div>
   );
 }
+ReadmeModal.propTypes = {
+    closeModal: PropTypes.instanceOf(Function)
+};

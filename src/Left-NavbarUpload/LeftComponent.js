@@ -1,7 +1,10 @@
+/* eslint-disable react/prop-types */
 import React, { useState } from 'react';
 import FolderTree from 'react-folder-tree';
 import 'react-folder-tree/dist/style.css';
 import "../Css/LeftComponent.css"
+import RightComponent from "../Right-Editor/RightComponent";
+import PropTypes from "prop-types";
 
 /**
  * Represents the left component of the application, which is primarily responsible for
@@ -88,9 +91,12 @@ function LeftComponent({getActiveFile}) {
   const onNameClick = ({ nodeData }) => {
     const {
       // internal data
-      path, name, checked, isOpen, realPath, index }
+      path, name, checked, isOpen, realPath, index
+    }
         = nodeData;
-    getActiveFile(uploadedFiles[index]);
+    if (realPath != null){
+      getActiveFile(uploadedFiles[index]);
+    }
   };
 
   return (
@@ -126,4 +132,7 @@ function LeftComponent({getActiveFile}) {
     </main>
   );
 }
+LeftComponent.propTypes = {
+  getActiveFile: PropTypes.instanceOf(Function)
+};
 export default LeftComponent;
