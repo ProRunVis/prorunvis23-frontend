@@ -133,7 +133,6 @@ function LeftComponent({onFileClick}, {reset}) {
         )}
       </main>
   );
-
 }
 
 LeftComponent.propTypes = {

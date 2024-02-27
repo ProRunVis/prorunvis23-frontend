@@ -12,8 +12,11 @@ import PropTypes from "prop-types";
  * popups based on editor events. This component initializes the editor with
  * Java file content, handles editor events, and manages popup messages.
  */
-function RightComponent({fileInEditor}, {setFile}) {
+function RightComponent({fileInEditor}, {setFile}, {jsonManager}) {
   // Constants ------------------------------------------------------------------------------------------------------------------
+
+  const [activeFunction, setActiveFunction] = useState(0);
+  const [activeIterations, setActiveIterations] = useState([]);
 
   // Reference to the editor's container for performing DOM operations.
   const editorContainerRef = useRef(null);
@@ -58,7 +61,6 @@ function RightComponent({fileInEditor}, {setFile}) {
         setJavaFileContent(text);
       } catch (error) {
         console.error("Error loading the Java file:", error);
-
       }
     }
   };
@@ -66,11 +68,39 @@ function RightComponent({fileInEditor}, {setFile}) {
   // UseEffects
 
   // This effect is executed when dialogRef, setPopupMessage, or popupDistance changes.
-
+  //TODO give all to editor when file loaded that is also active file
+  //TODO check if current file is active file
   // This is called first when a Java file is loaded.
   useEffect(() => {
     loadJavaFile();
   }, [fileInEditor]);
+
+  useEffect(() => {
+    setActiveIterations([]);
+    //TODO give to editor
+    jsonManager.updateActiveLoopsFunction(activeFunction, []);
+    //TODO -> set all iterations to zero
+  }, [activeFunction]);
+
+  useEffect(() => {
+    setActiveFunction(jsonManager.getMain());
+  }, [jsonManager]);
+
+  useEffect(() => {
+    //TODO give to editor
+    let activeLoops = jsonManager.updateActiveLoopsFunction(activeFunction, activeIterations);
+    //TODO -> set iterations to zero if new loops active
+    if(activeIterations.length() == activeLoops.length()) {
+      jsonManager.updateActiveRangesFunction(activeFunction, activeIterations).forEach(editor.highlightGreen(current));
+      jsonManager.updateJumpsFunction(activeFunction, activeIterations).forEach(editor.addJump(current));
+    }
+    else{
+      while(activeIterations.length() == activeLoops.length()){
+
+      }
+    }
+  }, [activeIterations]);
+
 
   // This is called second to pass the file to the editor's constructor.
   // Effect executed when the content of the Java file or the highlighted lines change.

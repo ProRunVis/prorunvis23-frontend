@@ -17,7 +17,7 @@ function ContainerRightLeft(){
 
     return <>
     <LeftComponent onFileClick={setCurrentFile} reset={setCurrentToActive}/>
-    <RightComponent fileInEditor={currentFile} setFile={jump}/>
+    <RightComponent fileInEditor={currentFile} setFile={jump} jsonManager={new JsonManager()}/>
     </>
 }
 export default ContainerRightLeft;
