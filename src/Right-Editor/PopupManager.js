@@ -1,5 +1,4 @@
 
-
 /**
  * Manages the opening, positioning, and closing of popups within an application.
  * This class is the third in the sequence of operations for popup management. It is
@@ -46,7 +45,7 @@ class PopupManager {
     const y = e.pageY;
    
     // Open the popup at the mouse position
-    this.openPopupAtMousePosition(x, y); // Ändern Sie dies
+    this.openPopupAtMousePosition(x, y);
   }
    /**
    * Opens the popup at the specified mouse position with an offset.

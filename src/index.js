@@ -5,13 +5,13 @@ import React from 'react';
 import { createRoot } from 'react-dom/client';
 
 // Importiert die CSS-Datei für globale Stilrichtlinien.
-import './styling/index.css';
+import './Css/index.css';
 
 // Importiert die App-Komponente aus der Datei App.js.
 import App from './App.js';
 
 // Importiert die Funktion reportWebVitals, die für die Leistungsmessung der Webanwendung verwendet wird.
-import reportWebVitals from './Navbar&Upload/reportWebVitals.js';
+import reportWebVitals from './Left-NavbarUpload/ReportWebVitals.js';
 
 // Ermittelt das DOM-Element mit der ID 'root', das als Einhängepunkt für die React-Anwendung dient.
 const rootElement = document.getElementById('root');

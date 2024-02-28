@@ -4,7 +4,7 @@
  *
  * @param {Function} onPerfEntry - Eine Callback-Funktion, die aufgerufen wird, um Leistungseinträge zu melden.
  */
-const reportWebVitals = onPerfEntry => {
+const ReportWebVitals = onPerfEntry => {
   // Überprüft, ob eine Callback-Funktion bereitgestellt wurde und ob es sich um eine Funktion handelt.
   if (onPerfEntry && onPerfEntry instanceof Function) {
     // Lädt das Modul 'web-vitals' dynamisch.
@@ -20,4 +20,4 @@ const reportWebVitals = onPerfEntry => {
   }
 };
 
-export default reportWebVitals; // Exportiert die reportWebVitals Funktion.
+export default ReportWebVitals; // Exportiert die reportWebVitals Funktion.
