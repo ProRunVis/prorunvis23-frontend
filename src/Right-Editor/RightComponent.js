@@ -16,7 +16,7 @@ import * as moanco from "monaco-editor";
  * popups based on editor events. This component initializes the editor with
  * Java file content, handles editor events, and manages popup messages.
  */
-function RightComponent({fileInEditor}, {setFile}) {
+function RightComponent({fileInEditor, setFile, activeSelected}) {
   // Constants ------------------------------------------------------------------------------------------------------------------
 
   const [activeFunction, setActiveFunction] = useState(0);
@@ -48,7 +48,7 @@ function RightComponent({fileInEditor}, {setFile}) {
     popupManager.closePopup();
   };
 
-  let jsonManager = new JsonManager(new TraceNode("main",[(new SourceRange(new moanco.Range(1,1,2,2), "")), (new SourceRange(new moanco.Range(1,1,2,2)))], [1, 2], null, null, null, null, null), new TraceNode("main",[(new SourceRange(new moanco.Range(1,1,2,2), "")), (new SourceRange(new moanco.Range(1,1,2,2)))], [], 0, null, null, null, null));
+  let jsonManager = new JsonManager(new TraceNode("main",[(new SourceRange(new moanco.Range(1,1,3,4), "")), (new SourceRange(new moanco.Range(5,5,2,2)))], [], null, null, null, null, null));
 
   // Asynchronous function to load the content of the Java test file.
   const loadJavaFile = async () => {
@@ -70,6 +70,21 @@ function RightComponent({fileInEditor}, {setFile}) {
       }
     }
   };
+
+  function highlightGreen(range)
+  {
+      editor.createDecorationsCollection([
+        {
+          options: {className: "green"},
+          range: {
+            startLineNumber: range.startLineNumber,
+            startColumn: range.startColumn,
+            endLineNumber: range.endLineNumber,
+            endColumn: range.endColumn
+          }
+        }
+      ]);
+  }
   // -------------------------------------------------------------------------------------------------------------------------
   // UseEffects
 
@@ -80,15 +95,17 @@ function RightComponent({fileInEditor}, {setFile}) {
   }, [fileInEditor]);
 
   useEffect(() => {
-    let temp = jsonManager.updateActiveRangesFunction(activeFunction, []);
-    for(let i = 0; i < temp.length; i++) {
-      console.log(temp[i]);
-      editor.highlightGreen(temp[i]);
+    if(editor && activeSelected()) {
+      let temp = jsonManager.updateActiveRangesFunction(activeFunction, []);
+      for (let i = 0; i < temp.length; i++) {
+        highlightGreen(temp[i]);
+      }
     }
-    }, [activeFunction]);
+    }, [activeFunction, fileInEditor]);
 
   useEffect(() => {
-    setActiveFunction(jsonManager.getMain());
+      setActiveFunction(jsonManager.getMain());
+      setFile(jsonManager.nodes[activeFunction].sourceRanges[0].file);
   }, [jsonManager]);
 
 

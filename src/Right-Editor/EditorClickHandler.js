@@ -83,9 +83,10 @@ addLoop(range, iteration){
   this.loops.push([range, iteration]);
   }
 
-  highlightGreen({range}) {
-    console.log("Range in highlight green:" + range);
-    this.editor.createDecorationsCollection([
+  highlightGreen(range) {
+    //console.log("Range in highlight green:");
+    //console.log(range);
+    /*this.editor.createDecorationsCollection([
       {
         options: {className: "green"},
         range: {
@@ -95,7 +96,7 @@ addLoop(range, iteration){
           endColumn: range.endColumn
         }
       }
-    ]);
+    ]);*/
   }
 
 

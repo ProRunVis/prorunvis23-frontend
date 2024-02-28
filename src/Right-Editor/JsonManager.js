@@ -10,11 +10,11 @@ class JsonManager{
     highlighted = [];
     traceNodes= [];
 
-    constructor(t1, t2) {
+    constructor(t1) {
         this.nodes.push(t1);
-        this.nodes.push(t2);
-        this.nodes.push(t2);
-        //this.nodes.push(new TraceNode("main",[(new SourceRange(new moanco.Range(1,1,2,2), "")), (new SourceRange(new moanco.Range(1,1,2,2)))], [1, 2], null, null, null, null, null));
+        //this.nodes.push(t2);
+        //this.nodes.push(t2);
+        //this.nodes.push(new TraceNode("main",[(new SourceRange(new moanco.Range(1,1,2,2), "")), (new SourceRange(new moanco.Range(3,3,4,4)))], [], null, null, null, null, null));
         //this.nodes.push(new TraceNode("main",[(new SourceRange(new moanco.Range(1,1,2,2), "")), (new SourceRange(new moanco.Range(1,1,2,2)))], [], 0, null, null, null, null));
         //this.nodes.push(new TraceNode("main",[(new SourceRange(new moanco.Range(1,1,2,2), "")), (new SourceRange(new moanco.Range(1,1,2,2)))], [], 0, null, null, null, null));
         /*fetch('./data.json')
@@ -44,10 +44,6 @@ class JsonManager{
                         ranges.push(childRanges[j]);
                     }
                 }
-            }
-
-            for (let i = 0; i < ranges.length; i++){
-                console.log("range" + i + ranges[i]);
             }
             return ranges;
         }

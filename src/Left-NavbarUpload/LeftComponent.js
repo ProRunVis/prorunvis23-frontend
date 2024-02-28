@@ -1,5 +1,5 @@
 /* eslint-disable react/prop-types */
-import React, { useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import FolderTree from 'react-folder-tree';
 import 'react-folder-tree/dist/style.css';
 import "../Css/LeftComponent.css"
@@ -12,7 +12,7 @@ import PropTypes from "prop-types";
  * filters out Java files, and displays these files in a structured folder tree view.
  * Users can collapse or expand the left container to show or hide the folder tree.
  */
-function LeftComponent({onFileClick}, {reset}) {
+function LeftComponent({onFileClick, reset, passOnUploadedFiles}) {
   // State for the list of files uploaded by the user.
   const [uploadedFiles, setUploadedFiles] = useState([]);
   // State for the structured data used by FolderTree to display the directory and files.
@@ -76,7 +76,6 @@ function LeftComponent({onFileClick}, {reset}) {
         }
       });
     });
-    console.log(root);
     return root;
   };
 
@@ -98,6 +97,10 @@ function LeftComponent({onFileClick}, {reset}) {
       onFileClick(uploadedFiles[index]);
     }
   };
+
+  useEffect(() => {
+    passOnUploadedFiles(uploadedFiles);
+  }, [uploadedFiles]);
 
   return (
       <main className={`left-container ${isLeftContainerCollapsed ? 'collapsed' : ''}`} style={{width: isLeftContainerCollapsed ? '50px' : '280px'}}>
