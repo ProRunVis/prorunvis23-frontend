@@ -39,8 +39,10 @@ class JsonManager{
             }
             if (this.nodes[selectedFunction].childs != null) {
                 for (let i = 0; i < this.nodes[selectedFunction].childs.length; i++) {
-                    ranges.push(this.getRanges(this.nodes[selectedFunction].childs[i]));
-                    console.log(this.nodes[1].sourceRanges.range);
+                    let childRanges = this.getRanges(this.nodes[selectedFunction].childs[i]);
+                    for(let j = 0; j<childRanges.length; j++){
+                        ranges.push(childRanges[j]);
+                    }
                 }
             }
 
