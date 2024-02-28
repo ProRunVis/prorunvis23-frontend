@@ -1,10 +1,12 @@
 import React, { useEffect, useRef, useState, useMemo } from "react";
 import LeftComponent from "./Left-NavbarUpload/LeftComponent";
 import RightComponent from "./Right-Editor/RightComponent";
+import JsonManager from "./Right-Editor/JsonManager";
 
 function ContainerRightLeft(){
     const [currentFile, setCurrentFile] = useState();
     const [activeFile, setActiveFile] = useState();
+    const [dummy, setDummy] = useState(new JsonManager());
 
     function jump(file){
         setCurrentFile(file);
@@ -17,7 +19,7 @@ function ContainerRightLeft(){
 
     return <>
     <LeftComponent onFileClick={setCurrentFile} reset={setCurrentToActive}/>
-    <RightComponent fileInEditor={currentFile} setFile={jump} jsonManager={new JsonManager()}/>
+    <RightComponent fileInEditor={currentFile} setFile={jump}/>
     </>
 }
 export default ContainerRightLeft;

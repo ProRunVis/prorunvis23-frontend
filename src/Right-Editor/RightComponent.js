@@ -5,6 +5,10 @@ import EditorClickHandler from "./EditorClickHandler";
 import EditorInitializer from "./EditorInitializer";
 import "../Css/RightComponent.css"
 import PropTypes from "prop-types";
+import JsonManager from "./JsonManager";
+import TraceNode from "./TraceNode";
+import SourceRange from "./SourceRange";
+import * as moanco from "monaco-editor";
 
 /**
  * Represents the right component of the application, primarily responsible for
@@ -12,7 +16,7 @@ import PropTypes from "prop-types";
  * popups based on editor events. This component initializes the editor with
  * Java file content, handles editor events, and manages popup messages.
  */
-function RightComponent({fileInEditor}, {setFile}, {jsonManager}) {
+function RightComponent({fileInEditor}, {setFile}) {
   // Constants ------------------------------------------------------------------------------------------------------------------
 
   const [activeFunction, setActiveFunction] = useState(0);
@@ -44,6 +48,8 @@ function RightComponent({fileInEditor}, {setFile}, {jsonManager}) {
     popupManager.closePopup();
   };
 
+  let jsonManager = new JsonManager(new TraceNode("main",[(new SourceRange(new moanco.Range(1,1,2,2), "")), (new SourceRange(new moanco.Range(1,1,2,2)))], [1, 2], null, null, null, null, null), new TraceNode("main",[(new SourceRange(new moanco.Range(1,1,2,2), "")), (new SourceRange(new moanco.Range(1,1,2,2)))], [], 0, null, null, null, null));
+
   // Asynchronous function to load the content of the Java test file.
   const loadJavaFile = async () => {
     if(fileInEditor) {
@@ -68,38 +74,22 @@ function RightComponent({fileInEditor}, {setFile}, {jsonManager}) {
   // UseEffects
 
   // This effect is executed when dialogRef, setPopupMessage, or popupDistance changes.
-  //TODO give all to editor when file loaded that is also active file
-  //TODO check if current file is active file
   // This is called first when a Java file is loaded.
   useEffect(() => {
     loadJavaFile();
   }, [fileInEditor]);
 
   useEffect(() => {
-    setActiveIterations([]);
-    //TODO give to editor
-    jsonManager.updateActiveLoopsFunction(activeFunction, []);
-    //TODO -> set all iterations to zero
-  }, [activeFunction]);
+    let temp = jsonManager.updateActiveRangesFunction(activeFunction, []);
+    for(let i = 0; i < temp.length; i++) {
+      console.log(temp[i]);
+      editor.highlightGreen(temp[i]);
+    }
+    }, [activeFunction]);
 
   useEffect(() => {
     setActiveFunction(jsonManager.getMain());
   }, [jsonManager]);
-
-  useEffect(() => {
-    //TODO give to editor
-    let activeLoops = jsonManager.updateActiveLoopsFunction(activeFunction, activeIterations);
-    //TODO -> set iterations to zero if new loops active
-    if(activeIterations.length() == activeLoops.length()) {
-      jsonManager.updateActiveRangesFunction(activeFunction, activeIterations).forEach(editor.highlightGreen(current));
-      jsonManager.updateJumpsFunction(activeFunction, activeIterations).forEach(editor.addJump(current));
-    }
-    else{
-      while(activeIterations.length() == activeLoops.length()){
-
-      }
-    }
-  }, [activeIterations]);
 
 
   // This is called second to pass the file to the editor's constructor.
