@@ -1,4 +1,3 @@
-/* eslint-disable react/prop-types */
 import React, { useEffect, useRef, useState, useMemo } from "react";
 import PopupManager from "./PopupManager";
 import EditorClickHandler from "./EditorClickHandler";

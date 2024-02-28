@@ -37,26 +37,19 @@ class EditorClickHandler {
    */
   handleMouseDown() {
     this.editor.onMouseDown(e => {
-      const position = e.target.position;
-      if (position) {
-        //console.log("posx:", e.event.posx, "posy:", e.event.posy); // Debugging
-        //this.popupTrigger.handleWordAtPosition(position, e.event);
-        this.jumpTo(new Position(152, 1));
-        //RightComponent("./MethodCallTesting2");
-      }
+      //insert mouse down functionality f.e. jumps
     });
   }
 
   jumpTo(position) {
     this.editor.setPosition(position);
     this.editor.revealLineNearTop(position.lineNumber);
-    this.highlightRed(new monaco.Range(1, 1, 2, 1));
   }
 
   highlightRed(range) {
     this.editor.createDecorationsCollection([
       {
-        options: {className: "green"},
+        options: {className: "red"},
         range: {
           startLineNumber: range.startLineNumber,
           startColumn: range.startColumn,
@@ -70,7 +63,7 @@ class EditorClickHandler {
   highlightGreen(range) {
     this.editor.createDecorationsCollection([
       {
-        options: {className: "red"},
+        options: {className: "green"},
         range: {
           startLineNumber: range.startrow,
           startColumn: range.startcol,
@@ -80,8 +73,6 @@ class EditorClickHandler {
       }
     ]);
   }
-
-
 }
 
 export default EditorClickHandler;

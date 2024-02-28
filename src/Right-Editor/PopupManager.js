@@ -45,7 +45,7 @@ class PopupManager {
     const y = e.pageY;
    
     // Open the popup at the mouse position
-    this.openPopupAtMousePosition(x, y); // Ändern Sie dies
+    this.openPopupAtMousePosition(x, y);
   }
    /**
    * Opens the popup at the specified mouse position with an offset.

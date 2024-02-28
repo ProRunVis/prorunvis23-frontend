@@ -1,4 +1,3 @@
-/* eslint-disable react/prop-types */
 import React, { useState } from 'react';
 import FolderTree from 'react-folder-tree';
 import 'react-folder-tree/dist/style.css';

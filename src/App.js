@@ -5,7 +5,6 @@ import LeftComponent from './Left-NavbarUpload/LeftComponent';
 import RightComponent from './Right-Editor/RightComponent';
 import ContainerRightLeft from "./ContainerRightLeft";
 
-
 // Observes Left&RightContainer for correct resizing. Prohibits sending too many requests to DOM, which causes a Runtime Error
 const debounce = (func, wait) => {
   let timeout;
