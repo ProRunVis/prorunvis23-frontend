@@ -16,7 +16,7 @@ import * as moanco from "monaco-editor";
  * popups based on editor events. This component initializes the editor with
  * Java file content, handles editor events, and manages popup messages.
  */
-function RightComponent({fileInEditor, setFile, activeSelected}) {
+function RightComponent({fileInEditor, setFile, activeSelected, jsonManager}) {
   // Constants ------------------------------------------------------------------------------------------------------------------
 
   const [activeFunction, setActiveFunction] = useState(0);
@@ -47,8 +47,6 @@ function RightComponent({fileInEditor, setFile, activeSelected}) {
   const closePopup = () => {
     popupManager.closePopup();
   };
-
-  let jsonManager = new JsonManager(new TraceNode("main",[(new SourceRange(new moanco.Range(1,1,3,4), "")), (new SourceRange(new moanco.Range(5,5,2,2)))], [], null, null, null, null, null));
 
   // Asynchronous function to load the content of the Java test file.
   const loadJavaFile = async () => {
@@ -91,27 +89,47 @@ function RightComponent({fileInEditor, setFile, activeSelected}) {
   // This effect is executed when dialogRef, setPopupMessage, or popupDistance changes.
   // This is called first when a Java file is loaded.
   useEffect(() => {
+    console.log("File in editor changed.");
     loadJavaFile();
   }, [fileInEditor]);
 
+  //If active function or file displayed in editor changes render highlights depending on if active file is also displayed in editor
   useEffect(() => {
+    console.log("Editor changed, decorations rendered.");
+    let temp;
+    if(jsonManager)
+      temp = jsonManager.updateActiveRangesFunction(activeFunction, []);
     if(editor && activeSelected()) {
-      let temp = jsonManager.updateActiveRangesFunction(activeFunction, []);
-      for (let i = 0; i < temp.length; i++) {
-        highlightGreen(temp[i]);
+      if (temp.length !== 0) {
+        for (let i = 0; i < temp.length; i++) {
+          highlightGreen(temp[i]);
+        }
       }
     }
-    }, [activeFunction, fileInEditor]);
+    }, [editor]);
 
+  //if active function changes jump set editor to file that contains said function
   useEffect(() => {
+    console.log("Active function changed.");
+    if(jsonManager) {
+      setFile(jsonManager.nodes[activeFunction].sourceRanges[0].file);
+    }
+  }, [activeFunction]);
+
+  //if json manager/project changes get main function and set as active function also change the file in the editor to display said function
+  useEffect(() => {
+    if(jsonManager) {
+      console.log("JsonManager(loaded project) changed.")
       setActiveFunction(jsonManager.getMain());
       setFile(jsonManager.nodes[activeFunction].sourceRanges[0].file);
+    }
   }, [jsonManager]);
 
 
   // This is called second to pass the file to the editor's constructor.
   // Effect executed when the content of the Java file or the highlighted lines change.
   useEffect(() => {
+    console.log("File content changed, editor rendered.");
     if (javaFileContent && editorContainerRef.current) {
       if (editor) {
         editor.dispose();
