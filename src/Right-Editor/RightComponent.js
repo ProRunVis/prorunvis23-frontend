@@ -1,14 +1,9 @@
-/* eslint-disable react/prop-types */
 import React, { useEffect, useRef, useState, useMemo } from "react";
 import PopupManager from "./PopupManager";
 import EditorClickHandler from "./EditorClickHandler";
 import EditorInitializer from "./EditorInitializer";
 import "../Css/RightComponent.css"
 import PropTypes from "prop-types";
-import JsonManager from "./JsonManager";
-import TraceNode from "./TraceNode";
-import SourceRange from "./SourceRange";
-import * as moanco from "monaco-editor";
 
 /**
  * Represents the right component of the application, primarily responsible for
@@ -16,11 +11,11 @@ import * as moanco from "monaco-editor";
  * popups based on editor events. This component initializes the editor with
  * Java file content, handles editor events, and manages popup messages.
  */
-function RightComponent({fileInEditor, setFile, activeSelected, jsonManager}) {
+function RightComponent({fileInEditor, setFile, isActiveDisplayed, jsonManager}) {
   // Constants ------------------------------------------------------------------------------------------------------------------
 
-  const [activeFunction, setActiveFunction] = useState(0);
-  const [activeIterations, setActiveIterations] = useState([]);
+  const [selectedFunction, setSelectedFunction] = useState(0);
+  const [selectedIterations, setSelectedIterations] = useState([]);
 
   // Reference to the editor's container for performing DOM operations.
   const editorContainerRef = useRef(null);
@@ -89,20 +84,20 @@ function RightComponent({fileInEditor, setFile, activeSelected, jsonManager}) {
   // This effect is executed when dialogRef, setPopupMessage, or popupDistance changes.
   // This is called first when a Java file is loaded.
   useEffect(() => {
-    console.log("File in editor changed.");
+    console.log("File in editor changed, content rendered.");
     loadJavaFile();
   }, [fileInEditor]);
 
   //If active function or file displayed in editor changes render highlights depending on if active file is also displayed in editor
   useEffect(() => {
     console.log("Editor changed, decorations rendered.");
-    let temp;
+    let rangesToHighlight;
     if(jsonManager)
-      temp = jsonManager.updateActiveRangesFunction(activeFunction, []);
-    if(editor && activeSelected()) {
-      if (temp.length !== 0) {
-        for (let i = 0; i < temp.length; i++) {
-          highlightGreen(temp[i]);
+      rangesToHighlight = jsonManager.updateActiveRangesFunction(selectedFunction, []);
+    if(editor && isActiveDisplayed()) {
+      if (rangesToHighlight.length !== 0) {
+        for (let i = 0; i < rangesToHighlight.length; i++) {
+          highlightGreen(rangesToHighlight[i]);
         }
       }
     }
@@ -110,18 +105,19 @@ function RightComponent({fileInEditor, setFile, activeSelected, jsonManager}) {
 
   //if active function changes jump set editor to file that contains said function
   useEffect(() => {
-    console.log("Active function changed.");
     if(jsonManager) {
-      setFile(jsonManager.nodes[activeFunction].sourceRanges[0].file);
+      console.log("Active function changed, jump to it.");
+      setFile(jsonManager.nodes[selectedFunction].link.file);
     }
-  }, [activeFunction]);
+  }, [selectedFunction]);
 
   //if json manager/project changes get main function and set as active function also change the file in the editor to display said function
   useEffect(() => {
     if(jsonManager) {
-      console.log("JsonManager(loaded project) changed.")
-      setActiveFunction(jsonManager.getMain());
-      setFile(jsonManager.nodes[activeFunction].sourceRanges[0].file);
+      console.log("JsonManager(loaded project) changed, set main as active function.");
+      console.log(jsonManager.nodes[jsonManager.getMain()]);
+      setSelectedFunction(jsonManager.getMain());
+      setFile(jsonManager.nodes[jsonManager.getMain()].link.file);
     }
   }, [jsonManager]);
 

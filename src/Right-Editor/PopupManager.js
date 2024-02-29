@@ -1,4 +1,3 @@
-
 /**
  * Manages the opening, positioning, and closing of popups within an application.
  * This class is the third in the sequence of operations for popup management. It is

@@ -1,4 +1,3 @@
-
 /**
  * Determines whether a popup should be displayed based on the current cursor position in the editor.
  * This class is the second to be called in the sequence of operations for managing popups.
