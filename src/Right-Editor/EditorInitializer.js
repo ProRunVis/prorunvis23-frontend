@@ -1,7 +1,5 @@
 import * as monaco from 'monaco-editor/esm/vs/editor/editor.api';
 
-
-
 /**
  * Initializes the Monaco Editor with specific settings for editing Java files.
  * This class provides static methods to configure the editor, including setting
@@ -38,6 +36,7 @@ export class EditorInitializer {
       minimap: { enabled: false },
       wordWrap: 'off',
       automaticLayout: true,
+      readOnly: true,
       scrollbar: {
         alwaysConsumeMouseWheel: true
       },
@@ -122,7 +121,7 @@ export class EditorInitializer {
     //this.adjustEditorHeight(editor);
 
     // Event-Listener, wenn sich Editor ändert für die Höhe
-   // editor.onDidChangeModelContent(() => {
+    // editor.onDidChangeModelContent(() => {
     //  this.adjustEditorHeight(editor);
     //});
 

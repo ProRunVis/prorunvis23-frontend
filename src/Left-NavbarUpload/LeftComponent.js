@@ -126,7 +126,7 @@ function LeftComponent({onFileClick, reset, passOnUploadedFiles}) {
                         onNameClick={onNameClick}
                         showCheckbox={false}
                         readOnly={true}
-                        indentPixels={10}
+                        indentPixels={15}
                     />
                   </div>
               )}

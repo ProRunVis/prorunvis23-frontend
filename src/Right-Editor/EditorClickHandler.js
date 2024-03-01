@@ -1,5 +1,4 @@
 import PopupTrigger from './PopupTrigger';
-import {Position} from "monaco-editor";
 import '../Css/Decorate.css';
 
 
@@ -26,8 +25,6 @@ class EditorClickHandler {
     this.editor = editor;
     this.popupManager = popupManager;
     this.popupTrigger = new PopupTrigger(editor, popupManager);
-    this.jumps = [];
-    this.loops = [];
   }
 
   /**
@@ -37,68 +34,20 @@ class EditorClickHandler {
    * a popup based on the word located at the event's position.
    */
   handleMouseDown() {
-    this.editor.onMouseDown(e => {
+    /*this.editor.onMouseDown(e => {
       const position = e.target.position;
-
       if (position) {
-        //console.log("posx:", e.event.posx, "posy:", e.event.posy); // Debugging
         //this.popupTrigger.handleWordAtPosition(position, e.event);
         this.jumpTo(new Position(152, 1));
-        //RightComponent("./MethodCallTesting2");
       }
-    });
+    });*/
+    //Handle Mouse Down currently disabled
   }
 
   jumpTo(position) {
     this.editor.setPosition(position);
     this.editor.revealLineNearTop(position.lineNumber);
   }
-
-  highlightRed(range) {
-    this.editor.createDecorationsCollection([
-      {
-        options: {className: "red"},
-        range: {
-          startLineNumber: range.startLineNumber,
-          startColumn: range.startColumn,
-          endLineNumber: range.endLineNumber,
-          endColumn: range.endColumn
-        }
-      }
-    ]);
-  }
-
-  resetJumps(){
-    this.jumps = [];
-  }
-
-  resetLoops(){
-    this.loops = [];
-  }
-addJump(range){
-  this.jumps.push(range);
-}
-addLoop(range, iteration){
-  this.loops.push([range, iteration]);
-  }
-
-  highlightGreen(range) {
-    //console.log("Range in highlight green:");
-    //console.log(range);
-    /*this.editor.createDecorationsCollection([
-      {
-        options: {className: "green"},
-        range: {
-          startLineNumber: range.startLineNumber,
-          startColumn: range.startColumn,
-          endLineNumber: range.endLineNumber,
-          endColumn: range.endColumn
-        }
-      }
-    ]);*/
-  }
-
-
 }
 
 export default EditorClickHandler;

@@ -48,7 +48,6 @@ class PopupTrigger {
     const model = this.editor.getModel();
     
     const word = model.getWordAtPosition(position);
-    
 
     const wordMessages = {
       'for': 'Das ist ein for',
@@ -60,8 +59,6 @@ class PopupTrigger {
     };
 
     if (word && word.word in wordMessages) {
-    
-
       const mouseX = event.posx;
       const mouseY = event.posy;
       this.popupManager.updateMessage(wordMessages[word.word]);
@@ -69,5 +66,4 @@ class PopupTrigger {
     }
   }
 }
-
 export default PopupTrigger;
