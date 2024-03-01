@@ -4,6 +4,7 @@ import EditorClickHandler from "./EditorClickHandler";
 import EditorInitializer from "./EditorInitializer";
 import "../Css/RightComponent.css"
 import PropTypes from "prop-types";
+import JsonManager from "./JsonManager";
 
 /**
  * Represents the right component of the application, primarily responsible for
@@ -164,5 +165,7 @@ function RightComponent({fileInEditor, setFile, isActiveDisplayed, jsonManager})
 RightComponent.propTypes = {
   fileInEditor: PropTypes.instanceOf(File),
   setFile: PropTypes.instanceOf(Function),
+  isActiveDisplayed: PropTypes.instanceOf(Function),
+  jsonManager: PropTypes.instanceOf(JsonManager)
 };
 export default RightComponent;

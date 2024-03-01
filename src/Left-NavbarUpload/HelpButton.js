@@ -42,7 +42,7 @@ export default function HelpButton() {
         onRequestClose={closeModal} 
         contentLabel="Readme Modal" 
       >
-        <ReadmeModal closeModal={closeModal} /* Renders the content of the modal.*/ />
+        <ReadmeModal closeModal={closeModal/* Renders the content of the modal.*/} />
       </Modal>
     </>
   );

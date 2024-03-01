@@ -1,7 +1,5 @@
-/* eslint-disable react/prop-types */
 import React from "react";
 import PropTypes from "prop-types";
-import RightComponent from "../Right-Editor/RightComponent";
 /**
  * Defines a modal component that displays readme or help information to the user.
  * This functional component renders a modal dialog containing a title and a message
