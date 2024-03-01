@@ -34,13 +34,11 @@ class EditorClickHandler {
    * a popup based on the word located at the event's position.
    */
   handleMouseDown() {
-    /*this.editor.onMouseDown(e => {
-      const position = e.target.position;
-      if (position) {
-        //this.popupTrigger.handleWordAtPosition(position, e.event);
-        this.jumpTo(new Position(152, 1));
-      }
-    });*/
+    let p;
+    this.editor.onMouseDown(e => {
+      p = e.target.position;
+    });
+    return p;
     //Handle Mouse Down currently disabled
   }
 

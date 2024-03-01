@@ -14,8 +14,17 @@ class JsonManager {
         //if [] assume all iterations are zero
     }
     updateJumpsFunction(selectedFunction, selectedIterations){
-        //if [] assume all iterations are zero
-    }
+        let jumps = [];
+        if(selectedIterations.length === 0) {
+            for (let i = 0; i < this.nodes.length; i++) {
+                if(( this.nodes[i].link !== undefined || this.nodes[i].outlink !== undefined) && this.nodes[i].iteration === undefined ){
+                    console.log("jump:" + this.nodes[i].link.begin.line + this.nodes[i].link.begin.column);
+                    jumps.push(this.nodes[i]);
+                }
+            }
+        }
+        return jumps;
+     }
     updateActiveRangesFunction(selectedFunction, selectedIterations){
         console.log("test" + this.nodes[selectedFunction].childrenIndices);
         if(selectedIterations.length === 0){

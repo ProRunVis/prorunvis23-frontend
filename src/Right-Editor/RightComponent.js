@@ -17,6 +17,7 @@ function RightComponent({fileInEditor, setFile, isActiveDisplayed, jsonManager})
 
   const [selectedFunction, setSelectedFunction] = useState(0);
   const [selectedIterations, setSelectedIterations] = useState([]);
+  const [jumps, setJumps] = useState([]);
 
   // Reference to the editor's container for performing DOM operations.
   const editorContainerRef = useRef(null);
@@ -79,6 +80,33 @@ function RightComponent({fileInEditor, setFile, isActiveDisplayed, jsonManager})
         }
       ]);
   }
+  function handleJumps() {
+    if(editor) {
+      editor.onMouseDown(e => {
+        const position = e.target.position;
+        if(jumps.length != 0) {
+          for (let i = 0; i < jumps.length; i++) {
+
+            //setnewfile auf outlink file
+            /*
+            jumpto outlinkindex node
+            */
+            console.log(position);
+            if (new monaco.Range(jumps[i].link.begin.line, jumps[i].link.begin.column, jumps[i].link.end.line, jumps[i].link.end.column + 1).containsPosition(position)) {
+              setFile(jumps[i].link.file);
+              jumpTo(new monaco.Position(jumps[i].outLinks[jumps[i].outLinks.length-1].begin.line, jumps[i].outLinks[jumps[i].outLinks.length-1].begin.column));
+            }
+          }
+        }
+      });
+    }
+  }
+
+  function jumpTo(position) {
+    editor.setPosition(position);
+    editor.revealLineNearTop(position.lineNumber);
+  }
+
   // -------------------------------------------------------------------------------------------------------------------------
   // UseEffects
 
@@ -94,7 +122,7 @@ function RightComponent({fileInEditor, setFile, isActiveDisplayed, jsonManager})
     console.log("Editor changed, decorations rendered.");
     let rangesToHighlight;
     if(jsonManager)
-      rangesToHighlight = jsonManager.updateActiveRangesFunction(selectedFunction, []);
+      rangesToHighlight = jsonManager.updateActiveRangesFunction(selectedFunction, selectedIterations);
     if(editor && isActiveDisplayed()) {
       if (rangesToHighlight.length !== 0) {
         for (let i = 0; i < rangesToHighlight.length; i++) {
@@ -102,6 +130,7 @@ function RightComponent({fileInEditor, setFile, isActiveDisplayed, jsonManager})
         }
       }
     }
+    handleJumps();
     }, [editor]);
 
   //if active function changes jump set editor to file that contains said function
@@ -109,6 +138,7 @@ function RightComponent({fileInEditor, setFile, isActiveDisplayed, jsonManager})
     if(jsonManager) {
       console.log("Active function changed, jump to it.");
       setFile(jsonManager.nodes[selectedFunction].link.file);
+      setJumps(jsonManager.updateJumpsFunction(selectedFunction, selectedIterations));
     }
   }, [selectedFunction]);
 
@@ -139,7 +169,6 @@ function RightComponent({fileInEditor, setFile, isActiveDisplayed, jsonManager})
         setEditor(newEditor);
         // Initialize the EditorClickHandler here, after the editor has been created.
         const clickHandler = new EditorClickHandler(newEditor, popupManager);
-        clickHandler.handleMouseDown();
       }
     }
   }, [javaFileContent, popupManager]);
