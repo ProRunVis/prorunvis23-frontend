@@ -37,7 +37,7 @@ const debounce = (func, wait) => {
 function App() {
   const contentRef = useRef(null);
 
-  useEffect(() => {
+  /*useEffect(() => {
 
     const handleResize = debounce(() => {
       console.log('Containergröße hat sich geändert');
@@ -50,7 +50,7 @@ function App() {
     }
 
     return () => observer.disconnect(); // Cleanup-Function and disconnects
-  }, []);
+  }, []);*/
 
   return (
       <div className="App">

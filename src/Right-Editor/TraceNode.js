@@ -1,3 +1,4 @@
+import RightComponent from "./RightComponent";
 
 class TraceNode
 {
@@ -26,12 +27,12 @@ class TraceNode
                 this.outLinks.push(new SourceRange(new monaco.Range(node.outLinks[i].begin.line, node.outLinks[i].begin.column, node.outLinks[i].end.line, node.outLinks[i].end.column), node.outLinks[i].file));
 
         this.outIndex = null;
-        if(node.outIndex !== undefined)
+        if(node.outIndex !== undefined && node.outIndex !== 0)
             this.outIndex = node.outIndex;
 
-        this.iterations = null;
-        if(node.iterations !== undefined)
-            this.iterations = node.iterations;
+        this.iteration = null;
+        if(node.iteration !== undefined)
+            this.iteration = node.iteration;
 
         this.traceId = null;
         if(node.traceId !== undefined){
@@ -39,27 +40,24 @@ class TraceNode
         }
 
         this.nodeType = "Other";
-        this.outLinkPosition = null;
-        this.linkPosition = null;
-        if(this.iterations !== null) {
+        if(this.iteration != null) {
             this.nodeType = "Loop";
-        } else if(this.link !== null) {
+        } else if(this.link != null) {
             this.nodeType = "Function";
-            this.linkPosition = this.outLinks[this.outLinks.length - 1].range.getStartPosition();
-            this.outLinkPosition = this.link.range.getStartPosition();
-        } else if(this.outIndex !== null) {
+        } else if(this.outIndex != null) {
             this.nodeType = "Throw";
         }
 
-        //Are set after all Nodes are created
+        this.linkPosition = null;
+        this.outLinkPosition = null;
         this.outFunctionIndex = null;
-        this.outLoopIterations = [];
+        this.outLoopiterations = [];
 
         //TODO Throw exception if out set but outlink isnt vice versa
         //TODO Throw exception if anything isnt set that should be set
     }
-
 }
+export default TraceNode;
 class SourceRange
 {
     constructor(range, file){

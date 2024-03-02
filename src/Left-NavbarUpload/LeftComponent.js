@@ -97,7 +97,9 @@ function LeftComponent({onFileClick, reset, passOnUploadedFiles}) {
   };
 
   useEffect(() => {
-    passOnUploadedFiles(uploadedFiles);
+    //if(uploadedFiles.length > 0) {
+      passOnUploadedFiles(uploadedFiles);
+    //}
   }, [uploadedFiles]);
 
   return (

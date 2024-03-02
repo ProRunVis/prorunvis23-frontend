@@ -57,7 +57,7 @@ function RightComponent({fileInEditor, setFile, isActiveDisplayed, jsonManager})
         console.error("Error loading the Java file:", error);
       }
     }
-    else{
+    /*else{
       try {
         const response = await fetch("./Default.java");
         const text = await response.text();
@@ -65,7 +65,7 @@ function RightComponent({fileInEditor, setFile, isActiveDisplayed, jsonManager})
       } catch (error) {
         console.error("Error loading the Java file:", error);
       }
-    }
+    }*/
   };
 
   function highlightGreen(range)
@@ -86,17 +86,16 @@ function RightComponent({fileInEditor, setFile, isActiveDisplayed, jsonManager})
     if(editor) {
       editor.onMouseDown(e => {
         const position = e.target.position;
-        if(jumps.length != 0) {
+        if(jumps.length !== 0) {
           for (let i = 0; i < jumps.length; i++) {
 
             //setnewfile auf outlink file
             /*
             jumpto outlinkindex node
             */
-            console.log(position);
-            if (new monaco.Range(jumps[i].link.begin.line, jumps[i].link.begin.column, jumps[i].link.end.line, jumps[i].link.end.column + 1).containsPosition(position)) {
+            if (jumps[i].link.range.containsPosition(position)) {
               setFile(jumps[i].link.file);
-              jumpTo(new monaco.Position(jumps[i].outLinks[jumps[i].outLinks.length-1].begin.line, jumps[i].outLinks[jumps[i].outLinks.length-1].begin.column));
+              jumpTo(jumps[i].outLinkPosition);
             }
           }
         }
@@ -122,7 +121,7 @@ function RightComponent({fileInEditor, setFile, isActiveDisplayed, jsonManager})
   //If active function or file displayed in editor changes render highlights depending on if active file is also displayed in editor
   useEffect(() => {
     console.log("Editor changed, decorations rendered.");
-    let rangesToHighlight;
+    let rangesToHighlight = [];
     if(jsonManager)
       rangesToHighlight = jsonManager.updateActiveRangesFunction(selectedFunction, selectedIterations);
     if(editor && isActiveDisplayed()) {
@@ -137,7 +136,7 @@ function RightComponent({fileInEditor, setFile, isActiveDisplayed, jsonManager})
 
   //if active function changes jump set editor to file that contains said function
   useEffect(() => {
-    if(jsonManager) {
+    if(jsonManager !== null) {
       console.log("Active function changed, jump to it.");
       setFile(jsonManager.nodes[selectedFunction].link.file);
       setJumps(jsonManager.updateJumpsFunction(selectedFunction, selectedIterations));
@@ -148,7 +147,6 @@ function RightComponent({fileInEditor, setFile, isActiveDisplayed, jsonManager})
   useEffect(() => {
     if(jsonManager) {
       console.log("JsonManager(loaded project) changed, set main as active function.");
-      console.log(jsonManager.nodes[jsonManager.getMain()]);
       setSelectedFunction(jsonManager.getMain());
       setFile(jsonManager.nodes[jsonManager.getMain()].link.file);
     }
