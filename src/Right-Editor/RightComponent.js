@@ -86,19 +86,16 @@ function RightComponent({fileInEditor, setFile, isActiveDisplayed, jsonManager})
     if(editor) {
       editor.onMouseDown(e => {
         const position = e.target.position;
-        if(jumps.length !== 0) {
-          for (let i = 0; i < jumps.length; i++) {
-
+        jumps.forEach((jump) => {
+          if (jump.containsPosition(position)) {
+            setFile(jump.link.file);
+            jumpTo(jump.outLinkPosition);
+          }
+        });
             //setnewfile auf outlink file
             /*
             jumpto outlinkindex node
             */
-            if (jumps[i].link.range.containsPosition(position)) {
-              setFile(jumps[i].link.file);
-              jumpTo(jumps[i].outLinkPosition);
-            }
-          }
-        }
       });
     }
   }
@@ -125,11 +122,9 @@ function RightComponent({fileInEditor, setFile, isActiveDisplayed, jsonManager})
     if(jsonManager)
       rangesToHighlight = jsonManager.updateActiveRangesFunction(selectedFunction, selectedIterations);
     if(editor && isActiveDisplayed()) {
-      if (rangesToHighlight.length !== 0) {
-        for (let i = 0; i < rangesToHighlight.length; i++) {
-          highlightGreen(rangesToHighlight[i]);
-        }
-      }
+      rangesToHighlight.forEach((rangesToHighlight) => {
+        highlightGreen(rangesToHighlight);
+      });
     }
     handleJumps();
     }, [editor]);

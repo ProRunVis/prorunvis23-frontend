@@ -4,14 +4,16 @@ class TraceNode
 {
     constructor(node) {
         this.ranges = [];
-        if(node.ranges !== undefined && node.ranges.length > 0)
-            for(let i = 0; i < node.ranges.length; i++)
-                this.ranges.push(new monaco.Range(node.ranges[i].begin.line, node.ranges[i].begin.column, node.ranges[i].end.line, node.ranges[i].end.column));
+        if(node.ranges !== undefined)
+            node.ranges.forEach((range) => {
+                this.ranges.push(new monaco.Range(range.begin.line, node.range.begin.column, node.range.end.line, node.range.end.column));
+            });
 
         this.childrenIndices = [];
-        if(node.childrenIndices !== undefined && node.childrenIndices.length > 0)
-            for(let i = 0; i < node.childrenIndices.length; i++)
-                this.childrenIndices.push(node.childrenIndices[i]);
+        if(node.childrenIndices !== undefined)
+            node.childrenIndices.forEach((childIndex) => {
+                this.childrenIndices.push(childIndex);
+            });
 
         this.parentIndex = null;
         if(node.parentIndex !== undefined)
@@ -22,9 +24,10 @@ class TraceNode
             this.link = new SourceRange(new monaco.Range(node.link.begin.line, node.link.begin.column, node.link.end.line, node.link.end.column), node.link.file);
 
         this.outLinks = [];
-        if(node.outLinks !== undefined && node.outLinks.length > 0)
-            for (let i = 0; i < node.outLinks.length; i++)
-                this.outLinks.push(new SourceRange(new monaco.Range(node.outLinks[i].begin.line, node.outLinks[i].begin.column, node.outLinks[i].end.line, node.outLinks[i].end.column), node.outLinks[i].file));
+        if(node.outLinks !== undefined)
+            node.outLinks.forEach((nodeOutLink) => {
+                this.outLinks.push(new SourceRange(new monaco.Range(nodeOutLink.begin.line, nodeOutLink.begin.column, nodeOutLink.end.line, nodeOutLink.end.column), nodeOutLink.file));
+            });
 
         this.outIndex = null;
         if(node.outIndex !== undefined && node.outIndex !== 0)
@@ -35,9 +38,8 @@ class TraceNode
             this.iteration = node.iteration;
 
         this.traceId = null;
-        if(node.traceId !== undefined){
+        if(node.traceId !== undefined)
             this.traceId = node.traceId;
-        }
 
         this.nodeType = "Other";
         if(this.iteration != null) {

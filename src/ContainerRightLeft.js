@@ -10,12 +10,12 @@ function ContainerRightLeft(){
     const [uploadedFiles, setUploadedFiles] = useState([]);
 
     function jump(path){
-        for(let i=0;i<uploadedFiles.length ;i++){
-            if(path === uploadedFiles[i].webkitRelativePath){
-                setDisplayedFile(uploadedFiles[i]);
-                setActiveFile(uploadedFiles[i]);
+        uploadedFiles.forEach((uploadedFile) => {
+            if(path === uploadedFile.webkitRelativePath){
+                setDisplayedFile(uploadedFile);
+                setActiveFile(uploadedFile);
             }
-        }
+        });
     }
 
     function setDisplayedToActive(){
