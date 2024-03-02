@@ -8,7 +8,8 @@ class JsonManager {
                 this.nodes.push(new TraceNode(jsonData));
             });
 
-            this.nodes.forEach((node) => {
+            for(let i = 2; i < this.nodes.length; i++){
+                let node = this.nodes[i];
                 if(node.nodeType === "Throw")
                     node.outLinkPosition = this.nodes[node.outIndex].ranges[0].getStartPosition();
                 if(node.nodeType === "Function") {
@@ -27,7 +28,7 @@ class JsonManager {
                         parent = this.nodes[parent.parentIndex];
                     }
                 }
-            });
+            }
     }
     getMain(){
         return 1;
