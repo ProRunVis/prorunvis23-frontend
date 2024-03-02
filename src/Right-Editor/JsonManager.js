@@ -7,7 +7,6 @@ class JsonManager {
             jsonData.forEach((jsonData) => {
                 this.nodes.push(new TraceNode(jsonData));
             });
-
             for(let i = 2; i < this.nodes.length; i++){
                 let node = this.nodes[i];
                 if(node.nodeType === "Throw")
@@ -18,15 +17,16 @@ class JsonManager {
                 }
 
                 if(node.nodeType === "Function" || node.nodeType === "Throw") {
-                    let parent = this.nodes[node.parentIndex];
-                    while(parent.nodeType !== "Function") {
-                        if(parent.nodeType === "Loop") {
-                            node.outLoopiterations.unshift[parent.iteration];
-                            if(parent.iteration !== 1)
-                                parent = this.nodes[parent.parentIndex];
+                    let parentIndex = node.parentIndex;
+                    while(this.nodes[parentIndex].nodeType !== "Function") {
+                        if(this.nodes[parentIndex].nodeType === "Loop") {
+                            node.outLoopiterations.unshift[this.nodes[parentIndex].iteration];
+                            if(this.nodes[parentIndex].iteration !== 1)
+                                parentIndex = this.nodes[parentIndex].parentIndex;
                         }
-                        parent = this.nodes[parent.parentIndex];
+                        parentIndex = this.nodes[parentIndex].parentIndex
                     }
+                    this.nodes[i].outFunctionIndex = parentIndex;
                 }
             }
     }
@@ -38,10 +38,10 @@ class JsonManager {
     }
     updateJumpsFunction(functionIndex, selectedIterations){
         let jumps = [];
+        jumps.push(functionIndex);
         if(selectedIterations.length === 0) {
-            let childJumps = [];
             this.nodes[functionIndex].childrenIndices.forEach((childIndex) => {
-                jumps.concat(this.getJumps(childIndex));
+                jumps = jumps.concat(this.getJumps(childIndex));
             });
         }
         return jumps;
@@ -49,9 +49,9 @@ class JsonManager {
     getJumps(nodeIndex) {
         let jumps = [];
         if(this.nodes[nodeIndex].nodeType === "Function" || this.nodes[nodeIndex].nodeType === "Throw")
-            jumps.push(this.nodes[nodeIndex]);
+            jumps.push(nodeIndex);
         this.nodes[nodeIndex].childrenIndices.forEach((childIndex) => {
-            jumps.concat(this.getJumps(childIndex));
+            jumps = jumps.concat(this.getJumps(childIndex));
         });
         return jumps;
     }
@@ -62,7 +62,7 @@ class JsonManager {
                 ranges.push(range);
             });
             this.nodes[functionIndex].childrenIndices.forEach((childIndex) => {
-                ranges.concat(this.getRanges(childIndex));
+                ranges = ranges.concat(this.getRanges(childIndex));
             });
             return ranges;
         }
@@ -77,7 +77,7 @@ class JsonManager {
                 ranges.push(range);
             });
             this.nodes[nodeIndex].childrenIndices.forEach((childIndex) => {
-                ranges.concat(this.getRanges(childIndex));
+                ranges = ranges.concat(this.getRanges(childIndex));
             });
         }
         return ranges;

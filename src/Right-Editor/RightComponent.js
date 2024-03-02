@@ -82,20 +82,42 @@ function RightComponent({fileInEditor, setFile, isActiveDisplayed, jsonManager})
         }
       ]);
   }
+
+  function underline(range)
+  {
+    console.log("underline:" + range);
+    editor.createDecorationsCollection([
+      {
+        options: {className: "underline"},
+        range: {
+          startLineNumber: range.startLineNumber,
+          startColumn: range.startColumn,
+          endLineNumber: range.endLineNumber,
+          endColumn: range.endColumn
+        }
+      }
+    ]);
+  }
   function handleJumps() {
     if(editor) {
       editor.onMouseDown(e => {
         const position = e.target.position;
-        jumps.forEach((jump) => {
-          if (jump.containsPosition(position)) {
-            setFile(jump.link.file);
-            jumpTo(jump.outLinkPosition);
+        jumps.forEach((jumpIndex) => {
+          let jump = jsonManager.nodes[jumpIndex];
+          for(let i = 0; i < jump.outLinks.length; i ++){
+            if (jump.outLinks[i].range.containsPosition(position)) {
+              //jumpTo(jump.outLinkPosition[i]);
+              setSelectedFunction(jump.outFunctionIndex);
+            }
+          }
+          if(jump === selectedFunction){
+            return;
+          }
+          if (jump.link.range.containsPosition(position)) {
+            //jumpTo(jump.linkPosition);
+            setSelectedFunction(jumpIndex);
           }
         });
-            //setnewfile auf outlink file
-            /*
-            jumpto outlinkindex node
-            */
       });
     }
   }
@@ -122,8 +144,19 @@ function RightComponent({fileInEditor, setFile, isActiveDisplayed, jsonManager})
     if(jsonManager)
       rangesToHighlight = jsonManager.updateActiveRangesFunction(selectedFunction, selectedIterations);
     if(editor && isActiveDisplayed()) {
-      rangesToHighlight.forEach((rangesToHighlight) => {
-        highlightGreen(rangesToHighlight);
+      rangesToHighlight.forEach((rangeToHighlight) => {
+        highlightGreen(rangeToHighlight);
+      });
+      jumps.forEach((jump) => {
+        if(jsonManager.nodes[jump].nodeType !== "Function" || jump === selectedFunction) {
+          jsonManager.nodes[jump].outLinks.forEach((outLink) => {
+            underline(outLink.range);
+          });
+        }
+        if(jump === selectedFunction){
+          return;
+        }
+        underline(jsonManager.nodes[jump].link.range);
       });
     }
     handleJumps();
