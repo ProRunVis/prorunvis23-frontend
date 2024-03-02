@@ -2,9 +2,26 @@ class JsonManager {
     nodes = [];
     constructor(jsonString) {
         let jsonData = JSON.parse(jsonString);
-
-        for (let i = 0; i < jsonData.length; i++) {
-            this.nodes.push(jsonData[i]);
+        if(jsonData.length > 0) {
+            for (let i = 0; i < jsonData.length; i++) {
+                this.nodes.push(new TraceNode(jsonData[i]));
+            }
+            for (let i = 0; i < this.nodes.length; i++) {
+                if(this.nodes.nodeType === "Throw")
+                    this.nodes[i].outLinkPosition = this.nodes[this.nodes[i].outIndex].ranges[0].getStartPosition();
+                if(this.nodes.nodeType === "Function" || this.nodes.nodeType === "Throw") {
+                    let parent = this.nodes[this.nodes[i].parentIndex];
+                    while(parent.nodeType !== "Function") {
+                        if(parent.nodeType === "Loop") {
+                            this.nodes[i].outLoopIterations.unshift[parent.iterations];
+                            if(parent.iterations !== 1) {
+                                parent = this.nodes[parent.parentIndex];
+                            }
+                        }
+                        parent = this.nodes[parent.parentIndex];
+                    }
+                }
+            }
         }
     }
     getMain(){
@@ -18,7 +35,6 @@ class JsonManager {
         if(selectedIterations.length === 0) {
             for (let i = 0; i < this.nodes.length; i++) {
                 if(( this.nodes[i].link !== undefined || this.nodes[i].outlink !== undefined) && this.nodes[i].iteration === undefined ){
-                    console.log("jump:" + this.nodes[i].link.begin.line + this.nodes[i].link.begin.column);
                     jumps.push(this.nodes[i]);
                 }
             }

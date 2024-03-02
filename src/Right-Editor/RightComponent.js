@@ -40,6 +40,8 @@ function RightComponent({fileInEditor, setFile, isActiveDisplayed, jsonManager})
   // State for the content of the Java file to be displayed in the editor.
   const [javaFileContent, setJavaFileContent] = useState("");
 
+  let isJump = false;
+
   // Function to close the popup and clear the popup message.
   const closePopup = () => {
     popupManager.closePopup();
