@@ -1,18 +1,23 @@
 /**
  * TracNode class that stores the information of a traced node from tha backend.
- * ranges:
- * childrenIndices:
- * parentIndex:
- * link:
- * outLinks:
- * outIndex:
- * iteration:
- * traceId:
- * nodeType:
- * linkPosition:
- * outLinkPosition:
- * outFunctionIndex:
- * outLoopIterations:
+ * ranges: Array of all executed {@link monaco.Range}s contained in this node.
+ * childrenIndices: Array of all children indices associated with this node.
+ * parentIndex: Index of the parent of this node. Null for root node.
+ *      For Loop iterations always set to node of first iteration.
+ * link: {@link SourceRange} that contains {@link monaco.Range} of link that can be clicked
+ *      and relative filepath it leads to. Only set for Function and Loop nodes, otherwise null.
+ * outLinks: Array of maximum two {@link SourceRange}s. For Functions function name and if there taken return statement.
+ *      For Throws one {@link SourceRange} with range of throw statement.
+ * outIndex: Index of parent node the outLink leads back to.
+ * iteration: Number of the iteration. Set for Loops otherwise null.
+ * nodeType: String set to "Loop", "Function", "Throw" or "Other"
+ *  The following attributes are initially set to null,
+ *  but after creation of all TraceNodes assigned in {@link JsonManager},
+ *  because they partly depend on other TraceNodes.
+ * linkPosition: {@link monaco.Position} the link leads to.
+ * outLinkPosition: {@link monaco.Position} both outLinks leads to.
+ * outFunctionIndex: Index of the function that contains the node that both outLinks lead to.
+ * outLoopIterations: Iterations that are set in the outFunction were the node both outLinks lead to got executed.
  */
 class TraceNode
 {
@@ -66,10 +71,6 @@ class TraceNode
         this.iteration = null;
         if(node.iteration !== undefined)
             this.iteration = node.iteration;
-
-        this.traceId = null;
-        if(node.traceId !== undefined)
-            this.traceId = node.traceId;
 
         this.nodeType = "Other";
         if(this.iteration != null) {
