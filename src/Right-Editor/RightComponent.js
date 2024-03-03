@@ -1,6 +1,4 @@
 import React, { useEffect, useRef, useState, useMemo } from "react";
-import PopupManager from "./PopupManager";
-import EditorClickHandler from "./EditorClickHandler";
 import EditorInitializer from "./EditorInitializer";
 import "../Css/RightComponent.css"
 import PropTypes from "prop-types";
@@ -28,25 +26,8 @@ function RightComponent({fileInEditor, setFile, isActiveDisplayed, jsonManager})
   // State for the editor instance. 'setEditor' is used to update the editor state.
   const [editor, setEditor] = useState(null);
 
-  // State for the message to be displayed in the popup. 'setPopupMessage' updates this message.
-  //const [popupMessage, setPopupMessage] = useState("");
-
-  // Reference to the dialog element (popup) for performing DOM operations.
-  //const dialogRef = useRef(null);
-
-  // Creates an instance of PopupManager and uses 'useMemo' for performance optimization.
-  // The instance is recreated only if 'dialogRef', 'setPopupMessage', or 'popupDistance' changes.
-  /*const popupManager = useMemo(
-      () => new PopupManager(dialogRef, setPopupMessage, 10),
-      [dialogRef, setPopupMessage]
-  );*/
   // State for the content of the Java file to be displayed in the editor.
   const [javaFileContent, setJavaFileContent] = useState("");
-
-  // Function to close the popup and clear the popup message.
-  /*const closePopup = () => {
-    popupManager.closePopup();
-  };*/
 
   // Asynchronous function to load the content of the Java test file.
   const loadJavaFile = async () => {
@@ -58,19 +39,11 @@ function RightComponent({fileInEditor, setFile, isActiveDisplayed, jsonManager})
         console.error("Error loading the Java file:", error);
       }
     }
-    /*else{
-      try {
-        const response = await fetch("./Default.java");
-        const text = await response.text();
-        setJavaFileContent(text);
-      } catch (error) {
-        console.error("Error loading the Java file:", error);
-      }
-    }*/
   };
 
   function highlightGreen(range)
   {
+    console.log("highlight" + range);
       editor.createDecorationsCollection([
         {
           options: {className: "green"},
@@ -98,6 +71,7 @@ function RightComponent({fileInEditor, setFile, isActiveDisplayed, jsonManager})
       }
     ]);
   }
+
   function handleJumps() {
     if(editor) {
       editor.onMouseDown(e => {
@@ -205,11 +179,9 @@ function RightComponent({fileInEditor, setFile, isActiveDisplayed, jsonManager})
       );
       if (newEditor) {
         setEditor(newEditor);
-        // Initialize the EditorClickHandler here, after the editor has been created.
-        //const clickHandler = new EditorClickHandler(newEditor, popupManager);
       }
     }
-  }, [javaFileContent/*, popupManager*/]);
+  }, [javaFileContent]);
 
   // Render function
   return (
@@ -218,18 +190,6 @@ function RightComponent({fileInEditor, setFile, isActiveDisplayed, jsonManager})
       </main>
   );
 }
-/*For popup manager currently not in use
- <div
-    className="popup"
-    ref={dialogRef}
-    style={{ display: 'none' }} // Hidden by default
->
-  {popupMessage}
-  <br />
-  <button onClick={closePopup} className="popup-close-button">
-    Close
-  </button>
-</div> */
 
 RightComponent.propTypes = {
   fileInEditor: PropTypes.instanceOf(File),
