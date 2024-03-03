@@ -1,10 +1,9 @@
 import React, { useEffect, useRef } from 'react';
-
 import Navbar from "./Left-NavbarUpload/Navbar";
 import ContainerRightLeft from "./ContainerRightLeft";
 
-
 // Observes Left&RightContainer for correct resizing. Prohibits sending too many requests to DOM, which causes a Runtime Error
+//TODO Causes Error when you resize the browser too fast (strg - || +)
 const debounce = (func, wait) => {
   let timeout;
   return function executedFunction(...args) {
@@ -37,7 +36,7 @@ const debounce = (func, wait) => {
 function App() {
   const contentRef = useRef(null);
 
-  /*useEffect(() => {
+  useEffect(() => {
 
     const handleResize = debounce(() => {
       console.log('Containergröße hat sich geändert');
@@ -50,7 +49,7 @@ function App() {
     }
 
     return () => observer.disconnect(); // Cleanup-Function and disconnects
-  }, []);*/
+  }, []);
 
   return (
       <div className="App">
