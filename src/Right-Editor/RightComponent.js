@@ -19,6 +19,9 @@ function RightComponent({fileInEditor, setFile, isActiveDisplayed, jsonManager})
   const [selectedIterations, setSelectedIterations] = useState([]);
   const [jumps, setJumps] = useState([]);
 
+  const [jumpToPosition, setJumpToPosition] = useState(false);
+  const [jumpPosition, setJumpPosition] = useState();
+
   // Reference to the editor's container for performing DOM operations.
   const editorContainerRef = useRef(null);
 
@@ -106,16 +109,20 @@ function RightComponent({fileInEditor, setFile, isActiveDisplayed, jsonManager})
           let jump = jsonManager.nodes[jumpIndex];
           for(let i = 0; i < jump.outLinks.length; i ++){
             if (jump.outLinks[i].range.containsPosition(position)) {
-              //jumpTo(jump.outLinkPosition[i]);
+              setJumpPosition(jump.outLinkPosition[i]);
+              setJumpToPosition(true);
               setSelectedFunction(jump.outFunctionIndex);
+              console.log("jump");
             }
           }
           if(jump === selectedFunction){
             return;
           }
           if (jump.link.range.containsPosition(position)) {
-            //jumpTo(jump.linkPosition);
+            setJumpPosition(jump.linkPosition);
+            setJumpToPosition(true);
             setSelectedFunction(jumpIndex);
+            console.log("jump");
           }
         });
       });
@@ -123,6 +130,7 @@ function RightComponent({fileInEditor, setFile, isActiveDisplayed, jsonManager})
   }
 
   function jumpTo(position) {
+    console.log("Jump:" + position);
     editor.setPosition(position);
     editor.revealLineNearTop(position.lineNumber);
   }
@@ -198,6 +206,10 @@ function RightComponent({fileInEditor, setFile, isActiveDisplayed, jsonManager})
         // Initialize the EditorClickHandler here, after the editor has been created.
         const clickHandler = new EditorClickHandler(newEditor, popupManager);
       }
+    }
+    if(jumpToPosition) {
+      setJumpToPosition(false);
+      jumpTo(jumpPosition);
     }
   }, [javaFileContent, popupManager]);
 

@@ -6,7 +6,7 @@ class TraceNode
         this.ranges = [];
         if(node.ranges !== undefined)
             node.ranges.forEach((range) => {
-                this.ranges.push(new monaco.Range(range.begin.line, range.begin.column, range.end.line, range.end.column));
+                this.ranges.push(new monaco.Range(range.begin.line, range.begin.column, range.end.line, range.end.column + 1));
             });
 
         this.childrenIndices = [];
@@ -21,12 +21,12 @@ class TraceNode
 
         this.link = null;
         if(node.link !== undefined)
-            this.link = new SourceRange(new monaco.Range(node.link.begin.line, node.link.begin.column, node.link.end.line, node.link.end.column), node.link.file);
+            this.link = new SourceRange(new monaco.Range(node.link.begin.line, node.link.begin.column, node.link.end.line, node.link.end.column + 1), node.link.file);
 
         this.outLinks = [];
         if(node.outLinks !== undefined)
             node.outLinks.forEach((nodeOutLink) => {
-                this.outLinks.push(new SourceRange(new monaco.Range(nodeOutLink.begin.line, nodeOutLink.begin.column, nodeOutLink.end.line, nodeOutLink.end.column), nodeOutLink.file));
+                this.outLinks.push(new SourceRange(new monaco.Range(nodeOutLink.begin.line, nodeOutLink.begin.column, nodeOutLink.end.line, nodeOutLink.end.column + 1), nodeOutLink.file));
             });
 
         this.outIndex = null;

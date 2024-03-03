@@ -18,7 +18,7 @@ class PopupManager {
    * @param popupDistance The distance from the mouse click position to the popup's position.
    */
   constructor(dialogRef, setPopupMessage, popupDistance) {
-    console.log("Ich bin ein DialogRef : "+dialogRef)
+    //console.log("Ich bin ein DialogRef : "+dialogRef)
     this.dialogRef = dialogRef;
     this.setPopupMessage = setPopupMessage;
     this.popupDistance = popupDistance;
