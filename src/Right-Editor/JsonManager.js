@@ -48,22 +48,22 @@ class JsonManager {
     }
 
     /* For future loop tracking implementation:
-    updateActiveLoopsFunction(selectedFunction, selectedIterations){
+    updateActiveLoopsFunction(activeFunction, activeIterations){
         //if [] assume all iteration are zero
     }*/
 
     /**
-     * Determines all function and throw nodes contained in the currently selected function and calculates whether they
-     * are currently active or not by looking at the selected iterations.
+     * Determines all function and throw nodes contained in the currently active function and calculates whether they
+     * are currently active or not by looking at the active iterations.
      * @param functionIndex Index of the currently active function
-     * @param selectedIterations selected loop iterations (TODO)
+     * @param activeIterations active loop iterations (TODO)
      * @returns {*[]} An array with all the indices of the Function or Throw nodes
-     * contained in the currently selected function.
+     * contained in the currently active function.
      */
-    updateJumpsFunction(functionIndex, selectedIterations){
+    updateJumpsFunction(functionIndex, activeIterations){
         let jumps = [];
         jumps.push(functionIndex);
-        if(selectedIterations.length === 0) {
+        if(activeIterations.length === 0) {
             this.nodes[functionIndex].childrenIndices.forEach((childIndex) => {
                 jumps = jumps.concat(this.getJumps(childIndex));
             });
@@ -88,14 +88,14 @@ class JsonManager {
     }
 
     /**
-     * Determines all ranges in the currently selected function and calculates whether they
-     * are currently active or not by looking at the selected iterations.
+     * Determines all ranges in the currently active function and calculates whether they
+     * are currently active or not by looking at the active iterations.
      * @param functionIndex Index of the currently active function
-     * @param selectedIterations selected loop iterations (TODO)
-     * @returns {*[]} An array with all the active ranges contained in the currently selected function.
+     * @param activeIterations active loop iterations (TODO)
+     * @returns {*[]} An array with all the active ranges contained in the currently active function.
      */
-    updateActiveRangesFunction(functionIndex, selectedIterations) {
-        if(selectedIterations.length === 0) {
+    updateActiveRangesFunction(functionIndex, activeIterations) {
+        if(activeIterations.length === 0) {
             let ranges = [];
             this.nodes[functionIndex].ranges.forEach((range) => {
                 ranges.push(range);

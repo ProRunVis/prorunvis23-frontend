@@ -21,14 +21,14 @@ import JsonManager from "./JsonManager";
 function RightComponent({displayedFile, setActiveAndDisplayed, isActiveDisplayed, jsonManager}){
   // Constants --------------------------------------------------------------------------------------------------------
 
-  // State for the index of the selected function in the editor
-  const [selectedFunctionIndex, setSelectedFunctionIndex] = useState(0);
+  // State for the index of the active function in the editor
+  const [activeFunctionIndex, setActiveFunctionIndex] = useState(0);
 
-  // State for the indices of the selected iterations in selected function that is displayed in the editor
-  const [selectedIterations, setSelectedIterations] = useState([]);
+  // State for the indices of the active iterations in active function that is displayed in the editor
+  const [activeIterations, setActiveIterations] = useState([]);
 
   // State for the indices of the Nodes(other functions and throws)
-  // of the selected function that can be used to jump to another node
+  // of the active function that can be used to jump to another node
   const [jumpNodesIndices, setJumpNodesIndices] = useState([]);
 
   // State to determine
@@ -117,18 +117,18 @@ function RightComponent({displayedFile, setActiveAndDisplayed, isActiveDisplayed
             if (outLink.range.containsPosition(position)) {
               setJumpPosition(jump.outLinkPosition);
               setDoPositionJump(true);
-              setSelectedFunctionIndex(jump.outFunctionIndex);
+              setActiveFunctionIndex(jump.outFunctionIndex);
             }
           });
           // We do not want to check for the link of the current function since it might be in another file
-          // and is not part of the currently selected function
-          if(jump === selectedFunctionIndex){
+          // and is not part of the currently active function
+          if(jump === activeFunctionIndex){
             return;
           }
           if (jump.link.range.containsPosition(position)) {
             setJumpPosition(jump.linkPosition);
             setDoPositionJump(true);
-            setSelectedFunctionIndex(jumpIndex);
+            setActiveFunctionIndex(jumpIndex);
           }
         });
       });
@@ -140,6 +140,7 @@ function RightComponent({displayedFile, setActiveAndDisplayed, isActiveDisplayed
    * @param position monaco.Position to jump to.
    */
   function jumpToPosition(position) {
+    console.log(position);
     editor.revealLineNearTop(position.lineNumber);
     editor.setPosition(position);
   }
@@ -169,26 +170,35 @@ function RightComponent({displayedFile, setActiveAndDisplayed, isActiveDisplayed
       console.log("Editor changed.");
       let rangesToHighlight = [];
       if (jsonManager)
-        rangesToHighlight = jsonManager.updateActiveRangesFunction(selectedFunctionIndex, selectedIterations);
+        rangesToHighlight = jsonManager.updateActiveRangesFunction(activeFunctionIndex, activeIterations);
       if (isActiveDisplayed()) {
+        setDoPositionJump(true);
         rangesToHighlight.forEach((rangeToHighlight) => {
           highlightGreen(rangeToHighlight);
         });
         jumpNodesIndices.forEach((jump) => {
-          if (jsonManager.nodes[jump].nodeType !== "Function" || jump === selectedFunctionIndex) {
+          if (jsonManager.nodes[jump].nodeType !== "Function" || jump === activeFunctionIndex) {
             jsonManager.nodes[jump].outLinks.forEach((outLink) => {
               underline(outLink.range);
             });
           }
           // We do not want to mark for the link of the current function since it might be in another file
-          // and is not part of the currently selected function
-          if (jump === selectedFunctionIndex) {
+          // and is not part of the currently active function
+          if (jump === activeFunctionIndex) {
             return;
           }
           underline(jsonManager.nodes[jump].link.range);
         });
       }
       handleJumps();
+      if(!doPositionJump && isActiveDisplayed()){
+        console.log("now");
+        if(activeFunctionIndex !== 1)
+          jumpToPosition(jsonManager.nodes[activeFunctionIndex].outLinks[jsonManager.nodes[activeFunctionIndex].outLinks.length-1].range.getStartPosition());
+        else
+          jumpToPosition(jsonManager.nodes[activeFunctionIndex].link.range.getStartPosition());
+        setDoPositionJump(false);
+      }
       if (doPositionJump) {
         setDoPositionJump(false);
         jumpToPosition(jumpPosition);
@@ -203,21 +213,20 @@ function RightComponent({displayedFile, setActiveAndDisplayed, isActiveDisplayed
   useEffect(() => {
     if(jsonManager !== null) {
       console.log("Active function changed.");
-      setActiveAndDisplayed(jsonManager.nodes[selectedFunctionIndex].link.file);
-      setJumpNodesIndices(jsonManager.updateJumpsFunction(selectedFunctionIndex, selectedIterations));
+      setActiveAndDisplayed(jsonManager.nodes[activeFunctionIndex].link.file);
+      setJumpNodesIndices(jsonManager.updateJumpsFunction(activeFunctionIndex, activeIterations));
     }
-  }, [selectedFunctionIndex]);
+  }, [activeFunctionIndex]);
 
   /**
    * This effect is executed when json manager/project changes. It then gets the main function of that project
-   * and sets it as the active function and performs a file jump to the file that contains the new selected function.
+   * and sets it as the active function and performs a file jump to the file that contains the new active function.
    */
   useEffect(() => {
     if(jsonManager) {
       console.log("Loaded project changed.");
-      setSelectedFunctionIndex(jsonManager.getMain());
+      setActiveFunctionIndex(jsonManager.getMain());
       setActiveAndDisplayed(jsonManager.nodes[jsonManager.getMain()].link.file);
-      //TODO jump to position
     }
   }, [jsonManager]);
 

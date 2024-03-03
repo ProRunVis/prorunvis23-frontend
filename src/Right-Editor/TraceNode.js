@@ -6,8 +6,9 @@
  *      For Loop iterations always set to node of first iteration.
  * link: {@link SourceRange} that contains {@link monaco.Range} of link that can be clicked
  *      and relative filepath it leads to. Only set for Function and Loop nodes, otherwise null.
+ *      For main function set range is set to method head and file that contains it.
  * outLinks: Array of maximum two {@link SourceRange}s. For Functions function name and if there taken return statement.
- *      For Throws one {@link SourceRange} with range of throw statement.
+ *      For Throws one {@link SourceRange} with range of throw statement. Null for main function.
  * outIndex: Index of parent node the outLink leads back to.
  * iteration: Number of the iteration. Set for Loops otherwise null.
  * nodeType: String set to "Loop", "Function", "Throw" or "Other"
