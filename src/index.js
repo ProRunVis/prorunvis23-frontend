@@ -21,8 +21,8 @@ if (rootElement) {
     // Creates the Root-Element through 'createRoot' from 'react-dom/client'.
     const root = createRoot(rootElement);
     
-    // Verwendet 'root.render()', um die App-Komponente innerhalb des <React.StrictMode>-Wrappers zu rendern.
-    // <React.StrictMode> wird verwendet, um zusätzliche Prüfungen und Warnungen für die App zu aktivieren.
+    // Uses 'root.render()', to render the app-component inside the <React.StrictMode>-wrapper.
+    // <React.StrictMode> is used to activate additional tests and warnings for the app.
     root.render(
       <React.StrictMode>
         <App />
@@ -30,7 +30,7 @@ if (rootElement) {
     );
 }
 
-// reportWebVitals wird aufgerufen, um Leistungsdaten zu erfassen und zu berichten.
-// Dies kann für die Analyse und Optimierung der Anwendungsleistung genutzt werden.
-// Mehr Informationen dazu finden Sie unter: https://bit.ly/CRA-vitals
-reportWebVitals(console.log);  // Hier wird 'console.log' als Beispiel-Callback-Funktion übergeben.
+// reportWebVitals is called to capture performance data and report it.
+// This can be used for analysing and optimizing the performance.
+// More information about this process can be found here: https://bit.ly/CRA-vitals
+reportWebVitals(console.log);  //'console.log' gets passed on as an example-callback-function.

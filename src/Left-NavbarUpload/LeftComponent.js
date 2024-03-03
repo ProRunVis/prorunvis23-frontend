@@ -9,8 +9,13 @@ import PropTypes from "prop-types";
  * displaying a folder tree of Java files. This component allows users to select a directory,
  * filters out Java files, and displays these files in a structured folder tree view.
  * Users can collapse or expand the left container to show or hide the folder tree.
+ * @param setDisplayedFile Function to change the active file to the one given.
+ * @param setDisplayedToActive Function to reset the view to the currently active Node.
+ * @param passOnUploadedFiles Pass the uploaded files to the parent component.
+ * @returns {Element} The left component containing the upload button and dir bar.
+ * @constructor
  */
-function LeftComponent({onFileClick, reset, passOnUploadedFiles}) {
+function LeftComponent({setDisplayedFile, setDisplayedToActive, passOnUploadedFiles}) {
   // State for the list of files uploaded by the user.
   const [uploadedFiles, setUploadedFiles] = useState([]);
   // State for the structured data used by FolderTree to display the directory and files.
@@ -94,7 +99,7 @@ function LeftComponent({onFileClick, reset, passOnUploadedFiles}) {
     }
         = nodeData;
     if (realPath != null){
-      onFileClick(uploadedFiles[index]);
+      setDisplayedFile(uploadedFiles[index]);
     }
   };
 
@@ -113,7 +118,7 @@ function LeftComponent({onFileClick, reset, passOnUploadedFiles}) {
         <button onClick={toggleLeftContainer}>{isLeftContainerCollapsed ? 'Open' : 'Close directory'}</button>
         {isLeftContainerCollapsed ? null : (
             <div>
-              <button onClick={reset}>{'Jump to active function'} </button>
+              <button onClick={setDisplayedToActive}>{'Jump to active function'} </button>
               <div className="upload-button-container">
                 <form className="text-box" encType="multipart/form-data">
                   <input
@@ -144,8 +149,9 @@ function LeftComponent({onFileClick, reset, passOnUploadedFiles}) {
   );
 }
 LeftComponent.propTypes = {
-  onFileClick: PropTypes.instanceOf(Function),
-  reset: PropTypes.instanceOf(Function),
+  setDisplayedFile: PropTypes.instanceOf(Function),
+  setDisplayedToActive: PropTypes.instanceOf(Function),
   passOnUploadedFiles: PropTypes.instanceOf(Function)
 };
+
 export default LeftComponent;

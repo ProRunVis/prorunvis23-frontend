@@ -1,5 +1,6 @@
 import React from "react";
 import PropTypes from "prop-types";
+
 /**
  * Defines a modal component that displays readme or help information to the user.
  * This functional component renders a modal dialog containing a title and a message
@@ -7,8 +8,6 @@ import PropTypes from "prop-types";
  * also provided, allowing the user to dismiss the modal. This component demonstrates
  * the use of props in React for passing the closeModal function, enabling the modal
  * to be closed from within.
- *
- * @param {Object} props - Component props.
  * @param {Function} props.closeModal - Function to close the modal.
  */
 export default function ReadmeModal({closeModal}) {
