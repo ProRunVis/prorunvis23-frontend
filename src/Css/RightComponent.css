@@ -1,6 +1,4 @@
-
-
-/* Der macht was mit Editor, aber ich weiss nicht was genau */
+/* Editor */
 .content {
   display: flex;
   flex-direction: row;
@@ -11,13 +9,12 @@
 
 .right-container {
     display: flex;
-    flex-direction: column; /* Vertikale Ausrichtung der Kinder */
-    justify-content: flex-start; /* Startet die Ausrichtung am Anfang des Containers */
-    align-items: stretch; /* Streckt die Kinder, um die Breite des Containers zu füllen */
+    flex-direction: column; /* Vertical alignment of children */
+    justify-content: flex-start; /* Alignment is applied from the start of the container */
+    align-items: stretch; /* Stretch the children to fill the container vertically */
     flex: 3;
     flex-basis: 75%;
-   
-    /*min-height: 100vh;*/
+    /* min-height: 100vh; */
     background-color:  black;
     color: white;
     box-sizing: border-box;
@@ -32,25 +29,21 @@
     width: 96%;
     flex-basis: 75%;
     margin-top : 0px;
-    /* Korrigiert von 'right' zu 'flex-start' */
-    
-    /* Passt die Größe dynamisch an */
+    /* Corrects from 'right' to 'flex-start' */
+    /* Adjust the container dynamically */
     box-sizing: border-box;
     min-height: 500px;
-    /* Mindesthöhe */
-    
-    /* Angepasst für eine gleichmäßige Aufteilung */
-    
-    /* Zentriert den Container */
-    
+    /* Minimum height */
+    /* Adjusted for a even distribution */
+    /* Centers the container */
     box-shadow: 0 0 10px black;
     position: relative;
-    /* Für absolut positionierte Kinder */
+    /* Children are placed absolut*/
   }
 
 
 
-  /* Popup, wenn man auf ein Element drückt */
+  /* Popup, if element is clicked */
 .popup {
   position: absolute;
   background-color: white;
@@ -61,10 +54,10 @@
 }
 
 .popup-close-button {
-  /* Fügen Sie hier Ihren Stil für den Schließ-Button hinzu */
+  /* Style for the popup close button */
 }
 
-/*sonstige Feinheiten*/
+/* Other */
 
 .my-loop-decoration {
   background-color: pink;
