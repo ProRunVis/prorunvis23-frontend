@@ -1,24 +1,24 @@
-// Importiert das React-Modul.
+// Imports the React module.
 import React from 'react';
 
-// Importiert das ReactDOM-Modul aus 'react-dom/client', was auf die neueste Version von React hinweist.
+// Imports the ReactDom module from 'react-dom/client'(refers to newest react version).
 import { createRoot } from 'react-dom/client';
 
-// Importiert die CSS-Datei für globale Stilrichtlinien.
+// Imports CSS-File for styling.
 import './Css/index.css';
 
-// Importiert die App-Komponente aus der Datei App.js.
+// Imports the App-component from App.js.
 import App from './App.js';
 
-// Importiert die Funktion reportWebVitals, die für die Leistungsmessung der Webanwendung verwendet wird.
+// Imports the function reportWebVitals for measuring the performance of the web application.
 import reportWebVitals from './Left-NavbarUpload/ReportWebVitals.js';
 
-// Ermittelt das DOM-Element mit der ID 'root', das als Einhängepunkt für die React-Anwendung dient.
+// Determines the DOM-Element with the ID 'root' that is used as an anchor point for the React application.
 const rootElement = document.getElementById('root');
 
-// Überprüft, ob das 'rootElement' existiert, um Fehler beim Erstellen des Root-Elements zu vermeiden.
+// Checks if the 'rootElement' is present to prevent errors.
 if (rootElement) {
-    // Erstellt das Root-Element mithilfe von 'createRoot' aus 'react-dom/client'.
+    // Creates the Root-Element through 'createRoot' from 'react-dom/client'.
     const root = createRoot(rootElement);
     
     // Verwendet 'root.render()', um die App-Komponente innerhalb des <React.StrictMode>-Wrappers zu rendern.
