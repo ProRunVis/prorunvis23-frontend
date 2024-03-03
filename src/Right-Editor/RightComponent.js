@@ -20,7 +20,7 @@ function RightComponent({fileInEditor, setFile, isActiveDisplayed, jsonManager})
   const [jumps, setJumps] = useState([]);
 
   const [jumpToPosition, setJumpToPosition] = useState(false);
-  const [jumpPosition, setJumpPosition] = useState();
+  const [jumpPosition, setJumpPosition] = useState(new monaco.Position(0,0));
 
   // Reference to the editor's container for performing DOM operations.
   const editorContainerRef = useRef(null);
@@ -107,14 +107,14 @@ function RightComponent({fileInEditor, setFile, isActiveDisplayed, jsonManager})
         const position = e.target.position;
         jumps.forEach((jumpIndex) => {
           let jump = jsonManager.nodes[jumpIndex];
-          for(let i = 0; i < jump.outLinks.length; i ++){
-            if (jump.outLinks[i].range.containsPosition(position)) {
-              setJumpPosition(jump.outLinkPosition[i]);
+          jump.outLinks.forEach((outLink) => {
+            if (outLink.range.containsPosition(position)) {
+              setJumpPosition(jump.outLinkPosition);
               setJumpToPosition(true);
               setSelectedFunction(jump.outFunctionIndex);
               console.log("jump");
             }
-          }
+          });
           if(jump === selectedFunction){
             return;
           }
@@ -131,8 +131,8 @@ function RightComponent({fileInEditor, setFile, isActiveDisplayed, jsonManager})
 
   function jumpTo(position) {
     console.log("Jump:" + position);
-    editor.setPosition(position);
     editor.revealLineNearTop(position.lineNumber);
+    editor.setPosition(position);
   }
 
   // -------------------------------------------------------------------------------------------------------------------------
@@ -168,6 +168,10 @@ function RightComponent({fileInEditor, setFile, isActiveDisplayed, jsonManager})
       });
     }
     handleJumps();
+      if(jumpToPosition) {
+        setJumpToPosition(false);
+        jumpTo(jumpPosition);
+      }
     }, [editor]);
 
   //if active function changes jump set editor to file that contains said function
@@ -206,10 +210,6 @@ function RightComponent({fileInEditor, setFile, isActiveDisplayed, jsonManager})
         // Initialize the EditorClickHandler here, after the editor has been created.
         const clickHandler = new EditorClickHandler(newEditor, popupManager);
       }
-    }
-    if(jumpToPosition) {
-      setJumpToPosition(false);
-      jumpTo(jumpPosition);
     }
   }, [javaFileContent, popupManager]);
 
