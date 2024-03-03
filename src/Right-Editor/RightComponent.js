@@ -69,7 +69,6 @@ function RightComponent({displayedFile, setActiveAndDisplayed, isActiveDisplayed
    */
   function highlightGreen(range)
   {
-    console.log("highlight" + range);
       editor.createDecorationsCollection([
         {
           options: {className: "green"},
