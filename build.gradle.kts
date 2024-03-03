@@ -14,7 +14,7 @@ node{
 
 tasks.register<NpmTask>("appNpmInstall"){
     setWorkingDir(file("${project.projectDir}"))
-    setArgs(listOf("install"))
+    setArgs(listOf("install", "react-folder-tree@5.1.1", "--force"))
 }
 tasks.register<NpmTask>("appNpmBuild") {
     setWorkingDir(file("${project.projectDir}"))
