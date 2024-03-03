@@ -84,7 +84,9 @@ function LeftComponent({onFileClick, reset, passOnUploadedFiles}) {
     setIsLeftContainerCollapsed(!isLeftContainerCollapsed);
   };
 
-// custom event handler for node name click
+  /**
+   * Custom event handler for node name click.
+   */
   const onNameClick = ({ nodeData }) => {
     const {
       // internal data
@@ -96,6 +98,9 @@ function LeftComponent({onFileClick, reset, passOnUploadedFiles}) {
     }
   };
 
+  /**
+   * Pass uploaded files to parent component, every time they change
+   */
   useEffect(() => {
     if(uploadedFiles.length > 0) {
       passOnUploadedFiles(uploadedFiles);
@@ -103,7 +108,8 @@ function LeftComponent({onFileClick, reset, passOnUploadedFiles}) {
   }, [uploadedFiles]);
 
   return (
-      <main className={`left-container ${isLeftContainerCollapsed ? 'collapsed' : ''}`} style={{width: isLeftContainerCollapsed ? '50px' : '280px'}}>
+      <main className={`left-container ${isLeftContainerCollapsed ? 'collapsed' : ''}`}
+            style={{width: isLeftContainerCollapsed ? '50px' : '280px'}}>
         <button onClick={toggleLeftContainer}>{isLeftContainerCollapsed ? 'Open' : 'Close directory'}</button>
         {isLeftContainerCollapsed ? null : (
             <div>
@@ -137,7 +143,6 @@ function LeftComponent({onFileClick, reset, passOnUploadedFiles}) {
       </main>
   );
 }
-
 LeftComponent.propTypes = {
   onFileClick: PropTypes.instanceOf(Function),
   reset: PropTypes.instanceOf(Function),
