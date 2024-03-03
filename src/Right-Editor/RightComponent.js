@@ -140,7 +140,6 @@ function RightComponent({displayedFile, setActiveAndDisplayed, isActiveDisplayed
    * @param position monaco.Position to jump to.
    */
   function jumpToPosition(position) {
-    console.log(position);
     editor.revealLineNearTop(position.lineNumber);
     editor.setPosition(position);
   }
@@ -192,7 +191,6 @@ function RightComponent({displayedFile, setActiveAndDisplayed, isActiveDisplayed
       }
       handleJumps();
       if(!doPositionJump && isActiveDisplayed()){
-        console.log("now");
         if(activeFunctionIndex !== 1)
           jumpToPosition(jsonManager.nodes[activeFunctionIndex].outLinks[jsonManager.nodes[activeFunctionIndex].outLinks.length-1].range.getStartPosition());
         else
