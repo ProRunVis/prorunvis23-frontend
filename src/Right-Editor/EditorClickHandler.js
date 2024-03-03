@@ -3,6 +3,8 @@ import '../Css/Decorate.css';
 
 
 /**
+ * CURRENTLY NOT IN USE
+ *
  * Handles mouse clicks within the editor. This class is the first to be invoked
  * in the sequence of handling an editor click event. It initializes the handling
  * mechanism by associating the editor with a popup manager and setting up a popup

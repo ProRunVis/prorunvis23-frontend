@@ -29,26 +29,24 @@ function RightComponent({fileInEditor, setFile, isActiveDisplayed, jsonManager})
   const [editor, setEditor] = useState(null);
 
   // State for the message to be displayed in the popup. 'setPopupMessage' updates this message.
-  const [popupMessage, setPopupMessage] = useState("");
+  //const [popupMessage, setPopupMessage] = useState("");
 
   // Reference to the dialog element (popup) for performing DOM operations.
-  const dialogRef = useRef(null);
+  //const dialogRef = useRef(null);
 
   // Creates an instance of PopupManager and uses 'useMemo' for performance optimization.
   // The instance is recreated only if 'dialogRef', 'setPopupMessage', or 'popupDistance' changes.
-  const popupManager = useMemo(
+  /*const popupManager = useMemo(
       () => new PopupManager(dialogRef, setPopupMessage, 10),
       [dialogRef, setPopupMessage]
-  );
+  );*/
   // State for the content of the Java file to be displayed in the editor.
   const [javaFileContent, setJavaFileContent] = useState("");
 
-  let isJump = false;
-
   // Function to close the popup and clear the popup message.
-  const closePopup = () => {
+  /*const closePopup = () => {
     popupManager.closePopup();
-  };
+  };*/
 
   // Asynchronous function to load the content of the Java test file.
   const loadJavaFile = async () => {
@@ -88,7 +86,6 @@ function RightComponent({fileInEditor, setFile, isActiveDisplayed, jsonManager})
 
   function underline(range)
   {
-    console.log("underline:" + range);
     editor.createDecorationsCollection([
       {
         options: {className: "underline"},
@@ -112,7 +109,6 @@ function RightComponent({fileInEditor, setFile, isActiveDisplayed, jsonManager})
               setJumpPosition(jump.outLinkPosition);
               setJumpToPosition(true);
               setSelectedFunction(jump.outFunctionIndex);
-              console.log("jump");
             }
           });
           if(jump === selectedFunction){
@@ -122,7 +118,6 @@ function RightComponent({fileInEditor, setFile, isActiveDisplayed, jsonManager})
             setJumpPosition(jump.linkPosition);
             setJumpToPosition(true);
             setSelectedFunction(jumpIndex);
-            console.log("jump");
           }
         });
       });
@@ -130,7 +125,6 @@ function RightComponent({fileInEditor, setFile, isActiveDisplayed, jsonManager})
   }
 
   function jumpTo(position) {
-    console.log("Jump:" + position);
     editor.revealLineNearTop(position.lineNumber);
     editor.setPosition(position);
   }
@@ -141,43 +135,47 @@ function RightComponent({fileInEditor, setFile, isActiveDisplayed, jsonManager})
   // This effect is executed when dialogRef, setPopupMessage, or popupDistance changes.
   // This is called first when a Java file is loaded.
   useEffect(() => {
-    console.log("File in editor changed, content rendered.");
-    loadJavaFile();
+    if(fileInEditor) {
+      console.log("File changed.");
+      loadJavaFile();
+    }
   }, [fileInEditor]);
 
   //If active function or file displayed in editor changes render highlights depending on if active file is also displayed in editor
   useEffect(() => {
-    console.log("Editor changed, decorations rendered.");
-    let rangesToHighlight = [];
-    if(jsonManager)
-      rangesToHighlight = jsonManager.updateActiveRangesFunction(selectedFunction, selectedIterations);
-    if(editor && isActiveDisplayed()) {
-      rangesToHighlight.forEach((rangeToHighlight) => {
-        highlightGreen(rangeToHighlight);
-      });
-      jumps.forEach((jump) => {
-        if(jsonManager.nodes[jump].nodeType !== "Function" || jump === selectedFunction) {
-          jsonManager.nodes[jump].outLinks.forEach((outLink) => {
-            underline(outLink.range);
-          });
-        }
-        if(jump === selectedFunction){
-          return;
-        }
-        underline(jsonManager.nodes[jump].link.range);
-      });
-    }
-    handleJumps();
-      if(jumpToPosition) {
+    if(editor) {
+      console.log("Editor changed.");
+      let rangesToHighlight = [];
+      if (jsonManager)
+        rangesToHighlight = jsonManager.updateActiveRangesFunction(selectedFunction, selectedIterations);
+      if (editor && isActiveDisplayed()) {
+        rangesToHighlight.forEach((rangeToHighlight) => {
+          highlightGreen(rangeToHighlight);
+        });
+        jumps.forEach((jump) => {
+          if (jsonManager.nodes[jump].nodeType !== "Function" || jump === selectedFunction) {
+            jsonManager.nodes[jump].outLinks.forEach((outLink) => {
+              underline(outLink.range);
+            });
+          }
+          if (jump === selectedFunction) {
+            return;
+          }
+          underline(jsonManager.nodes[jump].link.range);
+        });
+      }
+      handleJumps();
+      if (jumpToPosition) {
         setJumpToPosition(false);
         jumpTo(jumpPosition);
       }
+    }
     }, [editor]);
 
   //if active function changes jump set editor to file that contains said function
   useEffect(() => {
     if(jsonManager !== null) {
-      console.log("Active function changed, jump to it.");
+      console.log("Active function changed.");
       setFile(jsonManager.nodes[selectedFunction].link.file);
       setJumps(jsonManager.updateJumpsFunction(selectedFunction, selectedIterations));
     }
@@ -186,7 +184,7 @@ function RightComponent({fileInEditor, setFile, isActiveDisplayed, jsonManager})
   //if json manager/project changes get main function and set as active function also change the file in the editor to display said function
   useEffect(() => {
     if(jsonManager) {
-      console.log("JsonManager(loaded project) changed, set main as active function.");
+      console.log("Loaded project changed.");
       setSelectedFunction(jsonManager.getMain());
       setFile(jsonManager.nodes[jsonManager.getMain()].link.file);
     }
@@ -196,8 +194,8 @@ function RightComponent({fileInEditor, setFile, isActiveDisplayed, jsonManager})
   // This is called second to pass the file to the editor's constructor.
   // Effect executed when the content of the Java file or the highlighted lines change.
   useEffect(() => {
-    console.log("File content changed, editor rendered.");
     if (javaFileContent && editorContainerRef.current) {
+      console.log("File content changed.");
       if (editor) {
         editor.dispose();
       }
@@ -208,29 +206,31 @@ function RightComponent({fileInEditor, setFile, isActiveDisplayed, jsonManager})
       if (newEditor) {
         setEditor(newEditor);
         // Initialize the EditorClickHandler here, after the editor has been created.
-        const clickHandler = new EditorClickHandler(newEditor, popupManager);
+        //const clickHandler = new EditorClickHandler(newEditor, popupManager);
       }
     }
-  }, [javaFileContent, popupManager]);
+  }, [javaFileContent/*, popupManager*/]);
 
   // Render function
   return (
       <main className="right-container">
         <div ref={editorContainerRef} className="editor-container"></div>
-        <div
-            className="popup"
-            ref={dialogRef}
-            style={{ display: 'none' }} // Hidden by default
-        >
-          {popupMessage}
-          <br />
-          <button onClick={closePopup} className="popup-close-button">
-            Close
-          </button>
-        </div>
       </main>
   );
 }
+/*For popup manager currently not in use
+ <div
+    className="popup"
+    ref={dialogRef}
+    style={{ display: 'none' }} // Hidden by default
+>
+  {popupMessage}
+  <br />
+  <button onClick={closePopup} className="popup-close-button">
+    Close
+  </button>
+</div> */
+
 RightComponent.propTypes = {
   fileInEditor: PropTypes.instanceOf(File),
   setFile: PropTypes.instanceOf(Function),

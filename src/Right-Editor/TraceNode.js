@@ -1,5 +1,3 @@
-import RightComponent from "./RightComponent";
-
 class TraceNode
 {
     constructor(node) {
@@ -54,9 +52,6 @@ class TraceNode
         this.outLinkPosition = null;
         this.outFunctionIndex = null;
         this.outLoopiterations = [];
-
-        //TODO Throw exception if out set but outlink isnt vice versa
-        //TODO Throw exception if anything isnt set that should be set
     }
 }
 export default TraceNode;

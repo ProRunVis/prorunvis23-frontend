@@ -29,10 +29,6 @@ class JsonManager {
                     this.nodes[i].outFunctionIndex = parentIndex;
                 }
             }
-            this.nodes.forEach((node) => {
-            console.log(node);
-        });
-
     }
     getMain(){
         return 1;

@@ -1,4 +1,6 @@
 /**
+ * CURRENTLY NOT IN USE
+ *
  * Retrieves the instance of the editor if it has been initialized.
  * This function checks if the editor parameter is not null or undefined,
  * indicating that the editor has been successfully initialized. If the editor
