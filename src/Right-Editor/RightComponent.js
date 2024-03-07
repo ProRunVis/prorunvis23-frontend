@@ -27,6 +27,8 @@ function RightComponent({displayedFile, setActiveAndDisplayed, isActiveDisplayed
   // State for the indices of the active iterations in active function that is displayed in the editor
   const [activeIterations, setActiveIterations] = useState([]);
 
+  const [activeIterationIndices, setActiveIterationIndices] = useState([]);
+
   // State for the indices of the Nodes(other functions and throws)
   // of the active function that can be used to jump to another node
   const [jumpNodesIndices, setJumpNodesIndices] = useState([]);
@@ -103,6 +105,23 @@ function RightComponent({displayedFile, setActiveAndDisplayed, isActiveDisplayed
   }
 
   /**
+   * TODO
+   */
+  function iterationChanged(newIterationIndex){
+
+
+
+
+      let arr = jsonManager.initIterations(activeFunctionIndex, activeIterations, [jsonManager.nodes[index].traceId]);
+
+
+      arr.splice(jsonManager.getIndex(), Nofelementstodelete, jsonManager.getIterations(index, [jsonManager.nodes[newIteration].iteration], [newIteration], 0));
+
+
+      setActiveIterations(arr);
+  }
+
+  /**
    * Sets up an event listener that listens mouse clicks in the editor.
    * If the mouse is clicked it checks whether the mouse position is on a link,
    * if so it initiates the jump to the new Node.
@@ -118,6 +137,7 @@ function RightComponent({displayedFile, setActiveAndDisplayed, isActiveDisplayed
               setJumpPosition(jump.outLinkPosition);
               setDoPositionJump(true);
               setActiveFunctionIndex(jump.outFunctionIndex);
+              setActiveIterationIndices(jsonManager.initIterations(activeFunctionIndex, jump.outLoopIterations, []));
             }
           });
           // We do not want to check for the link of the current function since it might be in another file
@@ -129,6 +149,7 @@ function RightComponent({displayedFile, setActiveAndDisplayed, isActiveDisplayed
             setJumpPosition(jump.linkPosition);
             setDoPositionJump(true);
             setActiveFunctionIndex(jumpIndex);
+            setActiveIterationIndices(jsonManager.initIterations(activeFunctionIndex, [], []));
           }
         });
       });
@@ -169,7 +190,7 @@ function RightComponent({displayedFile, setActiveAndDisplayed, isActiveDisplayed
       console.log("Editor changed.");
       let rangesToHighlight = [];
       if (jsonManager)
-        rangesToHighlight = jsonManager.updateActiveRangesFunction(activeFunctionIndex, activeIterations);
+        rangesToHighlight = jsonManager.updateActiveRangesFunction(activeFunctionIndex, activeIterationIndices);
       if (isActiveDisplayed()) {
         setDoPositionJump(true);
         rangesToHighlight.forEach((rangeToHighlight) => {
@@ -212,7 +233,7 @@ function RightComponent({displayedFile, setActiveAndDisplayed, isActiveDisplayed
     if(jsonManager !== null) {
       console.log("Active function changed.");
       setActiveAndDisplayed(jsonManager.nodes[activeFunctionIndex].link.file);
-      setJumpNodesIndices(jsonManager.updateJumpsFunction(activeFunctionIndex, activeIterations));
+      setJumpNodesIndices(jsonManager.updateJumpsFunction(activeFunctionIndex, activeIterationIndices));
     }
   }, [activeFunctionIndex]);
 
@@ -225,6 +246,7 @@ function RightComponent({displayedFile, setActiveAndDisplayed, isActiveDisplayed
       console.log("Loaded project changed.");
       setActiveFunctionIndex(jsonManager.getMain());
       setActiveAndDisplayed(jsonManager.nodes[jsonManager.getMain()].link.file);
+      setActiveIterationIndices(jsonManager.initIterations(jsonManager.getMain(), [], []));
     }
   }, [jsonManager]);
 
