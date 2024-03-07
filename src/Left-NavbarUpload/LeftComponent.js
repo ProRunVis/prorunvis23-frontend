@@ -1,8 +1,7 @@
-import React, { useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import FolderTree from 'react-folder-tree';
 import 'react-folder-tree/dist/style.css';
 import "../Css/LeftComponent.css"
-import RightComponent from "../Right-Editor/RightComponent";
 import PropTypes from "prop-types";
 
 /**
@@ -10,8 +9,13 @@ import PropTypes from "prop-types";
  * displaying a folder tree of Java files. This component allows users to select a directory,
  * filters out Java files, and displays these files in a structured folder tree view.
  * Users can collapse or expand the left container to show or hide the folder tree.
+ * @param setDisplayedFile Function to change the active file to the one given.
+ * @param setDisplayedToActive Function to reset the view to the currently active Node.
+ * @param passOnUploadedFiles Pass the uploaded files to the parent component.
+ * @returns {Element} The left component containing the upload button and dir bar.
+ * @constructor
  */
-function LeftComponent({getActiveFile}) {
+function LeftComponent({setDisplayedFile, setDisplayedToActive, passOnUploadedFiles}) {
   // State for the list of files uploaded by the user.
   const [uploadedFiles, setUploadedFiles] = useState([]);
   // State for the structured data used by FolderTree to display the directory and files.
@@ -75,7 +79,6 @@ function LeftComponent({getActiveFile}) {
         }
       });
     });
-    console.log(root);
     return root;
   };
 
@@ -86,7 +89,9 @@ function LeftComponent({getActiveFile}) {
     setIsLeftContainerCollapsed(!isLeftContainerCollapsed);
   };
 
-// custom event handler for node name click
+  /**
+   * Custom event handler for node name click.
+   */
   const onNameClick = ({ nodeData }) => {
     const {
       // internal data
@@ -94,44 +99,59 @@ function LeftComponent({getActiveFile}) {
     }
         = nodeData;
     if (realPath != null){
-      getActiveFile(uploadedFiles[index]);
+      setDisplayedFile(uploadedFiles[index]);
     }
   };
 
+  /**
+   * Pass uploaded files to parent component, every time they change
+   */
+  useEffect(() => {
+    if(uploadedFiles.length > 0) {
+      passOnUploadedFiles(uploadedFiles);
+    }
+  }, [uploadedFiles]);
+
   return (
-    <main className={`left-container ${isLeftContainerCollapsed ? 'collapsed' : ''}`} style={{width: isLeftContainerCollapsed ? '50px' : '280px'}}>
-      <button onClick={toggleLeftContainer}>{isLeftContainerCollapsed ? 'Open' : 'Close directory'}</button>
-      {isLeftContainerCollapsed ? null : (
-        <div>
-          <div className="button-container">
-            <form className="text-box" encType="multipart/form-data">
-              <input
-                type="file"
-                name="file"
-                multiple
-                webkitdirectory=""
-                onChange={handleFileUpload}
-                className="picker"
-              />
-            </form>
-          </div>
-          {folderTreeData && (
-            <div className="folder-tree-container">
-              <FolderTree
-                data={folderTreeData}
-                onNameClick={onNameClick}
-                showCheckbox={false}
-                readOnly={true}
-                indentPixels={0}
-              />
+      <main className={`left-container ${isLeftContainerCollapsed ? 'collapsed' : ''}`}
+            style={{width: isLeftContainerCollapsed ? '50px' : '280px'}}>
+        <button onClick={toggleLeftContainer}>{isLeftContainerCollapsed ? 'Open' : 'Close directory'}</button>
+        {isLeftContainerCollapsed ? null : (
+            <div>
+              <button onClick={setDisplayedToActive}>{'Jump to active function'} </button>
+              <div className="upload-button-container">
+                <form className="text-box" encType="multipart/form-data">
+                  <input
+                      type="file"
+                      name="file"
+                      multiple
+                      webkitdirectory=""
+                      onChange={handleFileUpload}
+                      className="picker"
+                  />
+                </form>
+              </div>
+
+              {folderTreeData && (
+                  <div className="folder-tree-container">
+                    <FolderTree
+                        data={folderTreeData}
+                        onNameClick={onNameClick}
+                        showCheckbox={false}
+                        readOnly={true}
+                        indentPixels={15}
+                    />
+                  </div>
+              )}
             </div>
-          )}
-        </div>
-      )}
-    </main>
+        )}
+      </main>
   );
 }
 LeftComponent.propTypes = {
-  getActiveFile: PropTypes.instanceOf(Function)
+  setDisplayedFile: PropTypes.instanceOf(Function),
+  setDisplayedToActive: PropTypes.instanceOf(Function),
+  passOnUploadedFiles: PropTypes.instanceOf(Function)
 };
+
 export default LeftComponent;

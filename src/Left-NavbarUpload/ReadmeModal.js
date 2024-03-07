@@ -1,6 +1,5 @@
 import React from "react";
 import PropTypes from "prop-types";
-import RightComponent from "../Right-Editor/RightComponent";
 
 /**
  * Defines a modal component that displays readme or help information to the user.
@@ -9,8 +8,6 @@ import RightComponent from "../Right-Editor/RightComponent";
  * also provided, allowing the user to dismiss the modal. This component demonstrates
  * the use of props in React for passing the closeModal function, enabling the modal
  * to be closed from within.
- *
- * @param {Object} props - Component props.
  * @param {Function} props.closeModal - Function to close the modal.
  */
 export default function ReadmeModal({closeModal}) {

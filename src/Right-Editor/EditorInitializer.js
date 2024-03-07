@@ -8,6 +8,7 @@ import * as monaco from 'monaco-editor/esm/vs/editor/editor.api';
  * and user-friendly code editor environment.
  */
 export class EditorInitializer {
+
   /**
    * Initializes the Monaco Editor in the provided container with the given Java file content.
    * This method sets up the editor with predefined options such as language, theme, and various
@@ -26,7 +27,7 @@ export class EditorInitializer {
     if (!containerRef.current) {
       return;
     }
-    const editor = monaco.editor.create(containerRef.current, {  //erstellt einen neuen Editor
+    const editor = monaco.editor.create(containerRef.current, {  // Creates a new editor
       value: javaFileContent,
       language: 'java',
       theme: 'java-theme',
@@ -35,6 +36,7 @@ export class EditorInitializer {
       minimap: { enabled: false },
       wordWrap: 'off',
       automaticLayout: true,
+      readOnly: true,
       scrollbar: {
         alwaysConsumeMouseWheel: true
       },
@@ -43,7 +45,7 @@ export class EditorInitializer {
     // ----------------------------------Syntax Highlighting ------------------------------------
 
 
-    monaco.editor.defineTheme('java-theme', {  // Stil Eigenschaften des Editors
+    monaco.editor.defineTheme('java-theme', {  // Style Properties of the editor
       base: 'vs-dark',
       inherit: true,
       rules: [
@@ -71,7 +73,7 @@ export class EditorInitializer {
       }
     });
 
-    monaco.languages.setMonarchTokensProvider('java', {   // Syntax Highlighting
+    monaco.languages.setMonarchTokensProvider('java', {   // Syntax highlighting
       tokenizer: {
         root: [
           [/\b(Integer|Double|Float|Long|Short|Byte|Boolean|Character|String)\b/, 'custom-wrapper-class'],
@@ -104,16 +106,15 @@ export class EditorInitializer {
       }
     });
 
-    monaco.languages.register({ id: 'java' });   // meldet das Syntax Hightling an
+    monaco.languages.register({ id: 'java' });   // Activates the syntax highlighting
 
-    // -------------------------------------  Aufruf aller weiteren Methoden für den Editor ----------------------------
+    // -------------------------------------  All other function calls for the editor  ----------------------------
 
-    // Aktualisiere den Inhalt des Editors
+    // Update the content
     editor.getModel().setValue(javaFileContent);
 
-    // Setzt Dark Theme  für den Editor
+    // Set dark theme
     monaco.editor.setTheme('vs-dark');
-
     return editor
   }
 }

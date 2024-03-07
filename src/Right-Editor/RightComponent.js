@@ -1,18 +1,43 @@
 import React, { useEffect, useRef, useState, useMemo } from "react";
-import PopupManager from "./PopupManager";
-import EditorClickHandler from "./EditorClickHandler";
+import '../Css/Decorate.css';
 import EditorInitializer from "./EditorInitializer";
 import "../Css/RightComponent.css"
 import PropTypes from "prop-types";
+import JsonManager from "./JsonManager";
 
 /**
  * Represents the right component of the application, primarily responsible for
- * displaying the code editor and managing code interactions such as displaying
- * popups based on editor events. This component initializes the editor with
- * Java file content, handles editor events, and manages popup messages.
+ * displaying the code editor and managing code interactions
+ * based on editor events. This component initializes the editor with
+ * Java file content and handles editor events.
+ * @param displayedFile File to displayed in editor.
+ * @param setActiveAndDisplayed Function to update the displayed and active file in the parent component.
+ * @param isActiveDisplayed Function that returns boolean whether the file currently displayed is the file containing
+ * the currently active Node.
+ * @param jsonManager Instance of the JsonManager class containing all the traced Nodes of the uploaded project.
+ * @returns {Element} The right component of the website containing the editor.
+ * @constructor
  */
-function RightComponent({fileInEditor}) {
-  // Constants ------------------------------------------------------------------------------------------------------------------
+function RightComponent({displayedFile, setActiveAndDisplayed, isActiveDisplayed, jsonManager}){
+  // Constants --------------------------------------------------------------------------------------------------------
+
+  // State for the index of the active function in the editor
+  const [activeFunctionIndex, setActiveFunctionIndex] = useState(0);
+
+  // State for the indices of the active iterations in active function that is displayed in the editor
+  const [activeIterations, setActiveIterations] = useState([]);
+
+  // State for the indices of the Nodes(other functions and throws)
+  // of the active function that can be used to jump to another node
+  const [jumpNodesIndices, setJumpNodesIndices] = useState([]);
+
+  // State to determine
+  // whether the file was changed through a jump, so a jump to the line of the current Node has to be performed
+  // or the file was changed using the file tree
+  const [doPositionJump, setDoPositionJump] = useState(false);
+
+  // State to safe the line and column to jump to in the new or current file if a jump to a new Node is performed
+  const [jumpPosition, setJumpPosition] = useState(new monaco.Position(0,0));
 
   // Reference to the editor's container for performing DOM operations.
   const editorContainerRef = useRef(null);
@@ -20,61 +45,196 @@ function RightComponent({fileInEditor}) {
   // State for the editor instance. 'setEditor' is used to update the editor state.
   const [editor, setEditor] = useState(null);
 
-  // State for the message to be displayed in the popup. 'setPopupMessage' updates this message.
-  const [popupMessage, setPopupMessage] = useState("");
-
-  // Reference to the dialog element (popup) for performing DOM operations.
-  const dialogRef = useRef(null);
-
-  // Creates an instance of PopupManager and uses 'useMemo' for performance optimization.
-  // The instance is recreated only if 'dialogRef', 'setPopupMessage', or 'popupDistance' changes.
-  const popupManager = useMemo(
-      () => new PopupManager(dialogRef, setPopupMessage, 10),
-      [dialogRef, setPopupMessage]
-  );
   // State for the content of the Java file to be displayed in the editor.
   const [javaFileContent, setJavaFileContent] = useState("");
 
-  // Function to close the popup and clear the popup message.
-  const closePopup = () => {
-    popupManager.closePopup();
-  };
-
-  // Asynchronous function to load the content of the Java test file.
+  /**
+   *  Asynchronous function to load the content of the Java test file.
+   */
   const loadJavaFile = async () => {
-    if(fileInEditor) {
+    if(displayedFile) {
       try {
-        const text = await fileInEditor.text();
+        const text = await displayedFile.text();
         setJavaFileContent(text);
       } catch (error) {
         console.error("Error loading the Java file:", error);
-      }
-    }
-    else{
-      try {
-        const response = await fetch("./Default.java");
-        const text = await response.text();
-        setJavaFileContent(text);
-      } catch (error) {
-        console.error("Error loading the Java file:", error);
-
       }
     }
   };
-  // -------------------------------------------------------------------------------------------------------------------------
+
+  /**
+   * Function to render a range in the current editor with a green background.
+   * Used to show which part of the code got executed.
+   * @param range monaco.Range to be decorated.
+   */
+  function highlightGreen(range)
+  {
+      editor.createDecorationsCollection([
+        {
+          options: {className: "green"},
+          range: {
+            startLineNumber: range.startLineNumber,
+            startColumn: range.startColumn,
+            endLineNumber: range.endLineNumber,
+            endColumn: range.endColumn
+          }
+        }
+      ]);
+  }
+
+  /**
+   * Function to render a range in the current editor with a blue background.
+   * Used to show which part of the code got is a link and can be clicked to jump to another Node.
+   * @param range monaco.Range to be decorated.
+   */
+  function underline(range)
+  {
+    editor.createDecorationsCollection([
+      {
+        options: {className: "underline"},
+        range: {
+          startLineNumber: range.startLineNumber,
+          startColumn: range.startColumn,
+          endLineNumber: range.endLineNumber,
+          endColumn: range.endColumn
+        }
+      }
+    ]);
+  }
+
+  /**
+   * Sets up an event listener that listens mouse clicks in the editor.
+   * If the mouse is clicked it checks whether the mouse position is on a link,
+   * if so it initiates the jump to the new Node.
+   */
+  function handleJumps() {
+    if(editor) {
+      editor.onMouseDown(e => {
+        const position = e.target.position;
+        jumpNodesIndices.forEach((jumpIndex) => {
+          let jump = jsonManager.nodes[jumpIndex];
+          jump.outLinks.forEach((outLink) => {
+            if (outLink.range.containsPosition(position)) {
+              setJumpPosition(jump.outLinkPosition);
+              setDoPositionJump(true);
+              setActiveFunctionIndex(jump.outFunctionIndex);
+            }
+          });
+          // We do not want to check for the link of the current function since it might be in another file
+          // and is not part of the currently active function
+          if(jump === activeFunctionIndex){
+            return;
+          }
+          if (jump.link.range.containsPosition(position)) {
+            setJumpPosition(jump.linkPosition);
+            setDoPositionJump(true);
+            setActiveFunctionIndex(jumpIndex);
+          }
+        });
+      });
+    }
+  }
+
+  /**
+   * Handles the jump to a position in the editor.
+   * @param position monaco.Position to jump to.
+   */
+  function jumpToPosition(position) {
+    editor.revealLineNearTop(position.lineNumber);
+    editor.setPosition(position);
+  }
+
+  // ------------------------------------------------------------------------------------------------------------------
   // UseEffects
 
-  // This effect is executed when dialogRef, setPopupMessage, or popupDistance changes.
-
-  // This is called first when a Java file is loaded.
+  /**
+   * This effect is executed when the file in the editor changes. It then loads in the content of said file
+   * into the editor
+   */
   useEffect(() => {
-    loadJavaFile();
-  }, [fileInEditor]);
+    if(displayedFile) {
+      console.log("File changed.");
+      loadJavaFile();
+    }
+  }, [displayedFile]);
 
-  // This is called second to pass the file to the editor's constructor.
-  // Effect executed when the content of the Java file or the highlighted lines change.
+  /**
+   * This effect is executed when the editor changes. It then gets the ranges that should be highlighted from the
+   * jsonManager and displays them in the editor if the current file is the one where the active Node is located.
+   * It then starts the event listener for mouse clicks and sets the position of the editor to the active Node if it is
+   * part of the displayed file.
+   */
+  useEffect(() => {
+    if(editor) {
+      console.log("Editor changed.");
+      let rangesToHighlight = [];
+      if (jsonManager)
+        rangesToHighlight = jsonManager.updateActiveRangesFunction(activeFunctionIndex, activeIterations);
+      if (isActiveDisplayed()) {
+        setDoPositionJump(true);
+        rangesToHighlight.forEach((rangeToHighlight) => {
+          highlightGreen(rangeToHighlight);
+        });
+        jumpNodesIndices.forEach((jump) => {
+          if (jsonManager.nodes[jump].nodeType !== "Function" || jump === activeFunctionIndex) {
+            jsonManager.nodes[jump].outLinks.forEach((outLink) => {
+              underline(outLink.range);
+            });
+          }
+          // We do not want to mark for the link of the current function since it might be in another file
+          // and is not part of the currently active function
+          if (jump === activeFunctionIndex) {
+            return;
+          }
+          underline(jsonManager.nodes[jump].link.range);
+        });
+      }
+      handleJumps();
+      if(!doPositionJump && isActiveDisplayed()){
+        if(activeFunctionIndex !== 1)
+          jumpToPosition(jsonManager.nodes[activeFunctionIndex].outLinks[jsonManager.nodes[activeFunctionIndex].outLinks.length-1].range.getStartPosition());
+        else
+          jumpToPosition(jsonManager.nodes[activeFunctionIndex].link.range.getStartPosition());
+        setDoPositionJump(false);
+      }
+      if (doPositionJump) {
+        setDoPositionJump(false);
+        jumpToPosition(jumpPosition);
+      }
+    }
+    }, [editor]);
+
+  /**
+   * This effect is executed when the active function changes. It then sets editor to file that contains said function
+   * and updates the JumpNodeIndices.
+   */
+  useEffect(() => {
+    if(jsonManager !== null) {
+      console.log("Active function changed.");
+      setActiveAndDisplayed(jsonManager.nodes[activeFunctionIndex].link.file);
+      setJumpNodesIndices(jsonManager.updateJumpsFunction(activeFunctionIndex, activeIterations));
+    }
+  }, [activeFunctionIndex]);
+
+  /**
+   * This effect is executed when json manager/project changes. It then gets the main function of that project
+   * and sets it as the active function and performs a file jump to the file that contains the new active function.
+   */
+  useEffect(() => {
+    if(jsonManager) {
+      console.log("Loaded project changed.");
+      setActiveFunctionIndex(jsonManager.getMain());
+      setActiveAndDisplayed(jsonManager.nodes[jsonManager.getMain()].link.file);
+    }
+  }, [jsonManager]);
+
+  /**
+   * This effect is executed when the content that should be displayed by the editor changes.
+   * It then creates a new editor to display the new content.
+   */
   useEffect(() => {
     if (javaFileContent && editorContainerRef.current) {
+      console.log("File content changed.");
       if (editor) {
         editor.dispose();
       }
@@ -84,32 +244,21 @@ function RightComponent({fileInEditor}) {
       );
       if (newEditor) {
         setEditor(newEditor);
-        // Initialize the EditorClickHandler here, after the editor has been created.
-        const clickHandler = new EditorClickHandler(newEditor, popupManager);
-        clickHandler.handleMouseDown();
       }
     }
-  }, [javaFileContent, popupManager]);
+  }, [javaFileContent]);
 
-  // Render function
+  // Render editor
   return (
       <main className="right-container">
         <div ref={editorContainerRef} className="editor-container"></div>
-        <div
-            className="popup"
-            ref={dialogRef}
-            style={{ display: 'none' }} // Hidden by default
-        >
-          {popupMessage}
-          <br />
-          <button onClick={closePopup} className="popup-close-button">
-            Close
-          </button>
-        </div>
       </main>
   );
 }
 RightComponent.propTypes = {
-  fileInEditor: PropTypes.instanceOf(File)
+  displayedFile: PropTypes.instanceOf(File),
+  setActiveAndDisplayed: PropTypes.instanceOf(Function),
+  isActiveDisplayed: PropTypes.instanceOf(Function),
+  jsonManager: PropTypes.instanceOf(JsonManager)
 };
 export default RightComponent;

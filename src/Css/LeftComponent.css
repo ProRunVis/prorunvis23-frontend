@@ -1,6 +1,6 @@
 .left-container {
     display: flex;
-    flex-direction: column; /* Stapelt die Kinder vertikal */
+    flex-direction: column; /* Stacks the children vertically */
     align-items: stretch; 
     transition: width 0.3s ease;
     width: 280px;
@@ -12,38 +12,36 @@
     border-right:2px solid #ffc7b1e7 ;
   }
   .left-container.collapsed {
-    width: 10%; /* Breite, um nur den Button zu zeigen */
+    width: 10%; /* Width used to show only the button */
     background-color: rgb(31, 29, 29);;
     
   }
   
   .left-container button {
-    position: absolute; /* Positioniert den Button absolut */
-    top: 0; /* Oben am Container */
-    left: 0; /* Links am Container */
-    width: 100%; /* Button nimmt die volle Containerbreite ein */
-    padding: 12px 0; /* Gibt dem Button etwas Raum */
+    position: sticky; /* Positions the button sticky */
+    top: 0; /* Top of the Container */
+    left: 0; /* Left of the Container */
+    width: 100%; /* Button vertically uses the whole container */
+    padding: 12px 0; /* Creates a bit of buffer space */
     cursor: pointer;
-    background-color: rgb(31, 29, 29); /* Hintergrundfarbe des Buttons */
-    color: white; /* Textfarbe des Buttons */
-    border: none;
+    background-color: rgb(31, 29, 29); /* Background color of button */
+    color: white; /* Text color inside of button */
+    border-color: #ffc7b1e7;
+    border-left-width: 0px;
+    border-right-width: 0px;
+    border-top-width: 0px;
   }
-  
-  /* Stellen Sie sicher, dass keine anderen Stile die Farbe oder den Hintergrund des .left-container überschreiben. */
-  
-  
-  
-  
-  /* Stil für den FolderTree, wenn nötig */
-  
-  
-  
+  /* Ensure that no other style component overrides the .left-container color and background */
+
+
+  /* Style for the FolderTree, if necessary */
   .text-box {
-    display: flex; /* Aktiviert Flexbox */
-    justify-content: flex-end; /* Positioniert den Inhalt am Ende der Hauptachse (rechts) */
-    align-items: center; /* Zentriert den Inhalt entlang der Kreuzachse (vertikal) */
+    display: flex; /* Activate flexbox */
+    justify-content: flex-end; /* Positions the content at the end of the main axis (right) */
+    align-items: center; /* Centers the content along the cross axis (vertically) */
     width: 100%;
     border: 2px solid #ffc7b1e7;
+    border-top-width: 0;
     padding: 10px;
     color: white;
     background-color: black;
@@ -110,24 +108,36 @@
     background-color: rgb(4, 7, 18);
   }
   
-  .button-container {
+  .upload-button-container {
     width: 100% ;
     color: pink;
-    margin-top: 40px;
+    margin-top: 0px;
     display: flex;
     flex-direction: column;
-    justify-content: center; /* Zentriert den Inhalt vertikal */
-    align-items: center; /* Zentriert den Inhalt horizontal */
+    justify-content: center; /* Aligns the content vertically */
+    align-items: center; /* Aligns the content horizontally */
     padding-right: 20px;
     
    
   }
-  .picker {
-    margin-right: 20px; /* Oder einen anderen Wert, um den gewünschten Abstand zu schaffen */
-  }
+
+.reset-button-container {
+  width: 100% ;
+  color: white;
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center; /* Aligns the content vertically */
+  align-items: center; /* Aligns the content horizontally */
+  padding-right: 20px;
+
+}
+
+.picker {
+  margin-right: 20px; /* Create buffer distance to the right */
+}
   
-  .folder-tree-container {
-    margin-top: 1px; /* Setzen Sie den gewünschten Abstand */
-    width : 100%;
-  
-  }
+.folder-tree-container {
+  margin-top: 1px; /* Create buffer distance to the top */
+  width : 100%;
+}
