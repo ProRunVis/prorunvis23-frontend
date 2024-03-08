@@ -4,6 +4,7 @@ import EditorInitializer from "./EditorInitializer";
 import "../Css/RightComponent.css"
 import PropTypes from "prop-types";
 import JsonManager from "./JsonManager";
+import {json} from "react-router-dom";
 
 /**
  * Represents the right component of the application, primarily responsible for
@@ -23,9 +24,6 @@ function RightComponent({displayedFile, setActiveAndDisplayed, isActiveDisplayed
 
   // State for the index of the active function in the editor
   const [activeFunctionIndex, setActiveFunctionIndex] = useState(0);
-
-  // State for the indices of the active iterations in active function that is displayed in the editor
-  const [activeIterations, setActiveIterations] = useState([]);
 
   const [activeIterationIndices, setActiveIterationIndices] = useState([]);
 
@@ -69,11 +67,11 @@ function RightComponent({displayedFile, setActiveAndDisplayed, isActiveDisplayed
    * Used to show which part of the code got executed.
    * @param range monaco.Range to be decorated.
    */
-  function highlightGreen(range)
+  function highlightActive(range)
   {
       editor.createDecorationsCollection([
         {
-          options: {className: "green"},
+          options: {className: "active"},
           range: {
             startLineNumber: range.startLineNumber,
             startColumn: range.startColumn,
@@ -89,11 +87,30 @@ function RightComponent({displayedFile, setActiveAndDisplayed, isActiveDisplayed
    * Used to show which part of the code got is a link and can be clicked to jump to another Node.
    * @param range monaco.Range to be decorated.
    */
-  function underline(range)
+  function highlightLink(range)
   {
     editor.createDecorationsCollection([
       {
-        options: {className: "underline"},
+        options: {className: "link"},
+        range: {
+          startLineNumber: range.startLineNumber,
+          startColumn: range.startColumn,
+          endLineNumber: range.endLineNumber,
+          endColumn: range.endColumn
+        }
+      }
+    ]);
+  }
+
+  /**
+   *
+   * @param range monaco.Range to be decorated.
+   */
+  function highlightLoop(range)
+  {
+    editor.createDecorationsCollection([
+      {
+        options: {className: "loop"},
         range: {
           startLineNumber: range.startLineNumber,
           startColumn: range.startColumn,
@@ -108,17 +125,14 @@ function RightComponent({displayedFile, setActiveAndDisplayed, isActiveDisplayed
    * TODO
    */
   function iterationChanged(newIterationIndex){
-
-
-
-
-      let arr = jsonManager.initIterations(activeFunctionIndex, activeIterations, [jsonManager.nodes[index].traceId]);
-
-
-      arr.splice(jsonManager.getIndex(), Nofelementstodelete, jsonManager.getIterations(index, [jsonManager.nodes[newIteration].iteration], [newIteration], 0));
-
-
-      setActiveIterations(arr);
+    let insertPosition;
+    jsonManager.activeIterationIndices.forEach((activeIterationIndex) => {
+      if (jsonManager.nodes[activeIterationIndex].traceId === jsonManager.nodes[newIterationIndex].traceId)
+        insertPosition = activeIterationIndex;
+    });
+    let newActiveIterations = jsonManager.initIterations(activeFunctionIndex, activeIterationIndices, [jsonManager.nodes[newIterationIndex].traceId]);
+    newActiveIterations.splice(insertPosition,0, ...newActiveIterations);
+    setActiveIterationIndices(newActiveIterations);
   }
 
   /**
@@ -127,7 +141,6 @@ function RightComponent({displayedFile, setActiveAndDisplayed, isActiveDisplayed
    * if so it initiates the jump to the new Node.
    */
   function handleJumps() {
-    if(editor) {
       editor.onMouseDown(e => {
         const position = e.target.position;
         jumpNodesIndices.forEach((jumpIndex) => {
@@ -153,7 +166,22 @@ function RightComponent({displayedFile, setActiveAndDisplayed, isActiveDisplayed
           }
         });
       });
-    }
+  }
+
+  function handleIterationDisplay(){
+
+  }
+
+  function handleIterationButton(){
+    editor.onMouseDown(e => {
+      const position = e.target.position;
+      activeIterationIndices.forEach((iterationIndex) => {
+        let iteration = jsonManager.nodes[iterationIndex];
+        if (iteration.link.range.containsPosition(position)) {
+          //TODO popup
+        }
+      });
+    });
   }
 
   /**
@@ -191,15 +219,15 @@ function RightComponent({displayedFile, setActiveAndDisplayed, isActiveDisplayed
       let rangesToHighlight = [];
       if (jsonManager)
         rangesToHighlight = jsonManager.updateActiveRangesFunction(activeFunctionIndex, activeIterationIndices);
-      if (isActiveDisplayed()) {
+        if (isActiveDisplayed()) {
         setDoPositionJump(true);
         rangesToHighlight.forEach((rangeToHighlight) => {
-          highlightGreen(rangeToHighlight);
+          highlightActive(rangeToHighlight);
         });
         jumpNodesIndices.forEach((jump) => {
           if (jsonManager.nodes[jump].nodeType !== "Function" || jump === activeFunctionIndex) {
             jsonManager.nodes[jump].outLinks.forEach((outLink) => {
-              underline(outLink.range);
+              highlightLink(outLink.range);
             });
           }
           // We do not want to mark for the link of the current function since it might be in another file
@@ -207,10 +235,15 @@ function RightComponent({displayedFile, setActiveAndDisplayed, isActiveDisplayed
           if (jump === activeFunctionIndex) {
             return;
           }
-          underline(jsonManager.nodes[jump].link.range);
+          highlightLink(jsonManager.nodes[jump].link.range);
         });
-      }
-      handleJumps();
+        activeIterationIndices.forEach((loop) => {
+          highlightLoop(jsonManager.nodes[loop].link);
+        });
+        }
+        handleJumps();
+        handleIterationDisplay();
+        handleIterationButton();
       if(!doPositionJump && isActiveDisplayed()){
         if(activeFunctionIndex !== 1)
           jumpToPosition(jsonManager.nodes[activeFunctionIndex].outLinks[jsonManager.nodes[activeFunctionIndex].outLinks.length-1].range.getStartPosition());

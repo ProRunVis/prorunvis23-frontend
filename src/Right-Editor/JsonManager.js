@@ -61,6 +61,19 @@ class JsonManager {
     }
 
     /**
+     *
+     */
+    getLastIterationNumber(iterationIndex){
+        let iterationIndexId = this.nodes[iterationIndex].traceId;
+        let lastIteration = this.nodes[iterationIndex].iteration;
+        this.nodes.forEach((node) => {
+            if(node.traceId === iterationIndexId)
+                lastIteration = node.iteration;
+        });
+        return lastIteration;
+    }
+
+    /**
      * Determines how many loops are active in the current function,
      * assuming that all occurring loops have iteration set to one.
      * @param functionIndex Index of the currently active function.

@@ -1,4 +1,5 @@
 /* Decorations for the editor */
-.red { background-color: red; }
-.green { background-color: green; }
-.underline { background-color: blue; }
+.inactive { background-color: red; }
+.active { background-color: green; }
+.link { background-color: blue; }
+.loop { background-color: blue; }
