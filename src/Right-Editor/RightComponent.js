@@ -169,7 +169,7 @@ function RightComponent({displayedFile, setActiveAndDisplayed, isActiveDisplayed
   }
 
   function handleIterationDisplay(){
-
+  
   }
 
   function handleIterationButton(){
