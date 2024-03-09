@@ -82,6 +82,15 @@ function RightComponent({displayedFile, setActiveAndDisplayed, isActiveDisplayed
       ]);
   }
 
+  function placeDecoration(startLineNumber, symbol) {
+    let pos = new monaco.Range(startLineNumber, 7, startLineNumber, 7);
+    let id = {major: 1, minor: 1};
+    let text = "test";
+    console.log(text);
+    let editOperation = {range: pos, text: text, forceMoveMarkers: true};
+    editor.executeEdits("custom-code", [editOperation]);
+  }
+
   /**
    * Function to render a range in the current editor with a blue background.
    * Used to show which part of the code got is a link and can be clicked to jump to another Node.
@@ -100,6 +109,26 @@ function RightComponent({displayedFile, setActiveAndDisplayed, isActiveDisplayed
         }
       }
     ]);
+  }
+
+  function drawLine(ranges) {
+      let currentRow = new monaco.Range(ranges[0].startLineNumber, 0, ranges[0].startLineNumber + 1, 0);
+      let symbol = 54;
+      for (let i = 0; i < ranges.length;) {
+        if (currentRow.containsRange(ranges[i])) {
+          placeDecoration(currentRow.startLineNumber, symbol);
+          symbol = 2506;
+          i++;
+          continue;
+        } else if (currentRow.isEmpty() && symbol !== 54) {
+          placeDecoration(currentRow.startLineNumber, symbol);
+        }
+        if (symbol === 2506) {
+          placeDecoration(currentRow.startLineNumber - 1, 2534);
+          symbol = 54;
+        }
+        currentRow = new monaco.Range(currentRow.startLineNumber + 1, 0, currentRow.endLineNumber + 1, 0);
+      }
   }
 
   /**
@@ -175,6 +204,7 @@ function RightComponent({displayedFile, setActiveAndDisplayed, isActiveDisplayed
         rangesToHighlight.forEach((rangeToHighlight) => {
           highlightGreen(rangeToHighlight);
         });
+        drawLine(rangesToHighlight);
         jumpNodesIndices.forEach((jump) => {
           if (jsonManager.nodes[jump].nodeType !== "Function" || jump === activeFunctionIndex) {
             jsonManager.nodes[jump].outLinks.forEach((outLink) => {
