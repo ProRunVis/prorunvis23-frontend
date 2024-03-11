@@ -19,10 +19,10 @@ class PopupManager {
      * @param setPopupMessage A function to update the popup's message content.
      * @param popupDistance The distance from the mouse click position to the popup's position.
      */
-    constructor(dialogRef, setPopupMessage, popupDistance) {
+    constructor(dialogRef, popupDistance) {
         console.log("Ich bin ein DialogRef : "+dialogRef)
         this.dialogRef = dialogRef;
-        this.setPopupMessage = setPopupMessage;
+        //this.setPopupMessage = setPopupMessage;
         this.popupDistance = popupDistance;
         this.closePopup = this.closePopup.bind(this);
     }
@@ -32,7 +32,7 @@ class PopupManager {
      * @param message The new message to display in the popup.
      */
     updateMessage(message) {
-        this.setPopupMessage(message);
+        //this.setPopupMessage(message);
     }
 
     /**
@@ -57,7 +57,7 @@ class PopupManager {
     openPopupAtMousePosition(x, y) {
         console.log("1- Mouse Position - X:", x, "Y:", y);
 
-        const dialogElement = this.dialogRef.current;
+        const dialogElement = new ();
         //console.log("dialogRef  "+ this.dialogElement)
         console.log("1.5- Mouse Position - X:", x, "Y:", y);
         if (dialogElement) {
@@ -71,10 +71,10 @@ class PopupManager {
      * Closes the popup and clears its message content.
      */
     closePopup() {
-        const dialogElement = this.dialogRef.current;
+        const dialogElement = 'test'; //this.dialogRef.current;
         if (dialogElement) {
             dialogElement.style.display = 'none';
-            this.setPopupMessage(null);
+            //this.setPopupMessage(null);
         }
     }
 }

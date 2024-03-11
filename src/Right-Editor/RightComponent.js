@@ -6,6 +6,7 @@ import PropTypes from "prop-types";
 import JsonManager from "./JsonManager";
 import {json} from "react-router-dom";
 import async from "async";
+import PopupManager from "./PopupManager";
 
 /**
  * Represents the right component of the application, primarily responsible for
@@ -48,6 +49,8 @@ function RightComponent({displayedFile, setActiveAndDisplayed, isActiveDisplayed
 
   // State for the content of the Java file to be displayed in the editor.
   const [javaFileContent, setJavaFileContent] = useState("");
+
+  //const [popupManager, setPopupManager] = useState(new PopupManager('test', 10));
 
   /**
    *  Asynchronous function to load the content of the Java test file.
@@ -121,7 +124,7 @@ function RightComponent({displayedFile, setActiveAndDisplayed, isActiveDisplayed
   }
 
   /**
-   * TODO
+   *
    */
   function iterationChanged(newIterationIndex){ //index in nodes
     console.log("iterationChanged" + newIterationIndex);
@@ -139,7 +142,6 @@ function RightComponent({displayedFile, setActiveAndDisplayed, isActiveDisplayed
     console.log("insert pos " + insertPosition);
 
     let newActiveIterations = jsonManager.initIterations(activeFunctionIndex, [], [jsonManager.nodes[newIterationIndex].traceId]);
-    //TODO same issue with trace ids that occured with the other thing aswell
 
     console.log("newActiveIter" + newActiveIterations);
 
@@ -147,8 +149,7 @@ function RightComponent({displayedFile, setActiveAndDisplayed, isActiveDisplayed
     //calc new active iterations
     let neu = [newIterationIndex];
     neu.concat(jsonManager.initIterations(newIterationIndex, [], [jsonManager.nodes[newIterationIndex].traceId]));
-    newActiveIterations.splice(insertPosition,0, ...neu); //TODO insert whatever I get when I only start downwards from the new iteration index
-
+    newActiveIterations.splice(insertPosition,0, ...neu);
     console.log("error found1");
     setActiveIterationIndices(newActiveIterations);
   }
@@ -196,6 +197,9 @@ function RightComponent({displayedFile, setActiveAndDisplayed, isActiveDisplayed
     editor.onMouseDown(e => {
       const position = e.target.position;
       //console.log("beepboop" + activeIterationIndices);
+      //TODO open popup here
+      //popupManager.openPopupAtMousePosition(position.lineNumber, position.column);
+
       activeIterationIndices.forEach((iterationIndex) => {
         let iteration = jsonManager.nodes[iterationIndex];
         if (iteration.link.range.containsPosition(position)) {
@@ -299,7 +303,7 @@ function RightComponent({displayedFile, setActiveAndDisplayed, isActiveDisplayed
         handleIterationButton();
 
         activeIterationIndices.forEach((index) => {
-          highlightLink(jsonManager.nodes[index].link.range);
+          highlightLoop(jsonManager.nodes[index].link.range);
         });
       }
      if (!doPositionJump && isActiveDisplayed()) {
