@@ -61,7 +61,7 @@ function LeftComponent({setDisplayedFile, setDisplayedToActive, passOnUploadedFi
           if(!isDirectory && !existingNode){
             existingNode = {
               name: nodeName,
-              realPath: file.webkitRelativePath,
+              realPath: file.webkitRelativePath.slice(file.webkitRelativePath.indexOf('/') + 1, file.webkitRelativePath.length),
               index: i,
               children: isDirectory ? [] : undefined // Add children only for directories
             };
@@ -99,6 +99,7 @@ function LeftComponent({setDisplayedFile, setDisplayedToActive, passOnUploadedFi
     }
         = nodeData;
     if (realPath != null){
+      //console.log("Hier:" + realPath);
       setDisplayedFile(uploadedFiles[index]);
     }
   };

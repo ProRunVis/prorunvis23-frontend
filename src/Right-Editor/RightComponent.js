@@ -52,13 +52,21 @@ function RightComponent({displayedFile, setActiveAndDisplayed, isActiveDisplayed
    *  Asynchronous function to load the content of the Java test file.
    */
   const loadJavaFile = async () => {
-    if(displayedFile) {
       try {
         const text = await displayedFile.text();
         setJavaFileContent(text);
       } catch (error) {
         console.error("Error loading the Java file:", error);
       }
+    if (editor) {
+      editor.dispose();
+    }
+    const newEditor = EditorInitializer.initializeEditor(
+        editorContainerRef,
+        javaFileContent
+    );
+    if (newEditor) {
+      setEditor(newEditor);
     }
   };
 
@@ -150,6 +158,7 @@ function RightComponent({displayedFile, setActiveAndDisplayed, isActiveDisplayed
               setJumpPosition(jump.outLinkPosition);
               setDoPositionJump(true);
               setActiveFunctionIndex(jump.outFunctionIndex);
+              console.log("error found");
               setActiveIterationIndices(jsonManager.initIterations(activeFunctionIndex, jump.outLoopIterations, []));
             }
           });
@@ -162,6 +171,7 @@ function RightComponent({displayedFile, setActiveAndDisplayed, isActiveDisplayed
             setJumpPosition(jump.linkPosition);
             setDoPositionJump(true);
             setActiveFunctionIndex(jumpIndex);
+            console.log("error found");
             setActiveIterationIndices(jsonManager.initIterations(activeFunctionIndex, [], []));
           }
         });
@@ -175,10 +185,18 @@ function RightComponent({displayedFile, setActiveAndDisplayed, isActiveDisplayed
   function handleIterationButton(){
     editor.onMouseDown(e => {
       const position = e.target.position;
+      console.log("beepboop" + activeIterationIndices);
       activeIterationIndices.forEach((iterationIndex) => {
         let iteration = jsonManager.nodes[iterationIndex];
         if (iteration.link.range.containsPosition(position)) {
-          //TODO popup
+          console.log("change iteration");
+          let id = iteration.traceId;
+          let nexiteration = iteration.iteration + 1;
+
+          for(let i = 0; i > jsonManager.nodes.length ; i++){
+            if(jsonManager.nodes[i].traceId === id && nexiteration === jsonManager.nodes[i].iteration)
+              iterationChanged(jsonManager.nodes[i]);
+          }
         }
       });
     });
@@ -195,11 +213,10 @@ function RightComponent({displayedFile, setActiveAndDisplayed, isActiveDisplayed
 
   // ------------------------------------------------------------------------------------------------------------------
   // UseEffects
-
-  /**
-   * This effect is executed when the file in the editor changes. It then loads in the content of said file
-   * into the editor
-   */
+/*
+* This effect is executed when the file in the editor changes. It then loads in the content of said file
+  * into the editor
+  */
   useEffect(() => {
     if(displayedFile) {
       console.log("File changed.");
@@ -219,7 +236,7 @@ function RightComponent({displayedFile, setActiveAndDisplayed, isActiveDisplayed
       let rangesToHighlight = [];
       if (jsonManager)
         rangesToHighlight = jsonManager.updateActiveRangesFunction(activeFunctionIndex, activeIterationIndices);
-        if (isActiveDisplayed()) {
+      if (isActiveDisplayed()) {
         setDoPositionJump(true);
         rangesToHighlight.forEach((rangeToHighlight) => {
           highlightActive(rangeToHighlight);
@@ -237,13 +254,8 @@ function RightComponent({displayedFile, setActiveAndDisplayed, isActiveDisplayed
           }
           highlightLink(jsonManager.nodes[jump].link.range);
         });
-        activeIterationIndices.forEach((loop) => {
-          highlightLoop(jsonManager.nodes[loop].link);
-        });
-        }
-        handleJumps();
-        handleIterationDisplay();
-        handleIterationButton();
+      }
+      handleJumps();
       if(!doPositionJump && isActiveDisplayed()){
         if(activeFunctionIndex !== 1)
           jumpToPosition(jsonManager.nodes[activeFunctionIndex].outLinks[jsonManager.nodes[activeFunctionIndex].outLinks.length-1].range.getStartPosition());
@@ -256,7 +268,7 @@ function RightComponent({displayedFile, setActiveAndDisplayed, isActiveDisplayed
         jumpToPosition(jumpPosition);
       }
     }
-    }, [editor]);
+  }, [editor]);
 
   /**
    * This effect is executed when the active function changes. It then sets editor to file that contains said function
@@ -279,7 +291,6 @@ function RightComponent({displayedFile, setActiveAndDisplayed, isActiveDisplayed
       console.log("Loaded project changed.");
       setActiveFunctionIndex(jsonManager.getMain());
       setActiveAndDisplayed(jsonManager.nodes[jsonManager.getMain()].link.file);
-      setActiveIterationIndices(jsonManager.initIterations(jsonManager.getMain(), [], []));
     }
   }, [jsonManager]);
 
@@ -302,6 +313,7 @@ function RightComponent({displayedFile, setActiveAndDisplayed, isActiveDisplayed
       }
     }
   }, [javaFileContent]);
+
 
   // Render editor
   return (

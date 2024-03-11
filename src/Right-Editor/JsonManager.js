@@ -12,6 +12,7 @@ class JsonManager {
     constructor(jsonString) {
         this.nodes = [];
         this.activeIterationIndices = [];
+
         this.skipIds = [];
         let jsonData = JSON.parse(jsonString);
             jsonData.forEach((jsonData) => {
@@ -39,6 +40,9 @@ class JsonManager {
                     this.nodes[i].outFunctionIndex = parentIndex;
                 }
             }
+            this.nodes.forEach((node)=> {
+                console.log(node);
+            });
     }
 
     /**
@@ -55,7 +59,7 @@ class JsonManager {
     iterationNodeIndicesToIterations(iterationIndices){
         let iterations = [];
         iterationIndices.forEach((iterationIndex) => {
-            iterations.push(this.nodes[iterationIndex].iterations);
+            iterations.push(this.nodes[iterationIndex].iteration);
         });
         return iterations;
     }
@@ -84,12 +88,19 @@ class JsonManager {
      */
     initIterations(functionIndex, iterationsIndices, skipIds){
         this.skipIds = skipIds;
+        this.activeIterationIndices = iterationsIndices;
+        this.activeIterationIndex = 0;
         this.nodes[functionIndex].childrenIndices.forEach((childIndex) => {
-            iterationsIndices.concat(this.getIterations(childIndex, iterationsIndices, iterationsIndices.length + 1));
+            this.getIterations(childIndex);
         });
-        return iterationsIndices;
+        //console.log("tfoiualkjfajfadhf" + this.activeIterationIndices[0]);
+        //let a = this.activeIterationIndices;
+        //console.log(a);
+        return this.activeIterationIndices;
     }
 
+
+    //TODO init bool übergeben
     /**
      * Recursively determines all active loops that have this node as a grandparent,
      * assuming that all occurring loops have iteration set to one.
@@ -99,34 +110,35 @@ class JsonManager {
      * @returns {[*]} Array with all the initially active iterations(filled with 1s).
      * That have the current node as a grandparent and are part of this nodes function.
      */
-    getIterations(nodeIndex, iterationsIndices, activeIterationIndex){
+    getIterations(nodeIndex){
         let end = false;
         this.skipIds.forEach((skipId) => {
             if(this.nodes[nodeIndex].traceId === skipId)
                 end = true;
         });
         if(end)
-            return iterationsIndices;
+            return this.activeIterationIndices;
 
         let skip = true;
-        if(activeIterationIndex > iterationsIndices.length && this.nodes[nodeIndex].iterations === 1){
-            iterationsIndices.push(nodeIndex);
-            activeIterationIndex++;
+        if(this.nodes[nodeIndex].nodeType !== "Function" && this.nodes[nodeIndex].nodeType !== "Loop")
+            skip = false;
+        if(this.activeIterationIndex + 1 > this.activeIterationIndices.length && this.nodes[nodeIndex].iteration === 1){
+            this.activeIterationIndices.push(nodeIndex);
+            this.activeIterationIndex++;
             skip = false;
             this.skipIds.push(this.nodes[nodeIndex].traceId);
         }
-        else if(this.nodes[nodeIndex].iteration === iterationsIndices[activeIterationIndex]){
-            activeIterationIndex++;
+        else if(!(this.activeIterationIndex + 1 > this.activeIterationIndices.length) && this.nodes[nodeIndex].iteration === this.activeIterationIndices[this.activeIterationIndex]){
+            this.activeIterationIndex++;
             this.skipIds.push(this.nodes[nodeIndex].traceId);
             skip = false;
         }
-        if((this.nodes[nodeIndex].nodeType === "Loop" && !skip) ||
-            this.nodes[nodeIndex].nodeType !== "Function") {
+        if(!skip) {
             this.nodes[nodeIndex].childrenIndices.forEach((childIndex) => {
-                iterationsIndices.concat(this.getIterations(childIndex, iterationsIndices, activeIterationIndex));
+                this.activeIterationIndices.concat(this.getIterations(childIndex));
             });
         }
-        return iterationsIndices;
+        //return this.activeIterationIndices;
     };
 
     /**
