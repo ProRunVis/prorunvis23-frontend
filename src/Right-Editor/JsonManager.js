@@ -11,7 +11,7 @@ class JsonManager {
      */
     constructor(jsonString) {
         this.nodes = [];
-        this.activeIterationIndices = [];
+        this.activeIterations = [];
         this.skipIds = [];
         this.activeIterationIndex = 0;
 
@@ -88,16 +88,23 @@ class JsonManager {
      * Length equals how many loops are active.
      */
     initIterations(functionIndex, iterationsIndices, skipIds){
-        this.skipIds = skipIds;
-        this.activeIterationIndices = iterationsIndices;
+        this.skipIds = [...skipIds];
+        /*skipIds.forEach((skipId) => {
+           this.skipIds.push(skipId);
+        });*/
+        //console.log("skipidsarray? " +this.skipIds);
+        this.activeIterations = [...iterationsIndices];
+        /*iterationsIndices.forEach((activeIterationIndex) => {
+            this.activeIterations.push(activeIterationIndex);
+        });*/
         this.activeIterationIndex = 0;
         this.nodes[functionIndex].childrenIndices.forEach((childIndex) => {
             this.getIterations(childIndex);
         });
-        //console.log("tfoiualkjfajfadhf" + this.activeIterationIndices[0]);
-        //let a = this.activeIterationIndices;
+        //console.log("tfoiualkjfajfadhf" + this.activeIterations[0]);
+        //let a = this.activeIterations;
         //console.log(a);
-        return this.activeIterationIndices;
+        return this.activeIterations;
     }
 
 
@@ -117,29 +124,30 @@ class JsonManager {
             if(this.nodes[nodeIndex].traceId === skipId)
                 end = true;
         });
-        if(end)
-            return this.activeIterationIndices;
+        if(end){
+            console.log("skipped" + this.nodes[nodeIndex].traceId);
+            return this.activeIterations;}
 
         let skip = true;
         if(this.nodes[nodeIndex].nodeType !== "Function" && this.nodes[nodeIndex].nodeType !== "Loop")
             skip = false;
-        if(this.activeIterationIndex + 1 > this.activeIterationIndices.length && this.nodes[nodeIndex].iteration === 1){
-            this.activeIterationIndices.push(nodeIndex);
+        if(this.activeIterationIndex + 1 > this.activeIterations.length && this.nodes[nodeIndex].iteration === 1){
+            this.activeIterations.push(nodeIndex);
             this.activeIterationIndex++;
             skip = false;
             this.skipIds.push(this.nodes[nodeIndex].traceId);
         }
-        else if(!(this.activeIterationIndex + 1 > this.activeIterationIndices.length) && this.nodes[nodeIndex].iteration === this.activeIterationIndices[this.activeIterationIndex]){
+        else if(!(this.activeIterationIndex + 1 > this.activeIterations.length) && this.nodes[nodeIndex].iteration === this.activeIterations[this.activeIterationIndex]){
             this.activeIterationIndex++;
             this.skipIds.push(this.nodes[nodeIndex].traceId);
             skip = false;
         }
         if(!skip) {
             this.nodes[nodeIndex].childrenIndices.forEach((childIndex) => {
-                this.activeIterationIndices.concat(this.getIterations(childIndex));
+                this.activeIterations.concat(this.getIterations(childIndex));
             });
         }
-        //return this.activeIterationIndices;
+        //return this.activeIterations;
     };
 
     /**
@@ -151,7 +159,10 @@ class JsonManager {
      * contained in the currently active function.
      */
     updateJumpsFunction(functionIndex, activeIterationIndices){
-        this.activeIterationIndices = activeIterationIndices;
+        this.skipIds = [];
+        this.activeIterations = [...activeIterationIndices];
+        //activeIterationIndices.forEach((activeIterationIndex) => {
+        //this.activeIterations.push(activeIterationIndex); });
         let jumps = [];
         jumps.push(functionIndex);
         this.nodes[functionIndex].childrenIndices.forEach((childIndex) => {
@@ -178,10 +189,10 @@ class JsonManager {
         if(this.nodes[nodeIndex].nodeType === "Function" || this.nodes[nodeIndex].nodeType === "Throw")
             jumps.push(nodeIndex);
         if((!(this.nodes[nodeIndex].nodeType === "Loop") ||
-                nodeIndex === this.activeIterationIndices[0]) &&
+                nodeIndex === this.activeIterations[0]) &&
             this.nodes[nodeIndex].nodeType !== "Function") {
             if(this.nodes[nodeIndex].nodeType === "Loop") {
-                this.activeIterationIndices.shift();
+                this.activeIterations.shift();
                 this.skipIds.push(this.nodes[nodeIndex].traceId);
             }
             this.nodes[nodeIndex].childrenIndices.forEach((childIndex) => {
@@ -200,7 +211,11 @@ class JsonManager {
      */
     updateActiveRangesFunction(functionIndex, activeIterationIndices) {
         let ranges = [];
-        this.activeIterationIndices = activeIterationIndices;
+        this.activeIterations =  [...activeIterationIndices];
+        /*activeIterationIndices.forEach((activeIterationIndex) => {
+            this.activeIterations.push(activeIterationIndex);
+        });*/
+        console.log("yupp" + activeIterationIndices + this.activeIterations);
         this.skipIds = [];
         this.nodes[functionIndex].ranges.forEach((range) => {
             ranges.push(range);
@@ -226,12 +241,15 @@ class JsonManager {
         });
         if(end)
             return ranges;
+        console.log(this.activeIterations[0] + " " + nodeIndex);
         if(this.nodes[nodeIndex].nodeType === "Function") {
             ranges.push(this.nodes[nodeIndex].link.range);
-        } else if(!(this.nodes[nodeIndex].nodeType === "Loop") ||
-                nodeIndex === this.activeIterationIndices[0]) {
+        } else if(this.nodes[nodeIndex].nodeType !== "Loop" ||
+                nodeIndex === this.activeIterations[0]) {
+
             if(this.nodes[nodeIndex].nodeType === "Loop") {
-                this.activeIterationIndices.shift();
+                console.log("activee "+nodeIndex);
+                this.activeIterations.shift();
                 this.skipIds.push(this.nodes[nodeIndex].traceId);
             }
             this.nodes[nodeIndex].ranges.forEach((range) => {

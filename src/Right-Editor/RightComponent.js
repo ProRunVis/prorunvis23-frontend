@@ -5,6 +5,7 @@ import "../Css/RightComponent.css"
 import PropTypes from "prop-types";
 import JsonManager from "./JsonManager";
 import {json} from "react-router-dom";
+import async from "async";
 
 /**
  * Represents the right component of the application, primarily responsible for
@@ -25,7 +26,7 @@ function RightComponent({displayedFile, setActiveAndDisplayed, isActiveDisplayed
   // State for the index of the active function in the editor
   const [activeFunctionIndex, setActiveFunctionIndex] = useState(0);
 
-  const [activeIterationIndices, setActiveIterationIndices] = useState();
+  const [activeIterationIndices, setActiveIterationIndices] = useState([]);
 
   // State for the indices of the Nodes(other functions and throws)
   // of the active function that can be used to jump to another node
@@ -58,16 +59,6 @@ function RightComponent({displayedFile, setActiveAndDisplayed, isActiveDisplayed
       } catch (error) {
         console.error("Error loading the Java file:", error);
       }
-    if (editor) {
-      editor.dispose();
-    }
-    const newEditor = EditorInitializer.initializeEditor(
-        editorContainerRef,
-        javaFileContent
-    );
-    if (newEditor) {
-      setEditor(newEditor);
-    }
   };
 
   /**
@@ -132,16 +123,34 @@ function RightComponent({displayedFile, setActiveAndDisplayed, isActiveDisplayed
   /**
    * TODO
    */
-  function iterationChanged(newIterationIndex){
+  function iterationChanged(newIterationIndex){ //index in nodes
+    console.log("iterationChanged" + newIterationIndex);
+
+    //bis hier klappts
+    //
     let insertPosition;
-    jsonManager.activeIterationIndices.forEach((activeIterationIndex) => {
-      if (jsonManager.nodes[activeIterationIndex].traceId === jsonManager.nodes[newIterationIndex].traceId)
-        insertPosition = activeIterationIndex;
-    });
-    let newActiveIterations = jsonManager.initIterations(activeFunctionIndex, activeIterationIndices, [jsonManager.nodes[newIterationIndex].traceId]);
-    newActiveIterations.splice(insertPosition,0, ...newActiveIterations);
+    for(let i = 0; i<activeIterationIndices.length; i++) {
+      console.log(jsonManager.nodes[activeIterationIndices[i]].traceId + " " + jsonManager.nodes[newIterationIndex].traceId + " here");
+        if (jsonManager.nodes[activeIterationIndices[i]].traceId === jsonManager.nodes[newIterationIndex].traceId) {
+          insertPosition = i;
+          break;
+        }
+    }
+    console.log("insert pos " + insertPosition);
+
+    let newActiveIterations = jsonManager.initIterations(activeFunctionIndex, [], [jsonManager.nodes[newIterationIndex].traceId]);
+    //TODO same issue with trace ids that occured with the other thing aswell
+
+    console.log("newActiveIter" + newActiveIterations);
+
+
+    //calc new active iterations
+    let neu = [newIterationIndex];
+    neu.concat(jsonManager.initIterations(newIterationIndex, [], [jsonManager.nodes[newIterationIndex].traceId]));
+    newActiveIterations.splice(insertPosition,0, ...neu); //TODO insert whatever I get when I only start downwards from the new iteration index
+
     console.log("error found1");
-    //setActiveIterationIndices(newActiveIterations);
+    setActiveIterationIndices(newActiveIterations);
   }
 
   /**
@@ -160,7 +169,7 @@ function RightComponent({displayedFile, setActiveAndDisplayed, isActiveDisplayed
               setDoPositionJump(true);
               setActiveFunctionIndex(jump.outFunctionIndex);
               console.log("error found2");
-              //setActiveIterationIndices(jsonManager.initIterations(activeFunctionIndex, jump.outLoopIterations, []));
+              setActiveIterationIndices(jsonManager.initIterations(activeFunctionIndex, jump.outLoopIterations, []));
             }
           });
           // We do not want to check for the link of the current function since it might be in another file
@@ -173,7 +182,7 @@ function RightComponent({displayedFile, setActiveAndDisplayed, isActiveDisplayed
             setDoPositionJump(true);
             setActiveFunctionIndex(jumpIndex);
             console.log("error found3");
-            //setActiveIterationIndices(jsonManager.initIterations(activeFunctionIndex, [], []));
+            setActiveIterationIndices(jsonManager.initIterations(activeFunctionIndex, [], []));
           }
         });
       });
@@ -186,7 +195,7 @@ function RightComponent({displayedFile, setActiveAndDisplayed, isActiveDisplayed
   function handleIterationButton(){
     editor.onMouseDown(e => {
       const position = e.target.position;
-      console.log("beepboop" + activeIterationIndices);
+      //console.log("beepboop" + activeIterationIndices);
       activeIterationIndices.forEach((iterationIndex) => {
         let iteration = jsonManager.nodes[iterationIndex];
         if (iteration.link.range.containsPosition(position)) {
@@ -194,9 +203,11 @@ function RightComponent({displayedFile, setActiveAndDisplayed, isActiveDisplayed
           let id = iteration.traceId;
           let nexiteration = iteration.iteration + 1;
 
-          for(let i = 0; i > jsonManager.nodes.length ; i++){
-            if(jsonManager.nodes[i].traceId === id && nexiteration === jsonManager.nodes[i].iteration)
-              iterationChanged(jsonManager.nodes[i]);
+          for(let i = 0; i < jsonManager.nodes.length ; i++) {
+            if (jsonManager.nodes[i].traceId === id && nexiteration === jsonManager.nodes[i].iteration){
+              iterationChanged(i);
+              break;
+            }
           }
         }
       });
@@ -214,31 +225,57 @@ function RightComponent({displayedFile, setActiveAndDisplayed, isActiveDisplayed
 
   // ------------------------------------------------------------------------------------------------------------------
   // UseEffects
-/*
-* This effect is executed when the file in the editor changes. It then loads in the content of said file
-  * into the editor
-  */
+
+
+  useEffect(() => {
+    if(jsonManager) {
+      setActiveFunctionIndex(jsonManager.getMain());
+      setActiveAndDisplayed(jsonManager.nodes[1].link.file);
+    }
+  },[jsonManager]);
+
   useEffect(() => {
     if(displayedFile) {
-      console.log("File changed.");
       loadJavaFile();
     }
-  }, [displayedFile]);
+  },[displayedFile]);
 
-  /**
-   * This effect is executed when the editor changes. It then gets the ranges that should be highlighted from the
-   * jsonManager and displays them in the editor if the current file is the one where the active Node is located.
-   * It then starts the event listener for mouse clicks and sets the position of the editor to the active Node if it is
-   * part of the displayed file.
-   */
   useEffect(() => {
-    if(editor) {
-      console.log("Editor changed.");
-      let rangesToHighlight = [];
-      if (jsonManager) {
-        console.log("vallah bitte" + activeIterationIndices);
-        rangesToHighlight = jsonManager.updateActiveRangesFunction(activeFunctionIndex, activeIterationIndices);
+    if (javaFileContent && editorContainerRef.current) {
+      if (editor) {
+        editor.dispose();
       }
+      const newEditor = EditorInitializer.initializeEditor(
+          editorContainerRef,
+          javaFileContent
+      );
+      if (newEditor) {
+        setEditor(newEditor);
+      }
+    }
+  },[javaFileContent, activeIterationIndices, activeFunctionIndex]);
+
+  useEffect(() => {
+    if(jsonManager) {
+      setActiveIterationIndices(jsonManager.initIterations(activeFunctionIndex, [], []));
+    }
+  },[activeFunctionIndex]);
+
+  useEffect(() => {
+    if(jsonManager) {
+      setJumpNodesIndices(jsonManager.updateJumpsFunction(activeFunctionIndex, activeIterationIndices));
+    }
+  },[activeIterationIndices]);
+
+  useEffect(() => {
+    if(jsonManager && editor) {
+     console.log("File content changed.");
+
+
+     let rangesToHighlight = [];
+     rangesToHighlight = jsonManager.updateActiveRangesFunction(activeFunctionIndex, activeIterationIndices);
+
+
       if (isActiveDisplayed()) {
         setDoPositionJump(true);
         rangesToHighlight.forEach((rangeToHighlight) => {
@@ -257,11 +294,17 @@ function RightComponent({displayedFile, setActiveAndDisplayed, isActiveDisplayed
           }
           highlightLink(jsonManager.nodes[jump].link.range);
         });
+        handleJumps();
+
+        handleIterationButton();
+
+        activeIterationIndices.forEach((index) => {
+          highlightLink(jsonManager.nodes[index].link.range);
+        });
       }
-      handleJumps();
-      if(!doPositionJump && isActiveDisplayed()){
-        if(activeFunctionIndex !== 1)
-          jumpToPosition(jsonManager.nodes[activeFunctionIndex].outLinks[jsonManager.nodes[activeFunctionIndex].outLinks.length-1].range.getStartPosition());
+     if (!doPositionJump && isActiveDisplayed()) {
+        if (activeFunctionIndex !== 1)
+          jumpToPosition(jsonManager.nodes[activeFunctionIndex].outLinks[jsonManager.nodes[activeFunctionIndex].outLinks.length - 1].range.getStartPosition());
         else
           jumpToPosition(jsonManager.nodes[activeFunctionIndex].link.range.getStartPosition());
         setDoPositionJump(false);
@@ -270,68 +313,39 @@ function RightComponent({displayedFile, setActiveAndDisplayed, isActiveDisplayed
         setDoPositionJump(false);
         jumpToPosition(jumpPosition);
       }
+
+      //handleIterationDisplay();
+      console.log("dekorationen neu geladen");
     }
-  }, [javaFileContent]);
+
+  },[editor]);
+
+
+  useEffect(() => {
+    console.log(activeIterationIndices);
+  }, [activeIterationIndices]);
+
+
+  /**
+   * This effect is executed when the editor changes. It then gets the ranges that should be highlighted from the
+   * jsonManager and displays them in the editor if the current file is the one where the active Node is located.
+   * It then starts the event listener for mouse clicks and sets the position of the editor to the active Node if it is
+   * part of the displayed file.
+   */
+
 
   /**
    * This effect is executed when the active function changes. It then sets editor to file that contains said function
    * and updates the JumpNodeIndices.
    */
-  useEffect(() => {
-    if(jsonManager !== null) {
-      console.log("Active function changed.");
-      setActiveAndDisplayed(jsonManager.nodes[activeFunctionIndex].link.file);
-      setJumpNodesIndices(jsonManager.updateJumpsFunction(activeFunctionIndex, activeIterationIndices));
-    }
-  }, [activeFunctionIndex]);
 
   /**
    * This effect is executed when json manager/project changes. It then gets the main function of that project
    * and sets it as the active function and performs a file jump to the file that contains the new active function.
    */
-  useEffect(() => {
-    if(jsonManager) {
-      console.log("Loaded project changed.");
-      setActiveFunctionIndex(jsonManager.getMain());
-      setActiveAndDisplayed(jsonManager.nodes[jsonManager.getMain()].link.file);
-      console.log("error found4")
-      let temp = [];
-      const g = jsonManager.initIterations(jsonManager.getMain(), [],[]);
-      g.forEach((gg) => {
-        temp.push(gg);
-      });
-      //temp.concat(g);
-      setActiveIterationIndices(temp);
-      //let temp = [2];
-      //setActiveIterationIndices([2]);
-      console.log(temp);
-      console.log(activeIterationIndices);
-    }
-  }, [jsonManager]);
 
-  useEffect(() => {
-    console.log("changed: " + activeIterationIndices);
-  }, [activeIterationIndices]);
 
-  /**
-   * This effect is executed when the content that should be displayed by the editor changes.
-   * It then creates a new editor to display the new content.
-   */
-  useEffect(() => {
-    if (javaFileContent && editorContainerRef.current) {
-      console.log("File content changed.");
-      if (editor) {
-        editor.dispose();
-      }
-      const newEditor = EditorInitializer.initializeEditor(
-          editorContainerRef,
-          javaFileContent
-      );
-      if (newEditor) {
-        setEditor(newEditor);
-      }
-    }
-  }, [javaFileContent]);
+
 
 
   // Render editor
