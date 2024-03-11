@@ -25,7 +25,6 @@ function ContainerRightLeft(){
             if(path === uploadedFile.webkitRelativePath.slice(uploadedFile.webkitRelativePath.indexOf('/') + 1, uploadedFile.webkitRelativePath.length)){
                 setDisplayedFile(uploadedFile);
                 setActiveFile(uploadedFile);
-                console.log("test" + uploadedFile + " " + uploadedFile.realPath);
             }
         }
     }

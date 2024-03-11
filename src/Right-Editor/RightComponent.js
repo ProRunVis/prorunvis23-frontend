@@ -25,7 +25,7 @@ function RightComponent({displayedFile, setActiveAndDisplayed, isActiveDisplayed
   // State for the index of the active function in the editor
   const [activeFunctionIndex, setActiveFunctionIndex] = useState(0);
 
-  const [activeIterationIndices, setActiveIterationIndices] = useState([]);
+  const [activeIterationIndices, setActiveIterationIndices] = useState();
 
   // State for the indices of the Nodes(other functions and throws)
   // of the active function that can be used to jump to another node
@@ -140,7 +140,8 @@ function RightComponent({displayedFile, setActiveAndDisplayed, isActiveDisplayed
     });
     let newActiveIterations = jsonManager.initIterations(activeFunctionIndex, activeIterationIndices, [jsonManager.nodes[newIterationIndex].traceId]);
     newActiveIterations.splice(insertPosition,0, ...newActiveIterations);
-    setActiveIterationIndices(newActiveIterations);
+    console.log("error found1");
+    //setActiveIterationIndices(newActiveIterations);
   }
 
   /**
@@ -158,8 +159,8 @@ function RightComponent({displayedFile, setActiveAndDisplayed, isActiveDisplayed
               setJumpPosition(jump.outLinkPosition);
               setDoPositionJump(true);
               setActiveFunctionIndex(jump.outFunctionIndex);
-              console.log("error found");
-              setActiveIterationIndices(jsonManager.initIterations(activeFunctionIndex, jump.outLoopIterations, []));
+              console.log("error found2");
+              //setActiveIterationIndices(jsonManager.initIterations(activeFunctionIndex, jump.outLoopIterations, []));
             }
           });
           // We do not want to check for the link of the current function since it might be in another file
@@ -171,8 +172,8 @@ function RightComponent({displayedFile, setActiveAndDisplayed, isActiveDisplayed
             setJumpPosition(jump.linkPosition);
             setDoPositionJump(true);
             setActiveFunctionIndex(jumpIndex);
-            console.log("error found");
-            setActiveIterationIndices(jsonManager.initIterations(activeFunctionIndex, [], []));
+            console.log("error found3");
+            //setActiveIterationIndices(jsonManager.initIterations(activeFunctionIndex, [], []));
           }
         });
       });
@@ -234,8 +235,10 @@ function RightComponent({displayedFile, setActiveAndDisplayed, isActiveDisplayed
     if(editor) {
       console.log("Editor changed.");
       let rangesToHighlight = [];
-      if (jsonManager)
+      if (jsonManager) {
+        console.log("vallah bitte" + activeIterationIndices);
         rangesToHighlight = jsonManager.updateActiveRangesFunction(activeFunctionIndex, activeIterationIndices);
+      }
       if (isActiveDisplayed()) {
         setDoPositionJump(true);
         rangesToHighlight.forEach((rangeToHighlight) => {
@@ -268,7 +271,7 @@ function RightComponent({displayedFile, setActiveAndDisplayed, isActiveDisplayed
         jumpToPosition(jumpPosition);
       }
     }
-  }, [editor]);
+  }, [javaFileContent]);
 
   /**
    * This effect is executed when the active function changes. It then sets editor to file that contains said function
@@ -291,8 +294,24 @@ function RightComponent({displayedFile, setActiveAndDisplayed, isActiveDisplayed
       console.log("Loaded project changed.");
       setActiveFunctionIndex(jsonManager.getMain());
       setActiveAndDisplayed(jsonManager.nodes[jsonManager.getMain()].link.file);
+      console.log("error found4")
+      let temp = [];
+      const g = jsonManager.initIterations(jsonManager.getMain(), [],[]);
+      g.forEach((gg) => {
+        temp.push(gg);
+      });
+      //temp.concat(g);
+      setActiveIterationIndices(temp);
+      //let temp = [2];
+      //setActiveIterationIndices([2]);
+      console.log(temp);
+      console.log(activeIterationIndices);
     }
   }, [jsonManager]);
+
+  useEffect(() => {
+    console.log("changed: " + activeIterationIndices);
+  }, [activeIterationIndices]);
 
   /**
    * This effect is executed when the content that should be displayed by the editor changes.

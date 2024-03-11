@@ -12,8 +12,9 @@ class JsonManager {
     constructor(jsonString) {
         this.nodes = [];
         this.activeIterationIndices = [];
-
         this.skipIds = [];
+        this.activeIterationIndex = 0;
+
         let jsonData = JSON.parse(jsonString);
             jsonData.forEach((jsonData) => {
                 this.nodes.push(new TraceNode(jsonData));
