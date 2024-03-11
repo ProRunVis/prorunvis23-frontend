@@ -1,3 +1,5 @@
+
+
 /**
  * Manages the opening, positioning, and closing of popups within an application.
  * This class is the third in the sequence of operations for popup management. It is
@@ -56,7 +58,7 @@ class PopupManager {
         console.log("1- Mouse Position - X:", x, "Y:", y);
 
         const dialogElement = this.dialogRef.current;
-        console.log("dialogRef  "+this.dialogElement)
+        //console.log("dialogRef  "+ this.dialogElement)
         console.log("1.5- Mouse Position - X:", x, "Y:", y);
         if (dialogElement) {
             dialogElement.style.position = 'absolute';
