@@ -83,12 +83,18 @@ function RightComponent({displayedFile, setActiveAndDisplayed, isActiveDisplayed
   }
 
   function placeDecoration(startLineNumber, symbol) {
-    let pos = new monaco.Range(startLineNumber, 7, startLineNumber, 7);
-    let id = {major: 1, minor: 1};
-    let text = "test";
-    console.log(text);
-    let editOperation = {range: pos, text: text, forceMoveMarkers: true};
-    editor.executeEdits("custom-code", [editOperation]);
+    editor.createDecorationsCollection([
+      {
+        range: new monaco.Range(startLineNumber, 1, startLineNumber, 1),
+        options: {
+          glyphMarginClassName: symbol,
+          glyphMargin: {
+            position: monaco.editor.GlyphMarginLane.Right,
+          },
+        },
+      },
+    ]);
+
   }
 
   /**
@@ -113,21 +119,44 @@ function RightComponent({displayedFile, setActiveAndDisplayed, isActiveDisplayed
 
   function drawLine(ranges) {
       let currentRow = new monaco.Range(ranges[0].startLineNumber, 0, ranges[0].startLineNumber + 1, 0);
-      let symbol = 54;
+      let symbol = "end";
+      let stillInCurrentRange = false;
       for (let i = 0; i < ranges.length;) {
+        if (ranges[i].startLineNumber > currentRow.startLineNumber) {
+          stillInCurrentRange = false;
+          currentRow = new monaco.Range(currentRow.startLineNumber + 1, 0, currentRow.endLineNumber + 1, 0);
+        }
+        console.log(currentRow);
+        console.log(ranges[i]);
+        console.log(editor.model.getLineContent(currentRow.startLineNumber));
         if (currentRow.containsRange(ranges[i])) {
+          if (!stillInCurrentRange) {
+            symbol = (symbol === "line" || symbol === "start") ? "line" : "start";
+          }
+          if (i === ranges.length - 1) {
+            if (symbol === "start") {
+              symbol = "one-line";
+            } else {
+              symbol = "end";
+            }
+          }
+          console.log("start");
           placeDecoration(currentRow.startLineNumber, symbol);
-          symbol = 2506;
+          stillInCurrentRange = true;
           i++;
-          continue;
-        } else if (currentRow.isEmpty() && symbol !== 54) {
-          placeDecoration(currentRow.startLineNumber, symbol);
+        } else if (!currentRow.isEmpty()){
+          console.log("break");
+          if (symbol === "start") {
+            placeDecoration(currentRow.startLineNumber - 1, "one-line");
+          } else if (symbol === "line") {
+            placeDecoration(currentRow.startLineNumber - 1, "end");
+          }
+          symbol = "end";
+        } else if (currentRow.isEmpty() && (symbol === "start" || symbol === "line")) {
+          console.log("cont");
+          placeDecoration(currentRow.startLineNumber, "line");
+          symbol = "line";
         }
-        if (symbol === 2506) {
-          placeDecoration(currentRow.startLineNumber - 1, 2534);
-          symbol = 54;
-        }
-        currentRow = new monaco.Range(currentRow.startLineNumber + 1, 0, currentRow.endLineNumber + 1, 0);
       }
   }
 
@@ -232,7 +261,7 @@ function RightComponent({displayedFile, setActiveAndDisplayed, isActiveDisplayed
         jumpToPosition(jumpPosition);
       }
     }
-    }, [editor]);
+    }, [editor, activeFunctionIndex]);
 
   /**
    * This effect is executed when the active function changes. It then sets editor to file that contains said function
@@ -241,7 +270,7 @@ function RightComponent({displayedFile, setActiveAndDisplayed, isActiveDisplayed
   useEffect(() => {
     if(jsonManager !== null) {
       console.log("Active function changed.");
-      setActiveAndDisplayed(jsonManager.nodes[activeFunctionIndex].link.file);
+      setActiveAndDisplayed(jsonManager.nodes[activeFunctionIndex].link.filepath);
       setJumpNodesIndices(jsonManager.updateJumpsFunction(activeFunctionIndex, activeIterations));
     }
   }, [activeFunctionIndex]);
@@ -254,7 +283,7 @@ function RightComponent({displayedFile, setActiveAndDisplayed, isActiveDisplayed
     if(jsonManager) {
       console.log("Loaded project changed.");
       setActiveFunctionIndex(jsonManager.getMain());
-      setActiveAndDisplayed(jsonManager.nodes[jsonManager.getMain()].link.file);
+      setActiveAndDisplayed(jsonManager.nodes[jsonManager.getMain()].link.filepath);
     }
   }, [jsonManager]);
 
@@ -276,7 +305,7 @@ function RightComponent({displayedFile, setActiveAndDisplayed, isActiveDisplayed
         setEditor(newEditor);
       }
     }
-  }, [javaFileContent]);
+  }, [javaFileContent, activeFunctionIndex]);
 
   // Render editor
   return (
