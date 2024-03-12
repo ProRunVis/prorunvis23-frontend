@@ -59,7 +59,7 @@ class TraceNode
                     node.link.begin.column,
                     node.link.end.line,
                     node.link.end.column + 1),
-                node.link.file);
+                node.link.filepath);
 
         //outLinks: Array of maximum two {@link SourceRange}s. For Functions function name and if there taken return statement.
         //      For Throws one {@link SourceRange} with range of throw statement. Null for main function.
@@ -72,7 +72,7 @@ class TraceNode
                         nodeOutLink.begin.column,
                         nodeOutLink.end.line,
                         nodeOutLink.end.column + 1),
-                    nodeOutLink.file));
+                    nodeOutLink.filepath));
             });
 
         //outIndex: Index of parent node the outLink leads back to.

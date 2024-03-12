@@ -1,4 +1,5 @@
 import * as monaco from 'monaco-editor/esm/vs/editor/editor.api';
+import {useEffect} from "react";
 
 /**
  * Initializes the Monaco Editor with specific settings for editing Java files.
@@ -19,7 +20,12 @@ export class EditorInitializer {
    * @param javaFileContent The initial Java code content to be loaded into the editor.
    * @return The initialized Monaco Editor instance, or undefined if initialization fails.
    */
-  static initializeEditor(containerRef, javaFileContent) {
+  static initializeEditor(containerRef, javaFileContent, hints) {
+    /*obj.hints.forEach((hint)=>{
+      console.log(hint);
+    });*/
+    //console.log(obj);
+
     if (typeof javaFileContent !== 'string') {
       console.error('javaFileContent must be a string');
       return;
@@ -106,6 +112,53 @@ export class EditorInitializer {
       }
     });
 
+    const { dispose } = monaco.languages.registerInlayHintsProvider("java", {
+
+      provideInlayHints(model, range, token) {
+        let hintss = [];
+        /*hintss.push({
+          kind: monaco.languages.InlayHintKind.Type,
+          position: { column: 13, lineNumber: 4 },
+          label: `: Number`,
+        });
+        hintss.push({
+          kind: monaco.languages.InlayHintKind.Type,
+          position: { column: 13, lineNumber: 2 },
+          label: `: Number`,
+        });
+        hintss.push({
+          kind: monaco.languages.InlayHintKind.Type,
+          position: { column: 16, lineNumber: 2 },
+          label: `: Number`,
+          whitespaceBefore: true, // see difference between a and b parameter
+        });
+        hintss.push({
+          kind: monaco.languages.InlayHintKind.Parameter,
+          position: { column: 18, lineNumber: 4 },
+          label: `a:`,
+        });
+        hintss.push({
+          kind: monaco.languages.InlayHintKind.Parameter,
+          position: { column: 21, lineNumber: 4 },
+          label: `b:`,
+          whitespaceAfter: true, // similar to whitespaceBefore
+        });*/
+        hints.forEach((hint) => {
+          hintss.push({
+            kind: monaco.languages.InlayHintKind.Parameter,
+            position: {column: hint.position.column, lineNumber: hint.position.lineNumber},
+            label: hint.content,
+          });
+        });
+        console.log("hereeee", hintss);
+
+        return {
+          hints: hintss,
+          dispose: () => {},
+        };
+      },
+    });
+
     monaco.languages.register({ id: 'java' });   // Activates the syntax highlighting
 
     // -------------------------------------  All other function calls for the editor  ----------------------------
@@ -115,7 +168,7 @@ export class EditorInitializer {
 
     // Set dark theme
     monaco.editor.setTheme('vs-dark');
-    return editor
+    return {editor, dispose};
   }
 }
 export default EditorInitializer;

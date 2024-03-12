@@ -4,9 +4,8 @@ import EditorInitializer from "./EditorInitializer";
 import "../Css/RightComponent.css"
 import PropTypes from "prop-types";
 import JsonManager from "./JsonManager";
-import {json} from "react-router-dom";
-import async from "async";
-import PopupManager from "./PopupManager";
+import * as monaco from "monaco-editor";
+import {languages} from "monaco-editor";
 
 /**
  * Represents the right component of the application, primarily responsible for
@@ -23,6 +22,8 @@ import PopupManager from "./PopupManager";
  */
 function RightComponent({displayedFile, setActiveAndDisplayed, isActiveDisplayed, jsonManager}){
   // Constants --------------------------------------------------------------------------------------------------------
+
+  const [languageDispose, setLanguageDispose] = useState(null);
 
   // State for the index of the active function in the editor
   const [activeFunctionIndex, setActiveFunctionIndex] = useState(0);
@@ -178,12 +179,14 @@ function RightComponent({displayedFile, setActiveAndDisplayed, isActiveDisplayed
           if(jump === activeFunctionIndex){
             return;
           }
-          if (jump.link.range.containsPosition(position)) {
-            setJumpPosition(jump.linkPosition);
-            setDoPositionJump(true);
-            setActiveFunctionIndex(jumpIndex);
-            console.log("error found3");
-            setActiveIterationIndices(jsonManager.initIterations(activeFunctionIndex, [], []));
+          if(jsonManager.nodes[jump].nodeType === "Function") {
+            if (jump.link.range.containsPosition(position)) {
+              setJumpPosition(jump.linkPosition);
+              setDoPositionJump(true);
+              setActiveFunctionIndex(jumpIndex);
+              console.log("error found3");
+              setActiveIterationIndices(jsonManager.initIterations(activeFunctionIndex, [], []));
+            }
           }
         });
       });
@@ -205,10 +208,24 @@ function RightComponent({displayedFile, setActiveAndDisplayed, isActiveDisplayed
         if (iteration.link.range.containsPosition(position)) {
           console.log("change iteration");
           let id = iteration.traceId;
-          let nexiteration = iteration.iteration + 1;
+          //let nextIteration = iteration.iteration + 1;
+
+
+
+          let nextIteration = prompt("Please enter the iteration", iteration.iteration);
+          console.log(nextIteration);
+          nextIteration = parseInt(nextIteration);
+          console.log("int::", nextIteration);
+          if (nextIteration === null || nextIteration < 0 || nextIteration > jsonManager.getLastIterationNumber(iterationIndex)) {
+            nextIteration = iteration.iteration;
+          }
+
+
+
+
 
           for(let i = 0; i < jsonManager.nodes.length ; i++) {
-            if (jsonManager.nodes[i].traceId === id && nexiteration === jsonManager.nodes[i].iteration){
+            if (jsonManager.nodes[i].traceId === id && nextIteration === jsonManager.nodes[i].iteration){
               iterationChanged(i);
               break;
             }
@@ -244,18 +261,38 @@ function RightComponent({displayedFile, setActiveAndDisplayed, isActiveDisplayed
     }
   },[displayedFile]);
 
+
   useEffect(() => {
+    let newEditor;
+    //TODO create inlay hints with activeiterationindices
     if (javaFileContent && editorContainerRef.current) {
+      let hints = [];
+      activeIterationIndices.forEach((iterationIndex) => {
+        let position = jsonManager.nodes[iterationIndex].link.range.getStartPosition();
+        let content = `(` + jsonManager.nodes[iterationIndex].iteration + `/` + jsonManager.getLastIterationNumber(iterationIndex) + `)`;
+        hints.push({position, content});
+      });
+      console.log(hints);
       if (editor) {
+        //editor.language.dispose();
+        //languageDispose();
         editor.dispose();
+        //editor.dis();
       }
-      const newEditor = EditorInitializer.initializeEditor(
+      newEditor = EditorInitializer.initializeEditor(
           editorContainerRef,
-          javaFileContent
+          javaFileContent,
+          hints
       );
       if (newEditor) {
-        setEditor(newEditor);
+        //setLanguageDispose(newEditor.dispose);
+        setEditor(newEditor.editor);
+
       }
+    }
+    return () => {
+      if (javaFileContent && editorContainerRef.current)
+        newEditor.dispose();
     }
   },[javaFileContent, activeIterationIndices, activeFunctionIndex]);
 
@@ -296,7 +333,8 @@ function RightComponent({displayedFile, setActiveAndDisplayed, isActiveDisplayed
           if (jump === activeFunctionIndex) {
             return;
           }
-          highlightLink(jsonManager.nodes[jump].link.range);
+          if(jsonManager.nodes[jump].nodeType === "Function")
+            highlightLink(jsonManager.nodes[jump].link.range);
         });
         handleJumps();
 
