@@ -118,46 +118,53 @@ function RightComponent({displayedFile, setActiveAndDisplayed, isActiveDisplayed
   }
 
   function drawLine(ranges) {
-      let currentRow = new monaco.Range(ranges[0].startLineNumber, 0, ranges[0].startLineNumber + 1, 0);
-      let symbol = "end";
-      let stillInCurrentRange = false;
-      for (let i = 0; i < ranges.length;) {
-        if (ranges[i].startLineNumber > currentRow.startLineNumber) {
-          stillInCurrentRange = false;
-          currentRow = new monaco.Range(currentRow.startLineNumber + 1, 0, currentRow.endLineNumber + 1, 0);
-        }
+    console.log("raw: " + ranges);
+    let orderedRanges = ranges.sort((a, b) => ((a.startLineNumber < b.startLineNumber) ? -1 : (a.startLineNumber > b.startLineNumber) ? 1 : 0));
+    console.log("ordered: " + ranges);
+    let currentRow = new monaco.Range(ranges[0].startLineNumber, 0, ranges[0].startLineNumber + 1, 0);
+    let symbol = "end";
+    let stillInCurrentRange = false;
+    let breakIndex = 0;
+    for (let i = 0; i < ranges.length;) {
+      if (breakIndex > 100) {
+        console.log("breakIndex too high");
         console.log(currentRow);
         console.log(ranges[i]);
-        console.log(editor.model.getLineContent(currentRow.startLineNumber));
-        if (currentRow.containsRange(ranges[i])) {
-          if (!stillInCurrentRange) {
-            symbol = (symbol === "line" || symbol === "start") ? "line" : "start";
-          }
-          if (i === ranges.length - 1) {
-            if (symbol === "start") {
-              symbol = "one-line";
-            } else {
-              symbol = "end";
-            }
-          }
-          console.log("start");
-          placeDecoration(currentRow.startLineNumber, symbol);
-          stillInCurrentRange = true;
-          i++;
-        } else if (!currentRow.isEmpty()){
-          console.log("break");
-          if (symbol === "start") {
-            placeDecoration(currentRow.startLineNumber - 1, "one-line");
-          } else if (symbol === "line") {
-            placeDecoration(currentRow.startLineNumber - 1, "end");
-          }
-          symbol = "end";
-        } else if (currentRow.isEmpty() && (symbol === "start" || symbol === "line")) {
-          console.log("cont");
-          placeDecoration(currentRow.startLineNumber, "line");
-          symbol = "line";
-        }
+        console.log(symbol);
+        break;
       }
+      if (ranges[i].startLineNumber > currentRow.startLineNumber) {
+        stillInCurrentRange = false;
+        currentRow = new monaco.Range(currentRow.startLineNumber + 1, 0, currentRow.endLineNumber + 1, 0);
+      }
+      if (currentRow.containsRange(ranges[i])) {
+        if (!stillInCurrentRange) {
+          symbol = (symbol === "line" || symbol === "start") ? "line" : "start";
+        }
+        if (i === ranges.length - 1) {
+          if (symbol === "start") {
+            symbol = "one-line";
+          } else {
+            symbol = "end";
+          }
+        }
+        placeDecoration(currentRow.startLineNumber, symbol);
+        stillInCurrentRange = true;
+        i++;
+      } else if (!(editor.getModel().getValueInRange(currentRow).trim().length === 0)) {
+        if (symbol === "start") {
+          placeDecoration(currentRow.startLineNumber - 1, "one-line");
+        } else if (symbol === "line") {
+          placeDecoration(currentRow.startLineNumber - 1, "end");
+        }
+        symbol = "end";
+      } else if (editor.getModel().getValueInRange(currentRow).trim().length === 0 && (symbol === "start" || symbol === "line")) {
+        placeDecoration(currentRow.startLineNumber, "line");
+        symbol = "line";
+      }
+      console.log(currentRow + "," + ranges[i] + "," + symbol);
+      breakIndex++;
+    }
   }
 
   /**
