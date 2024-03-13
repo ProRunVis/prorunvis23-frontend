@@ -126,9 +126,6 @@ function RightComponent({displayedFile, setActiveAndDisplayed, isActiveDisplayed
           stillInCurrentRange = false;
           currentRow = new monaco.Range(currentRow.startLineNumber + 1, 0, currentRow.endLineNumber + 1, 0);
         }
-        console.log(currentRow);
-        console.log(ranges[i]);
-        console.log(editor.model.getLineContent(currentRow.startLineNumber));
         if (currentRow.containsRange(ranges[i])) {
           if (!stillInCurrentRange) {
             symbol = (symbol === "line" || symbol === "start") ? "line" : "start";
@@ -144,7 +141,7 @@ function RightComponent({displayedFile, setActiveAndDisplayed, isActiveDisplayed
           placeDecoration(currentRow.startLineNumber, symbol);
           stillInCurrentRange = true;
           i++;
-        } else if (!currentRow.isEmpty()){
+        } else if (!(editor.getModel().getValueInRange(currentRow).trim().length === 0)){
           console.log("break");
           if (symbol === "start") {
             placeDecoration(currentRow.startLineNumber - 1, "one-line");
@@ -152,7 +149,7 @@ function RightComponent({displayedFile, setActiveAndDisplayed, isActiveDisplayed
             placeDecoration(currentRow.startLineNumber - 1, "end");
           }
           symbol = "end";
-        } else if (currentRow.isEmpty() && (symbol === "start" || symbol === "line")) {
+        } else if (editor.getModel().getValueInRange(currentRow).trim().length === 0 && (symbol === "start" || symbol === "line")) {
           console.log("cont");
           placeDecoration(currentRow.startLineNumber, "line");
           symbol = "line";
@@ -230,6 +227,7 @@ function RightComponent({displayedFile, setActiveAndDisplayed, isActiveDisplayed
         rangesToHighlight = jsonManager.updateActiveRangesFunction(activeFunctionIndex, activeIterations);
       if (isActiveDisplayed()) {
         setDoPositionJump(true);
+        console.log(rangesToHighlight)
         rangesToHighlight.forEach((rangeToHighlight) => {
           highlightGreen(rangeToHighlight);
         });
