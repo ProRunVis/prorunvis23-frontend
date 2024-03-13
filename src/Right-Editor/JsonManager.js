@@ -48,9 +48,7 @@ class JsonManager {
                     this.nodes[i].outFunctionIndex = parentIndex;
                 }
             }
-            this.nodes.forEach((node) => {
-                console.log(node);
-            });
+                console.log(this.nodes);
     }
 
     /**
@@ -80,7 +78,7 @@ class JsonManager {
         let lastIteration = this.nodes[iterationIndex].iteration;
 
         this.nodes[this.nodes[iterationIndex].parentIndex].childrenIndices.forEach((childIndex) => {
-            if(this.nodes[childIndex].traceId === iterationIndexId)
+            if(this.nodes[childIndex].traceId === iterationIndexId && this.nodes[childIndex].iteration > lastIteration)
                 lastIteration = this.nodes[childIndex].iteration;
         });
         return lastIteration;

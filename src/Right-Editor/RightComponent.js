@@ -149,14 +149,24 @@ function RightComponent({displayedFile, setActiveAndDisplayed, isActiveDisplayed
       }
     }
     console.log("removeCounter: ", removeCounter);
+    console.log("insert position", insertPosition);
+    let iterationsInLoop = [newIterationIndex, ...jsonManager.initIterations(newIterationIndex, [], [])];
+    console.log("iterationsInLoop", iterationsInLoop);
+    /*
     let iterationsInLoop = [newIterationIndex, ...jsonManager.initIterations(newIterationIndex, [], [])];
     console.log("iterationsInLoop: ", iterationsInLoop);
     let iterationsWithoutLoop = activeIterationIndices.splice(insertPosition - 1, removeCounter, ...iterationsInLoop);
-    console.log("iterationsWithoutLoop: ", iterationsWithoutLoop);
+    console.log("iterationsWithoutLoop: ", iterationsWithoutLoop);*/
+    console.log("activre", activeIterationIndices);
+
+    const newNumbers = [
+      ...activeIterationIndices.slice(0, insertPosition),
+            ...iterationsInLoop,
+      ...activeIterationIndices.slice(insertPosition + removeCounter) ];
 
     //let newActiveIterations = activeIterationIndices.splice(insertPosition - 1, 0, ...iterationsInLoop);
-    console.log("new: ", iterationsWithoutLoop);
-    setActiveIterationIndices(iterationsWithoutLoop);
+    //console.log("new: ", iterationsWithoutLoop);
+    setActiveIterationIndices(newNumbers);
     //let newActiveIterationsInLoop = jsonManager.initIterations(newIterationIndex, [], []);
 
 
@@ -241,7 +251,7 @@ add to list at insert index
             nextIteration = iteration.iteration;
           }
           for(let i = 0; i < jsonManager.nodes.length ; i++) {
-            if (jsonManager.nodes[i].traceId === id && nextIteration === jsonManager.nodes[i].iteration){
+            if (jsonManager.nodes[i].traceId === id && nextIteration === jsonManager.nodes[i].iteration && jsonManager.nodes[i].parentIndex === iteration.parentIndex){
               changeIteration(i);
               break;
             }
