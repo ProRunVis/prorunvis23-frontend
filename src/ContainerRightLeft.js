@@ -51,11 +51,11 @@ function ContainerRightLeft(){
      * TODO Create link and fetch to the backend here currently using hardcoded example json
      * @param files project files to be traced.
      */
-    async function passOnUploadedFiles(files) {
-        setUploadedFiles(files);
-        let json = await fetch("api/process");
-        setJsonManager(new JsonManager(json));
-    }
+    function passOnUploadedFiles(files){
+            setUploadedFiles(files);
+            setJsonManager(new JsonManager(
+                '[{"ranges":[],"childrenIndices":[1],"outLinks":[],"outIndex":0,"traceId":"root"},{"ranges":[{"begin":{"line":4,"column":9},"end":{"line":4,"column":18}},{"begin":{"line":5,"column":13},"end":{"line":5,"column":17}}],"childrenIndices":[2],"parentIndex":0,"link":{"begin":{"line":3,"column":1},"end":{"line":3,"column":2},"file":"AMain/AMain.java"},"outLinks":[],"outIndex":0,"traceId":"4"},{"ranges":[{"begin":{"line":8,"column":13},"end":{"line":8,"column":22}}],"childrenIndices":[3],"parentIndex":1,"outLinks":[],"outIndex":0,"traceId":"6"},{"ranges":[{"begin":{"line":4,"column":9},"end":{"line":4,"column":18}},{"begin":{"line":5,"column":13},"end":{"line":5,"column":17}}],"childrenIndices":[],"parentIndex":2,"link":{"begin":{"line":8,"column":17},"end":{"line":8,"column":19},"file":"AMain/Bar.java"},"outLinks":[{"begin":{"line":3,"column":24},"end":{"line":3,"column":26}}],"outIndex":2,"traceId":"0"}]'));
+        }
 
     return <>
     <LeftComponent setDisplayedFile={setDisplayedFile} setDisplayedToActive={setDisplayedToActive} passOnUploadedFiles={passOnUploadedFiles}/>

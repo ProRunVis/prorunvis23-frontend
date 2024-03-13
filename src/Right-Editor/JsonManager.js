@@ -155,10 +155,10 @@ class JsonManager {
     }
 
     /**
-     Recursively determines all ranges of all child nodes that are part of the function
-     of the current node.
-     @param nodeIndex node index of current node.
-     @returns {*[]} An array with all ranges of the current node and all child nodes that are part of the function.
+     * Recursively determines all ranges of all child nodes that are part of the function
+     * of the current node.
+     * @param nodeIndex node index of current node.
+     * @returns {*[]} An array with all ranges of the current node and all child nodes that are part of the function.
      */
     getRanges(nodeIndex) {
         let ranges = [];
