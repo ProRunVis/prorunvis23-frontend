@@ -22,8 +22,6 @@ function ContainerRightLeft(){
      */
     function setActiveAndDisplayed(path){
         uploadedFiles.forEach((uploadedFile) => {
-            console.log(uploadedFile.webkitRelativePath.slice(uploadedFile.webkitRelativePath.indexOf('/') + 1, uploadedFile.webkitRelativePath.length));
-            console.log(path);
             if(path === uploadedFile.webkitRelativePath.slice(uploadedFile.webkitRelativePath.indexOf('/') + 1, uploadedFile.webkitRelativePath.length)){
                 setDisplayedFile(uploadedFile);
                 setActiveFile(uploadedFile);
@@ -53,9 +51,11 @@ function ContainerRightLeft(){
      * TODO Create link and fetch to the backend here currently using hardcoded example json
      * @param files project files to be traced.
      */
-    function passOnUploadedFiles(files){
-            setUploadedFiles(files);
-            setJsonManager(new JsonManager('[{"ranges":[],"childrenIndices":[1],"outLinks":[],"outIndex":0,"traceId":"root"},{"ranges":[{"begin":{"line":5,"column":9},"end":{"line":5,"column":14}},{"begin":{"line":6,"column":9},"end":{"line":6,"column":18}},{"begin":{"line":7,"column":9},"end":{"line":7,"column":18}},{"begin":{"line":8,"column":13},"end":{"line":8,"column":18}}],"childrenIndices":[2,11],"parentIndex":0,"link":{"filepath":"ReturnTest.java","begin":{"line":0,"column":0},"end":{"line":0,"column":0}},"outLinks":[{"filepath":"ReturnTest.java","begin":{"line":8,"column":21},"end":{"line":8,"column":27}}],"outIndex":0,"traceId":"0"},{"ranges":[{"begin":{"line":14,"column":9},"end":{"line":14,"column":18}},{"begin":{"line":16,"column":14},"end":{"line":16,"column":22}},{"begin":{"line":16,"column":25},"end":{"line":16,"column":29}}],"childrenIndices":[3,5,7,9],"parentIndex":1,"link":{"filepath":"ReturnTest.java","begin":{"line":5,"column":9},"end":{"line":5,"column":11}},"outLinks":[{"filepath":"ReturnTest.java","begin":{"line":23,"column":17},"end":{"line":23,"column":23}},{"filepath":"ReturnTest.java","begin":{"line":12,"column":24},"end":{"line":12,"column":26}}],"outIndex":1,"traceId":"2"},{"ranges":[{"begin":{"line":18,"column":17},"end":{"line":18,"column":21}},{"begin":{"line":27,"column":13},"end":{"line":27,"column":22}},{"begin":{"line":16,"column":32},"end":{"line":16,"column":34}}],"childrenIndices":[4],"parentIndex":2,"link":{"begin":{"line":16,"column":9},"end":{"line":16,"column":11}},"outLinks":[],"outIndex":0,"iteration":1,"traceId":"3"},{"ranges":[{"begin":{"line":25,"column":17},"end":{"line":25,"column":26}}],"childrenIndices":[],"parentIndex":3,"outLinks":[],"outIndex":0,"traceId":"6"},{"ranges":[{"begin":{"line":18,"column":17},"end":{"line":18,"column":21}},{"begin":{"line":27,"column":13},"end":{"line":27,"column":22}},{"begin":{"line":16,"column":32},"end":{"line":16,"column":34}}],"childrenIndices":[6],"parentIndex":2,"link":{"begin":{"line":16,"column":9},"end":{"line":16,"column":11}},"outLinks":[],"outIndex":0,"iteration":2,"traceId":"3"},{"ranges":[{"begin":{"line":25,"column":17},"end":{"line":25,"column":26}}],"childrenIndices":[],"parentIndex":5,"outLinks":[],"outIndex":0,"traceId":"6"},{"ranges":[{"begin":{"line":18,"column":17},"end":{"line":18,"column":21}},{"begin":{"line":27,"column":13},"end":{"line":27,"column":22}},{"begin":{"line":16,"column":32},"end":{"line":16,"column":34}}],"childrenIndices":[8],"parentIndex":2,"link":{"begin":{"line":16,"column":9},"end":{"line":16,"column":11}},"outLinks":[],"outIndex":0,"iteration":3,"traceId":"3"},{"ranges":[{"begin":{"line":25,"column":17},"end":{"line":25,"column":26}}],"childrenIndices":[],"parentIndex":7,"outLinks":[],"outIndex":0,"traceId":"6"},{"ranges":[{"begin":{"line":18,"column":17},"end":{"line":18,"column":21}}],"childrenIndices":[10],"parentIndex":2,"link":{"begin":{"line":16,"column":9},"end":{"line":16,"column":11}},"outLinks":[],"outIndex":0,"iteration":4,"traceId":"3"},{"ranges":[{"begin":{"line":22,"column":17},"end":{"line":22,"column":20}},{"begin":{"line":23,"column":17},"end":{"line":23,"column":23}}],"childrenIndices":[],"parentIndex":9,"outLinks":[],"outIndex":0,"traceId":"5"},{"ranges":[{"begin":{"line":8,"column":21},"end":{"line":8,"column":27}}],"childrenIndices":[],"parentIndex":1,"outLinks":[],"outIndex":0,"traceId":"1"}]'))}
+    async function passOnUploadedFiles(files) {
+        setUploadedFiles(files);
+        let json = await fetch("api/process");
+        setJsonManager(new JsonManager(json));
+    }
 
     return <>
     <LeftComponent setDisplayedFile={setDisplayedFile} setDisplayedToActive={setDisplayedToActive} passOnUploadedFiles={passOnUploadedFiles}/>

@@ -28,6 +28,7 @@ function LeftComponent({setDisplayedFile, setDisplayedToActive, passOnUploadedFi
    * @param {Event} event - The file input change event.
    */
   const handleFileUpload = (event) => {
+    document.getElementById("upload-form").submit();
     const filteredFiles = Array.from(event.target.files).filter(file =>
       file.webkitRelativePath.endsWith('.java')
     );
@@ -120,7 +121,7 @@ function LeftComponent({setDisplayedFile, setDisplayedToActive, passOnUploadedFi
             <div>
               <button onClick={setDisplayedToActive}>{'Jump to active function'} </button>
               <div className="upload-button-container">
-                <form className="text-box" encType="multipart/form-data">
+                <form id="upload-form" className="text-box" encType="multipart/form-data" method="POST" action="/api/upload">
                   <input
                       type="file"
                       name="file"
