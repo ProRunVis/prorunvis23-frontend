@@ -148,48 +148,14 @@ function RightComponent({displayedFile, setActiveAndDisplayed, isActiveDisplayed
         currentNode = jsonManager.nodes[currentNode.parentIndex];
       }
     }
-    console.log("removeCounter: ", removeCounter);
-    console.log("insert position", insertPosition);
     let iterationsInLoop = [newIterationIndex, ...jsonManager.initIterations(newIterationIndex, [], [])];
-    console.log("iterationsInLoop", iterationsInLoop);
-    /*
-    let iterationsInLoop = [newIterationIndex, ...jsonManager.initIterations(newIterationIndex, [], [])];
-    console.log("iterationsInLoop: ", iterationsInLoop);
-    let iterationsWithoutLoop = activeIterationIndices.splice(insertPosition - 1, removeCounter, ...iterationsInLoop);
-    console.log("iterationsWithoutLoop: ", iterationsWithoutLoop);*/
-    console.log("activre", activeIterationIndices);
 
-    const newNumbers = [
+    const newIterations = [
       ...activeIterationIndices.slice(0, insertPosition),
             ...iterationsInLoop,
       ...activeIterationIndices.slice(insertPosition + removeCounter) ];
 
-    //let newActiveIterations = activeIterationIndices.splice(insertPosition - 1, 0, ...iterationsInLoop);
-    //console.log("new: ", iterationsWithoutLoop);
-    setActiveIterationIndices(newNumbers);
-    //let newActiveIterationsInLoop = jsonManager.initIterations(newIterationIndex, [], []);
-
-
-
-    /*oldActiveIterations.forEach((iterationIndex) => {
-        jsonManager.nodes[iterationIndex]
-
-    });*/
-
-
-    //let oldActiveIterationsInLoop = jsonManager.initIterations(activeIterationIndices[insertPosition], [], []);
-/*
-calc children iterations for iteration before->get length
-remove those from list (insert index)
-calc children iterations for iteration after
-add to list at insert index
- */
-
-    //let newActiveIterations = jsonManager.initIterations(newIterationIndex, [], [jsonManager.nodes[newIterationIndex].traceId]);
-    //newActiveIterations.splice(insertPosition, oldActiveIterationsInLoop.length, newIterationIndex, ...newActiveIterations);
-
-    //setActiveIterationIndices(newActiveIterations);
-
+    setActiveIterationIndices(newIterations);
   }
 
   /**
@@ -214,7 +180,9 @@ add to list at insert index
               if (outLink.range.containsPosition(position)) {
                 setJumpPosition(jump.outLinkPosition);
                 setDoPositionJump(true);
-                setActiveIterationIndices(jsonManager.initIterations(jump.outFunctionIndex, jump.outLoopIterations, []));
+                console.log(jump);
+                console.log(jump.outLoopIterations);
+                setActiveIterationIndices(jump.outLoopIterations);
                 setActiveFunctionIndex(jump.outFunctionIndex);
               }
             });
@@ -381,10 +349,6 @@ add to list at insert index
     }
 
   },[editor]);
-
-  useEffect(() => {
-    console.log(activeIterationIndices);
-  }, [activeIterationIndices]);
 
 
   /**

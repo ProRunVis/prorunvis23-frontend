@@ -21,6 +21,7 @@ class JsonManager {
                 this.nodes.push(new TraceNode(jsonData));
 
             });
+        //console.log(this.nodes);
             for(let i = 2; i < this.nodes.length; i++){
                 let node = this.nodes[i];
                 if(node.nodeType === "Throw") { //TODO fix for emtpy catch
@@ -34,19 +35,66 @@ class JsonManager {
                 }
 
                 if(node.nodeType === "Function" || node.nodeType === "Throw") {
-                    let parentIndex = node.outIndex;
-                    while(this.nodes[parentIndex].nodeType !== "Function") {
-                        if(this.nodes[parentIndex].nodeType === "Loop") {
+                    let currentIndex = node.outIndex;
+                    let currentNode = this.nodes[currentIndex];
 
-                            node.outLoopIterations.unshift(parentIndex);
+                    let parentBeforeIndex = 0;
+                    let iterationsBefore = 0;
+                    let iterations = [];
+                    let start = true;
+                    while(currentNode.nodeType !== "Function" || start) {
+                        if(!start) {
+                            currentIndex = this.nodes[currentIndex].parentIndex;
+                            currentNode = this.nodes[currentIndex];
+                        }
+                        iterations = [];
+                        if (currentNode.nodeType === "Loop") {
+                            iterations.push(currentIndex);
+                        }
+                        currentNode.childrenIndices.forEach((childIndex) => {
+                            if (childIndex === parentBeforeIndex) {
+                                iterations.push(...iterationsBefore);
+                            } else if (this.nodes[childIndex].iteration === 1 && this.nodes[childIndex].traceId !== this.nodes[parentBeforeIndex].traceId) {
+                                iterations.push(childIndex);
+                            }
+                        });
+                        parentBeforeIndex = currentIndex;
+                        iterationsBefore = iterations;
+                        start = false;
+                    }
+                    this.nodes[i].outLoopIterations = iterations;
+                    this.nodes[i].outFunctionIndex = currentIndex;
+
+                    //Go through all nodes and check for loop
+                    //if loop check for iter = 1
+                    //if iter = 1 add to iterations and do deep check for more loops
+
+                    //if parent loop add safe the iteration and trace id
+                    //check all loops of parent again and add iter = 1, falls trace id von loop = safed trace id swap iter 1 für block iterations von vorher aus
+
+                    //continue until parent node type is function-> do children check one last time
+
+                    /*const newNumbers = [
+                        ...activeIterationIndices.slice(0, insertPosition),
+                        ...iterationsInLoop,
+                        ...activeIterationIndices.slice(insertPosition + removeCounter) ];*/
+
+
+/*
+                    while(this.nodes[currentIndex].nodeType !== "Function") {
+                        if(this.nodes[currentIndex].nodeType === "Loop") {
+
+                            node.outLoopIterations.unshift(currentIndex);
                             //TODO include the ones that are not part of parent structure
 
 
+
                         }
-                        parentIndex = this.nodes[parentIndex].parentIndex;
+                        currentIndex = this.nodes[currentIndex].parentIndex;
 
                     }
-                    this.nodes[i].outFunctionIndex = parentIndex;
+
+                    */
                 }
             }
                 console.log(this.nodes);
@@ -118,7 +166,6 @@ class JsonManager {
         this.skipIds.forEach((skipId) => {
             if(this.nodes[nodeIndex].traceId === skipId) {
                 end = true;
-                console.log("skipped", this.nodes[nodeIndex].traceId);
             }
         });
         if(!end) {
