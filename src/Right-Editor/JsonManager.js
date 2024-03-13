@@ -41,6 +41,7 @@ class JsonManager {
                             node.outLoopIterations.unshift(parentIndex);
                             //TODO include the ones that are not part of parent structure
 
+
                         }
                         parentIndex = this.nodes[parentIndex].parentIndex;
 
