@@ -3,6 +3,7 @@ import FolderTree from 'react-folder-tree';
 import 'react-folder-tree/dist/style.css';
 import "../Css/LeftComponent.css"
 import PropTypes from "prop-types";
+import {Form} from "react-router-dom";
 
 /**
  * Represents the left component of the application, which is primarily responsible for
@@ -28,11 +29,15 @@ function LeftComponent({setDisplayedFile, setDisplayedToActive, passOnUploadedFi
    * @param {Event} event - The file input change event.
    */
   const handleFileUpload = (event) => {
-    document.getElementById("upload-form").submit();
+    fetch("/api/upload", {
+      body: new FormData(document.getElementById("upload-form")),
+      method: "post"
+    });
     const filteredFiles = Array.from(event.target.files).filter(file =>
       file.webkitRelativePath.endsWith('.java')
     );
     setUploadedFiles(filteredFiles);
+    filteredFiles.webkitdirectory;
     if (filteredFiles.length > 0) {
       const directoryName = filteredFiles[0].webkitRelativePath.split('/')[0];
       const treeData = buildFolderTree(filteredFiles, directoryName);
@@ -121,7 +126,7 @@ function LeftComponent({setDisplayedFile, setDisplayedToActive, passOnUploadedFi
             <div>
               <button onClick={setDisplayedToActive}>{'Jump to active function'} </button>
               <div className="upload-button-container">
-                <form id="upload-form" className="text-box" encType="multipart/form-data" method="POST" action="/api/upload">
+                <form id="upload-form" className="text-box" encType="multipart/form-data">
                   <input
                       type="file"
                       name="file"

@@ -118,43 +118,40 @@ function RightComponent({displayedFile, setActiveAndDisplayed, isActiveDisplayed
   }
 
   function drawLine(ranges) {
-      let currentRow = new monaco.Range(ranges[0].startLineNumber, 0, ranges[0].startLineNumber + 1, 0);
-      let symbol = "end";
-      let stillInCurrentRange = false;
-      for (let i = 0; i < ranges.length;) {
-        if (ranges[i].startLineNumber > currentRow.startLineNumber) {
-          stillInCurrentRange = false;
-          currentRow = new monaco.Range(currentRow.startLineNumber + 1, 0, currentRow.endLineNumber + 1, 0);
-        }
-        if (currentRow.containsRange(ranges[i])) {
-          if (!stillInCurrentRange) {
-            symbol = (symbol === "line" || symbol === "start") ? "line" : "start";
-          }
-          if (i === ranges.length - 1) {
-            if (symbol === "start") {
-              symbol = "one-line";
-            } else {
-              symbol = "end";
-            }
-          }
-          console.log("start");
-          placeDecoration(currentRow.startLineNumber, symbol);
-          stillInCurrentRange = true;
-          i++;
-        } else if (!(editor.getModel().getValueInRange(currentRow).trim().length === 0)){
-          console.log("break");
-          if (symbol === "start") {
-            placeDecoration(currentRow.startLineNumber - 1, "one-line");
-          } else if (symbol === "line") {
-            placeDecoration(currentRow.startLineNumber - 1, "end");
-          }
-          symbol = "end";
-        } else if (editor.getModel().getValueInRange(currentRow).trim().length === 0 && (symbol === "start" || symbol === "line")) {
-          console.log("cont");
-          placeDecoration(currentRow.startLineNumber, "line");
-          symbol = "line";
-        }
+    let currentRow = new monaco.Range(ranges[0].startLineNumber, 0, ranges[0].startLineNumber + 1, 0);
+    let symbol = "end";
+    let stillInCurrentRange = false;
+    for (let i = 0; i < ranges.length;) {
+      if (ranges[i].startLineNumber > currentRow.startLineNumber) {
+        stillInCurrentRange = false;
+        currentRow = new monaco.Range(currentRow.startLineNumber + 1, 0, currentRow.endLineNumber + 1, 0);
       }
+      if (currentRow.containsRange(ranges[i])) {
+        if (!stillInCurrentRange) {
+          symbol = (symbol === "line" || symbol === "start") ? "line" : "start";
+        }
+        if (i === ranges.length - 1) {
+          if (symbol === "start") {
+            symbol = "one-line";
+          } else {
+            symbol = "end";
+          }
+        }
+        placeDecoration(currentRow.startLineNumber, symbol);
+        stillInCurrentRange = true;
+        i++;
+      } else if (!(editor.getModel().getValueInRange(currentRow).trim().length === 0)) {
+        if (symbol === "start") {
+          placeDecoration(currentRow.startLineNumber - 1, "one-line");
+        } else if (symbol === "line") {
+          placeDecoration(currentRow.startLineNumber - 1, "end");
+        }
+        symbol = "end";
+      } else if (editor.getModel().getValueInRange(currentRow).trim().length === 0 && (symbol === "start" || symbol === "line")) {
+        placeDecoration(currentRow.startLineNumber, "line");
+        symbol = "line";
+      }
+    }
   }
 
   /**
@@ -180,7 +177,7 @@ function RightComponent({displayedFile, setActiveAndDisplayed, isActiveDisplayed
           if(jump === activeFunctionIndex){
             return;
           }
-          if (jump.link.range.containsPosition(position)) {
+          if (jump.link !== null && jump.link.range.containsPosition(position)) {
             setJumpPosition(jump.linkPosition);
             setDoPositionJump(true);
             setActiveFunctionIndex(jumpIndex);
@@ -242,7 +239,9 @@ function RightComponent({displayedFile, setActiveAndDisplayed, isActiveDisplayed
           if (jump === activeFunctionIndex) {
             return;
           }
-          underline(jsonManager.nodes[jump].link.range);
+          if (jsonManager.nodes[jump].link != null) {
+            underline(jsonManager.nodes[jump].link.range);
+          }
         });
       }
       handleJumps();
@@ -251,13 +250,13 @@ function RightComponent({displayedFile, setActiveAndDisplayed, isActiveDisplayed
           jumpToPosition(jsonManager.nodes[activeFunctionIndex].outLinks[jsonManager.nodes[activeFunctionIndex].outLinks.length-1].range.getStartPosition());
         else
           jumpToPosition(jsonManager.nodes[activeFunctionIndex].link.range.getStartPosition());
+        }
         setDoPositionJump(false);
       }
       if (doPositionJump) {
         setDoPositionJump(false);
         jumpToPosition(jumpPosition);
       }
-    }
     }, [editor, activeFunctionIndex]);
 
   /**

@@ -150,12 +150,11 @@ class JsonManager {
         this.nodes[functionIndex].childrenIndices.forEach((childIndex) => {
             ranges = ranges.concat(this.getRanges(childIndex));
         });
-        ranges.sort();
+        ranges.sort((a, b) => ((a.startLineNumber < b.startLineNumber) ? -1 : (a.startLineNumber > b.startLineNumber) ? 1 : 0));
         return ranges;
     }
 
     /**
-
      Recursively determines all ranges of all child nodes that are part of the function
      of the current node.
      @param nodeIndex node index of current node.
