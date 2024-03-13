@@ -150,7 +150,7 @@ export class EditorInitializer {
             label: hint.content,
           });
         });
-        console.log("hereeee", hintss);
+        //console.log("hereeee", hintss);
 
         return {
           hints: hintss,

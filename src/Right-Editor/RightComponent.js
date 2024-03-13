@@ -128,30 +128,26 @@ function RightComponent({displayedFile, setActiveAndDisplayed, isActiveDisplayed
    *
    */
   function iterationChanged(newIterationIndex){ //index in nodes
-    console.log("iterationChanged" + newIterationIndex);
-
-    //bis hier klappts
-    //
     let insertPosition;
     for(let i = 0; i<activeIterationIndices.length; i++) {
-      console.log(jsonManager.nodes[activeIterationIndices[i]].traceId + " " + jsonManager.nodes[newIterationIndex].traceId + " here");
+
         if (jsonManager.nodes[activeIterationIndices[i]].traceId === jsonManager.nodes[newIterationIndex].traceId) {
           insertPosition = i;
           break;
         }
     }
-    console.log("insert pos " + insertPosition);
+
 
     let newActiveIterations = jsonManager.initIterations(activeFunctionIndex, [], [jsonManager.nodes[newIterationIndex].traceId]);
 
-    console.log("newActiveIter" + newActiveIterations);
+
 
 
     //calc new active iterations
     let neu = [newIterationIndex];
     neu.concat(jsonManager.initIterations(newIterationIndex, [], [jsonManager.nodes[newIterationIndex].traceId]));
     newActiveIterations.splice(insertPosition,0, ...neu);
-    console.log("error found1");
+
     setActiveIterationIndices(newActiveIterations);
   }
 
@@ -165,27 +161,35 @@ function RightComponent({displayedFile, setActiveAndDisplayed, isActiveDisplayed
         const position = e.target.position;
         jumpNodesIndices.forEach((jumpIndex) => {
           let jump = jsonManager.nodes[jumpIndex];
-          jump.outLinks.forEach((outLink) => {
-            if (outLink.range.containsPosition(position)) {
-              setJumpPosition(jump.outLinkPosition);
-              setDoPositionJump(true);
-              setActiveFunctionIndex(jump.outFunctionIndex);
-              console.log("error found2");
-              setActiveIterationIndices(jsonManager.initIterations(activeFunctionIndex, jump.outLoopIterations, []));
-            }
-          });
+          if (jump.nodeType !== "Function" || jumpIndex === activeFunctionIndex) {
+            jump.outLinks.forEach((outLink) => {
+              if (outLink.range.containsPosition(position)) {
+                setJumpPosition(jump.outLinkPosition);
+                setDoPositionJump(true);
+                console.log("outlink");
+                setActiveIterationIndices(jsonManager.initIterations(jump.outFunctionIndex, jump.outLoopIterations, []));
+                //TODO is probably changing iterations with old active iterations array
+                //TODO If no iteration gets selected soesnt work
+                console.log(jsonManager.initIterations(jumpIndex, jump.outLoopIterations, []));
+                setActiveFunctionIndex(jump.outFunctionIndex);
+
+              }
+            });
+          }
           // We do not want to check for the link of the current function since it might be in another file
           // and is not part of the currently active function
-          if(jump === activeFunctionIndex){
+          if(jumpIndex === activeFunctionIndex){
             return;
           }
-          if(jsonManager.nodes[jump].nodeType === "Function") {
+          //TODO
+          if(jump.nodeType === "Function") {
             if (jump.link.range.containsPosition(position)) {
               setJumpPosition(jump.linkPosition);
               setDoPositionJump(true);
+              console.log("functionlink", jumpIndex);
+              setActiveIterationIndices(jsonManager.initIterations(jumpIndex, [], []));
+              console.log(jsonManager.initIterations(jumpIndex, [], []));
               setActiveFunctionIndex(jumpIndex);
-              console.log("error found3");
-              setActiveIterationIndices(jsonManager.initIterations(activeFunctionIndex, [], []));
             }
           }
         });
@@ -199,23 +203,21 @@ function RightComponent({displayedFile, setActiveAndDisplayed, isActiveDisplayed
   function handleIterationButton(){
     editor.onMouseDown(e => {
       const position = e.target.position;
-      //console.log("beepboop" + activeIterationIndices);
-      //TODO open popup here
-      //popupManager.openPopupAtMousePosition(position.lineNumber, position.column);
+
+
 
       activeIterationIndices.forEach((iterationIndex) => {
         let iteration = jsonManager.nodes[iterationIndex];
         if (iteration.link.range.containsPosition(position)) {
-          console.log("change iteration");
+
           let id = iteration.traceId;
-          //let nextIteration = iteration.iteration + 1;
 
 
 
           let nextIteration = prompt("Please enter the iteration", iteration.iteration);
-          console.log(nextIteration);
+
           nextIteration = parseInt(nextIteration);
-          console.log("int::", nextIteration);
+
           if (nextIteration === null || nextIteration < 0 || nextIteration > jsonManager.getLastIterationNumber(iterationIndex)) {
             nextIteration = iteration.iteration;
           }
@@ -252,6 +254,8 @@ function RightComponent({displayedFile, setActiveAndDisplayed, isActiveDisplayed
     if(jsonManager) {
       setActiveFunctionIndex(jsonManager.getMain());
       setActiveAndDisplayed(jsonManager.nodes[1].link.file);
+      setActiveIterationIndices(jsonManager.initIterations(1, [], []));
+      console.log(jsonManager.initIterations(1, [], []));
     }
   },[jsonManager]);
 
@@ -264,20 +268,17 @@ function RightComponent({displayedFile, setActiveAndDisplayed, isActiveDisplayed
 
   useEffect(() => {
     let newEditor;
-    //TODO create inlay hints with activeiterationindices
     if (javaFileContent && editorContainerRef.current) {
       let hints = [];
-      activeIterationIndices.forEach((iterationIndex) => {
-        let position = jsonManager.nodes[iterationIndex].link.range.getStartPosition();
-        let content = `(` + jsonManager.nodes[iterationIndex].iteration + `/` + jsonManager.getLastIterationNumber(iterationIndex) + `)`;
-        hints.push({position, content});
-      });
-      console.log(hints);
+      if(isActiveDisplayed()) {
+        activeIterationIndices.forEach((iterationIndex) => {
+          let position = jsonManager.nodes[iterationIndex].link.range.getStartPosition();
+          let content = `(` + jsonManager.nodes[iterationIndex].iteration + `/` + jsonManager.getLastIterationNumber(iterationIndex) + `)`;
+          hints.push({position, content});
+        });
+      }
       if (editor) {
-        //editor.language.dispose();
-        //languageDispose();
         editor.dispose();
-        //editor.dis();
       }
       newEditor = EditorInitializer.initializeEditor(
           editorContainerRef,
@@ -285,9 +286,7 @@ function RightComponent({displayedFile, setActiveAndDisplayed, isActiveDisplayed
           hints
       );
       if (newEditor) {
-        //setLanguageDispose(newEditor.dispose);
         setEditor(newEditor.editor);
-
       }
     }
     return () => {
@@ -298,7 +297,9 @@ function RightComponent({displayedFile, setActiveAndDisplayed, isActiveDisplayed
 
   useEffect(() => {
     if(jsonManager) {
-      setActiveIterationIndices(jsonManager.initIterations(activeFunctionIndex, [], []));
+      //setActiveIterationIndices(jsonManager.initIterations(activeFunctionIndex, activeIterationIndices, []));
+      setActiveAndDisplayed(jsonManager.nodes[activeFunctionIndex].link.file);
+      setActiveAndDisplayed(jsonManager.nodes[activeFunctionIndex].link.file);
     }
   },[activeFunctionIndex]);
 
@@ -310,7 +311,6 @@ function RightComponent({displayedFile, setActiveAndDisplayed, isActiveDisplayed
 
   useEffect(() => {
     if(jsonManager && editor) {
-     console.log("File content changed.");
 
 
      let rangesToHighlight = [];
@@ -355,17 +355,9 @@ function RightComponent({displayedFile, setActiveAndDisplayed, isActiveDisplayed
         setDoPositionJump(false);
         jumpToPosition(jumpPosition);
       }
-
-      //handleIterationDisplay();
-      console.log("dekorationen neu geladen");
     }
 
   },[editor]);
-
-
-  useEffect(() => {
-    console.log(activeIterationIndices);
-  }, [activeIterationIndices]);
 
 
   /**

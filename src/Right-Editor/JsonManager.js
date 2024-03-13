@@ -1,4 +1,5 @@
 import TraceNode from "./TraceNode";
+import {Position} from "monaco-editor";
 
 /**
  * Class that contains an array of {@link TraceNode}s and manages them. It gives access to several functions that
@@ -18,25 +19,30 @@ class JsonManager {
         let jsonData = JSON.parse(jsonString);
             jsonData.forEach((jsonData) => {
                 this.nodes.push(new TraceNode(jsonData));
+
             });
             for(let i = 2; i < this.nodes.length; i++){
                 let node = this.nodes[i];
-                if(node.nodeType === "Throw")
-                    node.outLinkPosition = this.nodes[node.outIndex].ranges[0].getStartPosition();
+                if(node.nodeType === "Throw") { //TODO fix for emtpy catch
+                    node.outLinkPosition = new Position(0,0);
+                    if(undefined !== this.nodes[node.outIndex].ranges[0])
+                        node.outLinkPosition = this.nodes[node.outIndex].ranges[0].getStartPosition();
+                }
                 if(node.nodeType === "Function") {
                     node.linkPosition = node.outLinks[node.outLinks.length - 1].range.getStartPosition();
                     node.outLinkPosition = node.link.range.getStartPosition();
                 }
 
                 if(node.nodeType === "Function" || node.nodeType === "Throw") {
-                    let parentIndex = node.parentIndex;
+                    let parentIndex = node.outIndex;
                     while(this.nodes[parentIndex].nodeType !== "Function") {
                         if(this.nodes[parentIndex].nodeType === "Loop") {
-                            node.outLoopIterations.unshift[parentIndex];
-                            if(this.nodes[parentIndex].iteration !== 1)
-                                parentIndex = this.nodes[parentIndex].parentIndex;
+
+                            node.outLoopIterations.unshift(parentIndex);
+                            //TODO include the ones that are not part of parent structure
                         }
-                        parentIndex = this.nodes[parentIndex].parentIndex
+                        parentIndex = this.nodes[parentIndex].parentIndex;
+
                     }
                     this.nodes[i].outFunctionIndex = parentIndex;
                 }
@@ -71,9 +77,10 @@ class JsonManager {
     getLastIterationNumber(iterationIndex){
         let iterationIndexId = this.nodes[iterationIndex].traceId;
         let lastIteration = this.nodes[iterationIndex].iteration;
-        this.nodes.forEach((node) => {
-            if(node.traceId === iterationIndexId)
-                lastIteration = node.iteration;
+
+        this.nodes[this.nodes[iterationIndex].parentIndex].childrenIndices.forEach((childIndex) => {
+            if(this.nodes[childIndex].traceId === iterationIndexId)
+                lastIteration = this.nodes[childIndex].iteration;
         });
         return lastIteration;
     }
@@ -89,21 +96,11 @@ class JsonManager {
      */
     initIterations(functionIndex, iterationsIndices, skipIds){
         this.skipIds = [...skipIds];
-        /*skipIds.forEach((skipId) => {
-           this.skipIds.push(skipId);
-        });*/
-        //console.log("skipidsarray? " +this.skipIds);
         this.activeIterations = [...iterationsIndices];
-        /*iterationsIndices.forEach((activeIterationIndex) => {
-            this.activeIterations.push(activeIterationIndex);
-        });*/
         this.activeIterationIndex = 0;
         this.nodes[functionIndex].childrenIndices.forEach((childIndex) => {
             this.getIterations(childIndex);
         });
-        //console.log("tfoiualkjfajfadhf" + this.activeIterations[0]);
-        //let a = this.activeIterations;
-        //console.log(a);
         return this.activeIterations;
     }
 
@@ -125,7 +122,6 @@ class JsonManager {
                 end = true;
         });
         if(end){
-            console.log("skipped" + this.nodes[nodeIndex].traceId);
             return this.activeIterations;}
 
         let skip = true;
@@ -137,7 +133,7 @@ class JsonManager {
             skip = false;
             this.skipIds.push(this.nodes[nodeIndex].traceId);
         }
-        else if(!(this.activeIterationIndex + 1 > this.activeIterations.length) && this.nodes[nodeIndex].iteration === this.activeIterations[this.activeIterationIndex]){
+        if(!(this.activeIterationIndex + 1 > this.activeIterations.length) && this.nodes[nodeIndex].iteration === this.nodes[this.activeIterations[this.activeIterationIndex]].iteration){
             this.activeIterationIndex++;
             this.skipIds.push(this.nodes[nodeIndex].traceId);
             skip = false;
@@ -161,8 +157,6 @@ class JsonManager {
     updateJumpsFunction(functionIndex, activeIterationIndices){
         this.skipIds = [];
         this.activeIterations = [...activeIterationIndices];
-        //activeIterationIndices.forEach((activeIterationIndex) => {
-        //this.activeIterations.push(activeIterationIndex); });
         let jumps = [];
         jumps.push(functionIndex);
         this.nodes[functionIndex].childrenIndices.forEach((childIndex) => {
@@ -189,15 +183,16 @@ class JsonManager {
         if(this.nodes[nodeIndex].nodeType === "Function" || this.nodes[nodeIndex].nodeType === "Throw")
             jumps.push(nodeIndex);
         if((!(this.nodes[nodeIndex].nodeType === "Loop") ||
-                nodeIndex === this.activeIterations[0]) &&
-            this.nodes[nodeIndex].nodeType !== "Function") {
+                nodeIndex === this.activeIterations[0])) {
             if(this.nodes[nodeIndex].nodeType === "Loop") {
                 this.activeIterations.shift();
                 this.skipIds.push(this.nodes[nodeIndex].traceId);
             }
-            this.nodes[nodeIndex].childrenIndices.forEach((childIndex) => {
-                jumps = jumps.concat(this.getJumps(childIndex));
-            });
+            if(this.nodes[nodeIndex].nodeType !== "Function") {
+                this.nodes[nodeIndex].childrenIndices.forEach((childIndex) => {
+                    jumps = jumps.concat(this.getJumps(childIndex));
+                });
+            }
         }
         return jumps;
     }
@@ -212,10 +207,6 @@ class JsonManager {
     updateActiveRangesFunction(functionIndex, activeIterationIndices) {
         let ranges = [];
         this.activeIterations =  [...activeIterationIndices];
-        /*activeIterationIndices.forEach((activeIterationIndex) => {
-            this.activeIterations.push(activeIterationIndex);
-        });*/
-        console.log("yupp" + activeIterationIndices + this.activeIterations);
         this.skipIds = [];
         this.nodes[functionIndex].ranges.forEach((range) => {
             ranges.push(range);
@@ -241,14 +232,12 @@ class JsonManager {
         });
         if(end)
             return ranges;
-        console.log(this.activeIterations[0] + " " + nodeIndex);
         if(this.nodes[nodeIndex].nodeType === "Function") {
             ranges.push(this.nodes[nodeIndex].link.range);
         } else if(this.nodes[nodeIndex].nodeType !== "Loop" ||
                 nodeIndex === this.activeIterations[0]) {
 
             if(this.nodes[nodeIndex].nodeType === "Loop") {
-                console.log("activee "+nodeIndex);
                 this.activeIterations.shift();
                 this.skipIds.push(this.nodes[nodeIndex].traceId);
             }
