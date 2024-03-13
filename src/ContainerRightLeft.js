@@ -22,7 +22,7 @@ function ContainerRightLeft(){
      */
     function setActiveAndDisplayed(path){
         uploadedFiles.forEach((uploadedFile) => {
-            if(path === uploadedFile.webkitRelativePath){
+            if(path === uploadedFile.webkitRelativePath.slice(uploadedFile.webkitRelativePath.indexOf('/') + 1, uploadedFile.webkitRelativePath.length)){
                 setDisplayedFile(uploadedFile);
                 setActiveFile(uploadedFile);
             }

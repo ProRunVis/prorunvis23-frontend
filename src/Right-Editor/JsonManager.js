@@ -20,6 +20,7 @@ class JsonManager {
             for(let i = 2; i < this.nodes.length; i++){
                 let node = this.nodes[i];
                 if(node.nodeType === "Throw")
+                    // TODO add way to deal with empty catches
                     node.outLinkPosition = this.nodes[node.outIndex].ranges[0].getStartPosition();
                 if(node.nodeType === "Function") {
                     node.linkPosition = node.outLinks[node.outLinks.length - 1].range.getStartPosition();
@@ -139,9 +140,9 @@ class JsonManager {
      * @param activeIterations active loop iterations.
      * @returns {*[]} An array with all the active ranges contained in the currently active function.
      */
-    updateActiveRangesFunction(functionIndex, activeIterations) {
+    updateActiveRangesFunction(functionIndex, activeIterationIndices) {
         let ranges = [];
-        this.activeIterations = activeIterations;
+        this.activeIterationIndices = activeIterationIndices;
         this.skipIds = [];
         this.nodes[functionIndex].ranges.forEach((range) => {
             ranges.push(range);
@@ -149,6 +150,7 @@ class JsonManager {
         this.nodes[functionIndex].childrenIndices.forEach((childIndex) => {
             ranges = ranges.concat(this.getRanges(childIndex));
         });
+        ranges.sort((a, b) => ((a.startLineNumber < b.startLineNumber) ? -1 : (a.startLineNumber > b.startLineNumber) ? 1 : 0));
         return ranges;
     }
 
@@ -160,25 +162,22 @@ class JsonManager {
      */
     getRanges(nodeIndex) {
         let ranges = [];
+        let end = false;
         this.skipIds.forEach((skipId) => {
             if(this.nodes[nodeIndex].traceId === skipId)
-                return ranges;
-        });
+                end = true;});
+        if(end)
+            return ranges;
         if(this.nodes[nodeIndex].nodeType === "Function") {
-            ranges.push(this.nodes[nodeIndex].link.range);
-        } else if(!(this.nodes[nodeIndex].nodeType === "Loop") ||
-                this.nodes[nodeIndex].iteration === this.activeIterations[0]) {
+            ranges.push(this.nodes[nodeIndex].link.range);} else if(!(this.nodes[nodeIndex].nodeType === "Loop") ||
+            nodeIndex === this.activeIterationIndices[0]) {
             if(this.nodes[nodeIndex].nodeType === "Loop") {
-                this.activeIterations.shift();
-                this.skipIds.push(this.nodes[nodeIndex].traceId);
-            }
+                this.activeIterationIndices.shift();
+                this.skipIds.push(this.nodes[nodeIndex].traceId);}
             this.nodes[nodeIndex].ranges.forEach((range) => {
-                ranges.push(range);
-            });
+                ranges.push(range);});
             this.nodes[nodeIndex].childrenIndices.forEach((childIndex) => {
-                ranges = ranges.concat(this.getRanges(childIndex));
-            });
-        }
+                ranges = ranges.concat(this.getRanges(childIndex));});}
         return ranges;
     }
 }

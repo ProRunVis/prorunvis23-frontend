@@ -2,3 +2,11 @@
 .red { background-color: red; }
 .green { background-color: green; }
 .underline { background-color: blue; }
+.start {
+    content: url(../Images/start.png);}
+.line {
+    content: url(../Images/line.png);}
+.end {
+    content: url(../Images/end.png);}
+.one-line {
+    content: url(../Images/oneLine.png);}

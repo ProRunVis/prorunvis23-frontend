@@ -4,7 +4,7 @@
   flex-direction: row;
   justify-content: space-between;  
   align-items: stretch;
-  
+  height: 90dvh;
 }
 
 .right-container {
@@ -26,7 +26,7 @@
     flex-direction: column;
     justify-content: flex-start;
     align-items: stretch;
-    width: 96%;
+    width: 100%;
     flex-basis: 75%;
     margin-top : 0px;
     /* Corrects from 'right' to 'flex-start' */

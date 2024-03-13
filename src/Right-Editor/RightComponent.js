@@ -83,6 +83,26 @@ function RightComponent({displayedFile, setActiveAndDisplayed, isActiveDisplayed
   }
 
   /**
+   * Adds a symbol on the current line next to the line number. Which one is dictated by {@link drawLine}.
+   * @param startLineNumber number in which the symbol is drawn.
+   * @param symbol symbol that is drawn.
+   */
+  function placeDecoration(startLineNumber, symbol) {
+    editor.createDecorationsCollection([
+      {
+        range: new monaco.Range(startLineNumber, 1, startLineNumber, 1),
+        options: {
+          glyphMarginClassName: symbol,
+          glyphMargin: {
+            position: monaco.editor.GlyphMarginLane.Right,
+          },
+        },
+      },
+    ]);
+
+  }
+
+  /**
    * Function to render a range in the current editor with a blue background.
    * Used to show which part of the code got is a link and can be clicked to jump to another Node.
    * @param range monaco.Range to be decorated.
@@ -100,6 +120,47 @@ function RightComponent({displayedFile, setActiveAndDisplayed, isActiveDisplayed
         }
       }
     ]);
+  }
+
+  /**
+   * Draws a line next to executed code and determines where that line should start and stop.
+   * @param ranges executed ranges to be marked.
+   */
+  function drawLine(ranges) {
+    let currentRow = new monaco.Range(ranges[0].startLineNumber, 0, ranges[0].startLineNumber + 1, 0);
+    let symbol = "end";
+    let stillInCurrentRange = false;
+    for (let i = 0; i < ranges.length;) {
+      if (ranges[i].startLineNumber > currentRow.startLineNumber) {
+        stillInCurrentRange = false;
+        currentRow = new monaco.Range(currentRow.startLineNumber + 1, 0, currentRow.endLineNumber + 1, 0);
+      }
+      if (currentRow.containsRange(ranges[i])) {
+        if (!stillInCurrentRange) {
+          symbol = (symbol === "line" || symbol === "start") ? "line" : "start";
+        }
+        if (i === ranges.length - 1) {
+          if (symbol === "start") {
+            symbol = "one-line";
+          } else {
+            symbol = "end";
+          }
+        }
+        placeDecoration(currentRow.startLineNumber, symbol);
+        stillInCurrentRange = true;
+        i++;
+      } else if (!(editor.getModel().getValueInRange(currentRow).trim().length === 0)) {
+        if (symbol === "start") {
+          placeDecoration(currentRow.startLineNumber - 1, "one-line");
+        } else if (symbol === "line") {
+          placeDecoration(currentRow.startLineNumber - 1, "end");
+        }
+        symbol = "end";
+      } else if (editor.getModel().getValueInRange(currentRow).trim().length === 0 && (symbol === "start" || symbol === "line")) {
+        placeDecoration(currentRow.startLineNumber, "line");
+        symbol = "line";
+      }
+    }
   }
 
   /**
@@ -125,7 +186,7 @@ function RightComponent({displayedFile, setActiveAndDisplayed, isActiveDisplayed
           if(jump === activeFunctionIndex){
             return;
           }
-          if (jump.link.range.containsPosition(position)) {
+          if (jump.link !== null && jump.link.range.containsPosition(position)) {
             setJumpPosition(jump.linkPosition);
             setDoPositionJump(true);
             setActiveFunctionIndex(jumpIndex);
@@ -175,6 +236,7 @@ function RightComponent({displayedFile, setActiveAndDisplayed, isActiveDisplayed
         rangesToHighlight.forEach((rangeToHighlight) => {
           highlightGreen(rangeToHighlight);
         });
+        drawLine(rangesToHighlight);
         jumpNodesIndices.forEach((jump) => {
           if (jsonManager.nodes[jump].nodeType !== "Function" || jump === activeFunctionIndex) {
             jsonManager.nodes[jump].outLinks.forEach((outLink) => {
@@ -186,7 +248,9 @@ function RightComponent({displayedFile, setActiveAndDisplayed, isActiveDisplayed
           if (jump === activeFunctionIndex) {
             return;
           }
-          underline(jsonManager.nodes[jump].link.range);
+          if (jsonManager.nodes[jump].link != null) {
+            underline(jsonManager.nodes[jump].link.range);
+          }
         });
       }
       handleJumps();
@@ -195,14 +259,14 @@ function RightComponent({displayedFile, setActiveAndDisplayed, isActiveDisplayed
           jumpToPosition(jsonManager.nodes[activeFunctionIndex].outLinks[jsonManager.nodes[activeFunctionIndex].outLinks.length-1].range.getStartPosition());
         else
           jumpToPosition(jsonManager.nodes[activeFunctionIndex].link.range.getStartPosition());
+        }
         setDoPositionJump(false);
       }
       if (doPositionJump) {
         setDoPositionJump(false);
         jumpToPosition(jumpPosition);
       }
-    }
-    }, [editor]);
+    }, [editor, activeFunctionIndex]);
 
   /**
    * This effect is executed when the active function changes. It then sets editor to file that contains said function
@@ -211,7 +275,7 @@ function RightComponent({displayedFile, setActiveAndDisplayed, isActiveDisplayed
   useEffect(() => {
     if(jsonManager !== null) {
       console.log("Active function changed.");
-      setActiveAndDisplayed(jsonManager.nodes[activeFunctionIndex].link.file);
+      setActiveAndDisplayed(jsonManager.nodes[activeFunctionIndex].link.filepath);
       setJumpNodesIndices(jsonManager.updateJumpsFunction(activeFunctionIndex, activeIterations));
     }
   }, [activeFunctionIndex]);
@@ -224,7 +288,7 @@ function RightComponent({displayedFile, setActiveAndDisplayed, isActiveDisplayed
     if(jsonManager) {
       console.log("Loaded project changed.");
       setActiveFunctionIndex(jsonManager.getMain());
-      setActiveAndDisplayed(jsonManager.nodes[jsonManager.getMain()].link.file);
+      setActiveAndDisplayed(jsonManager.nodes[jsonManager.getMain()].link.filepath);
     }
   }, [jsonManager]);
 
@@ -246,7 +310,7 @@ function RightComponent({displayedFile, setActiveAndDisplayed, isActiveDisplayed
         setEditor(newEditor);
       }
     }
-  }, [javaFileContent]);
+  }, [javaFileContent, activeFunctionIndex]);
 
   // Render editor
   return (
