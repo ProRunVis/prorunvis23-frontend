@@ -22,8 +22,6 @@ function ContainerRightLeft(){
      */
     function setActiveAndDisplayed(path){
         uploadedFiles.forEach((uploadedFile) => {
-            console.log(uploadedFile.webkitRelativePath.slice(uploadedFile.webkitRelativePath.indexOf('/') + 1, uploadedFile.webkitRelativePath.length));
-            console.log(path);
             if(path === uploadedFile.webkitRelativePath.slice(uploadedFile.webkitRelativePath.indexOf('/') + 1, uploadedFile.webkitRelativePath.length)){
                 setDisplayedFile(uploadedFile);
                 setActiveFile(uploadedFile);
@@ -55,10 +53,6 @@ function ContainerRightLeft(){
      */
     async function passOnUploadedFiles(files) {
         setUploadedFiles(files);
-        await fetch("api/upload", {
-            method: "POST",
-            body: files,
-        });
         let json = await fetch("api/process");
         setJsonManager(new JsonManager(json));
     }
