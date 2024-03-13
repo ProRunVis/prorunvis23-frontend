@@ -82,6 +82,11 @@ function RightComponent({displayedFile, setActiveAndDisplayed, isActiveDisplayed
       ]);
   }
 
+  /**
+   * Adds a symbol on the current line next to the line number. Which one is dictated by {@link drawLine}.
+   * @param startLineNumber number in which the symbol is drawn.
+   * @param symbol symbol that is drawn.
+   */
   function placeDecoration(startLineNumber, symbol) {
     editor.createDecorationsCollection([
       {
@@ -117,6 +122,10 @@ function RightComponent({displayedFile, setActiveAndDisplayed, isActiveDisplayed
     ]);
   }
 
+  /**
+   * Draws a line next to executed code and determines where that line should start and stop.
+   * @param ranges executed ranges to be marked.
+   */
   function drawLine(ranges) {
     let currentRow = new monaco.Range(ranges[0].startLineNumber, 0, ranges[0].startLineNumber + 1, 0);
     let symbol = "end";
