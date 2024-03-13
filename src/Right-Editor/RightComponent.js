@@ -127,29 +127,65 @@ function RightComponent({displayedFile, setActiveAndDisplayed, isActiveDisplayed
   /**
    *
    */
-  function iterationChanged(newIterationIndex){ //index in nodes
+  function changeIteration(newIterationIndex){ //index in nodes
     let insertPosition;
+    let oldIterationIndex;
     for(let i = 0; i<activeIterationIndices.length; i++) {
-
         if (jsonManager.nodes[activeIterationIndices[i]].traceId === jsonManager.nodes[newIterationIndex].traceId) {
           insertPosition = i;
+          oldIterationIndex = activeIterationIndices[i];
           break;
         }
     }
 
+    let removeCounter = 0;
+    for(let i = 0; i < activeIterationIndices.length; i++){
+      let currentNode = jsonManager.nodes[activeIterationIndices[i]];
+      while(currentNode.traceId !== jsonManager.nodes[activeFunctionIndex].traceId) {
+        if (currentNode.traceId === jsonManager.nodes[oldIterationIndex].traceId) {
+          removeCounter++;
+        }
+        currentNode = jsonManager.nodes[currentNode.parentIndex];
+      }
+    }
+    console.log("removeCounter: ", removeCounter);
+    let iterationsInLoop = [newIterationIndex, ...jsonManager.initIterations(newIterationIndex, [], [])];
+    console.log("iterationsInLoop: ", iterationsInLoop);
+    let iterationsWithoutLoop = activeIterationIndices.splice(insertPosition - 1, removeCounter, ...iterationsInLoop);
+    console.log("iterationsWithoutLoop: ", iterationsWithoutLoop);
 
-    let newActiveIterations = jsonManager.initIterations(activeFunctionIndex, [], [jsonManager.nodes[newIterationIndex].traceId]);
+    //let newActiveIterations = activeIterationIndices.splice(insertPosition - 1, 0, ...iterationsInLoop);
+    console.log("new: ", iterationsWithoutLoop);
+    setActiveIterationIndices(iterationsWithoutLoop);
+    //let newActiveIterationsInLoop = jsonManager.initIterations(newIterationIndex, [], []);
 
 
 
+    /*oldActiveIterations.forEach((iterationIndex) => {
+        jsonManager.nodes[iterationIndex]
 
-    //calc new active iterations
-    let neu = [newIterationIndex];
-    neu.concat(jsonManager.initIterations(newIterationIndex, [], [jsonManager.nodes[newIterationIndex].traceId]));
-    newActiveIterations.splice(insertPosition,0, ...neu);
+    });*/
 
-    setActiveIterationIndices(newActiveIterations);
+
+    //let oldActiveIterationsInLoop = jsonManager.initIterations(activeIterationIndices[insertPosition], [], []);
+/*
+calc children iterations for iteration before->get length
+remove those from list (insert index)
+calc children iterations for iteration after
+add to list at insert index
+ */
+
+    //let newActiveIterations = jsonManager.initIterations(newIterationIndex, [], [jsonManager.nodes[newIterationIndex].traceId]);
+    //newActiveIterations.splice(insertPosition, oldActiveIterationsInLoop.length, newIterationIndex, ...newActiveIterations);
+
+    //setActiveIterationIndices(newActiveIterations);
+
   }
+
+  /**
+   * Current Iterations, remove every index that has the changed iteration as a parent
+   * Calc new Iterations for the changed iteration and insert where removed everything
+   */
 
   /**
    * Sets up an event listener that listens mouse clicks in the editor.
@@ -160,19 +196,16 @@ function RightComponent({displayedFile, setActiveAndDisplayed, isActiveDisplayed
       editor.onMouseDown(e => {
         const position = e.target.position;
         jumpNodesIndices.forEach((jumpIndex) => {
+          if(jumpIndex === 1)
+            return;
           let jump = jsonManager.nodes[jumpIndex];
           if (jump.nodeType !== "Function" || jumpIndex === activeFunctionIndex) {
             jump.outLinks.forEach((outLink) => {
               if (outLink.range.containsPosition(position)) {
                 setJumpPosition(jump.outLinkPosition);
                 setDoPositionJump(true);
-                console.log("outlink");
                 setActiveIterationIndices(jsonManager.initIterations(jump.outFunctionIndex, jump.outLoopIterations, []));
-                //TODO is probably changing iterations with old active iterations array
-                //TODO If no iteration gets selected soesnt work
-                console.log(jsonManager.initIterations(jumpIndex, jump.outLoopIterations, []));
                 setActiveFunctionIndex(jump.outFunctionIndex);
-
               }
             });
           }
@@ -181,54 +214,35 @@ function RightComponent({displayedFile, setActiveAndDisplayed, isActiveDisplayed
           if(jumpIndex === activeFunctionIndex){
             return;
           }
-          //TODO
           if(jump.nodeType === "Function") {
             if (jump.link.range.containsPosition(position)) {
               setJumpPosition(jump.linkPosition);
               setDoPositionJump(true);
-              console.log("functionlink", jumpIndex);
               setActiveIterationIndices(jsonManager.initIterations(jumpIndex, [], []));
-              console.log(jsonManager.initIterations(jumpIndex, [], []));
+
               setActiveFunctionIndex(jumpIndex);
             }
+
           }
         });
       });
   }
 
-  function handleIterationDisplay(){
-  
-  }
-
   function handleIterationButton(){
     editor.onMouseDown(e => {
       const position = e.target.position;
-
-
-
       activeIterationIndices.forEach((iterationIndex) => {
         let iteration = jsonManager.nodes[iterationIndex];
         if (iteration.link.range.containsPosition(position)) {
-
           let id = iteration.traceId;
-
-
-
           let nextIteration = prompt("Please enter the iteration", iteration.iteration);
-
           nextIteration = parseInt(nextIteration);
-
           if (nextIteration === null || nextIteration < 0 || nextIteration > jsonManager.getLastIterationNumber(iterationIndex)) {
             nextIteration = iteration.iteration;
           }
-
-
-
-
-
           for(let i = 0; i < jsonManager.nodes.length ; i++) {
             if (jsonManager.nodes[i].traceId === id && nextIteration === jsonManager.nodes[i].iteration){
-              iterationChanged(i);
+              changeIteration(i);
               break;
             }
           }
@@ -255,7 +269,6 @@ function RightComponent({displayedFile, setActiveAndDisplayed, isActiveDisplayed
       setActiveFunctionIndex(jsonManager.getMain());
       setActiveAndDisplayed(jsonManager.nodes[1].link.file);
       setActiveIterationIndices(jsonManager.initIterations(1, [], []));
-      console.log(jsonManager.initIterations(1, [], []));
     }
   },[jsonManager]);
 
@@ -358,6 +371,10 @@ function RightComponent({displayedFile, setActiveAndDisplayed, isActiveDisplayed
     }
 
   },[editor]);
+
+  useEffect(() => {
+    console.log(activeIterationIndices);
+  }, [activeIterationIndices]);
 
 
   /**

@@ -40,6 +40,7 @@ class JsonManager {
 
                             node.outLoopIterations.unshift(parentIndex);
                             //TODO include the ones that are not part of parent structure
+
                         }
                         parentIndex = this.nodes[parentIndex].parentIndex;
 
@@ -47,7 +48,7 @@ class JsonManager {
                     this.nodes[i].outFunctionIndex = parentIndex;
                 }
             }
-            this.nodes.forEach((node)=> {
+            this.nodes.forEach((node) => {
                 console.log(node);
             });
     }
@@ -104,8 +105,6 @@ class JsonManager {
         return this.activeIterations;
     }
 
-
-    //TODO init bool übergeben
     /**
      * Recursively determines all active loops that have this node as a grandparent,
      * assuming that all occurring loops have iteration set to one.
@@ -118,32 +117,31 @@ class JsonManager {
     getIterations(nodeIndex){
         let end = false;
         this.skipIds.forEach((skipId) => {
-            if(this.nodes[nodeIndex].traceId === skipId)
+            if(this.nodes[nodeIndex].traceId === skipId) {
                 end = true;
+                console.log("skipped", this.nodes[nodeIndex].traceId);
+            }
         });
-        if(end){
-            return this.activeIterations;}
-
-        let skip = true;
-        if(this.nodes[nodeIndex].nodeType !== "Function" && this.nodes[nodeIndex].nodeType !== "Loop")
-            skip = false;
-        if(this.activeIterationIndex + 1 > this.activeIterations.length && this.nodes[nodeIndex].iteration === 1){
-            this.activeIterations.push(nodeIndex);
-            this.activeIterationIndex++;
-            skip = false;
-            this.skipIds.push(this.nodes[nodeIndex].traceId);
+        if(!end) {
+            let skip = true;
+            if (this.nodes[nodeIndex].nodeType !== "Function" && this.nodes[nodeIndex].nodeType !== "Loop")
+                skip = false;
+            if (this.activeIterationIndex + 1 > this.activeIterations.length && this.nodes[nodeIndex].iteration === 1) {
+                this.activeIterations.push(nodeIndex);
+                this.activeIterationIndex++;
+                skip = false;
+                this.skipIds.push(this.nodes[nodeIndex].traceId);            }
+            if (!(this.activeIterationIndex + 1 > this.activeIterations.length) && this.nodes[nodeIndex].iteration === this.nodes[this.activeIterations[this.activeIterationIndex]].iteration) {
+                this.activeIterationIndex++;
+                this.skipIds.push(this.nodes[nodeIndex].traceId);
+                skip = false;
+            }
+            if (!skip) {
+                this.nodes[nodeIndex].childrenIndices.forEach((childIndex) => {
+                    this.activeIterations.concat(this.getIterations(childIndex));
+                });
+            }
         }
-        if(!(this.activeIterationIndex + 1 > this.activeIterations.length) && this.nodes[nodeIndex].iteration === this.nodes[this.activeIterations[this.activeIterationIndex]].iteration){
-            this.activeIterationIndex++;
-            this.skipIds.push(this.nodes[nodeIndex].traceId);
-            skip = false;
-        }
-        if(!skip) {
-            this.nodes[nodeIndex].childrenIndices.forEach((childIndex) => {
-                this.activeIterations.concat(this.getIterations(childIndex));
-            });
-        }
-        //return this.activeIterations;
     };
 
     /**
