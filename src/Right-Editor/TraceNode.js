@@ -32,7 +32,8 @@ class TraceNode {
         this.ranges = [];
         if (node.ranges !== undefined)
             node.ranges.forEach((range) => {
-                this.ranges.push(new monaco.Range(range.begin.line, range.begin.column, range.end.line, range.end.column + 1));
+                this.ranges.push(new monaco.Range(
+                    range.begin.line, range.begin.column, range.end.line, range.end.column + 1));
             });
 
         //childrenIndices: Array of all children indices associated with this node.

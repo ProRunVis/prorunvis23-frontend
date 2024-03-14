@@ -197,13 +197,16 @@ function RightComponent({displayedFile, setActiveAndDisplayed, isActiveDisplayed
      * @param ranges executed ranges to be marked.
      */
     function drawLine(ranges) {
-        let currentRow = new monaco.Range(ranges[0].startLineNumber, 0, ranges[0].startLineNumber + 1, 0);
+        let currentRow = new monaco.Range(
+            ranges[0].startLineNumber, 0, ranges[0].startLineNumber + 1, 0);
         let symbol = "end";
         let stillInCurrentRange = false;
         for (let i = 0; i < ranges.length;) {
             if (ranges[i].startLineNumber > currentRow.startLineNumber) {
                 stillInCurrentRange = false;
-                currentRow = new monaco.Range(currentRow.startLineNumber + 1, 0, currentRow.endLineNumber + 1, 0);
+                currentRow = new monaco.Range(
+                    currentRow.startLineNumber + 1, 0,
+                    currentRow.endLineNumber + 1, 0);
             }
             if (currentRow.containsRange(ranges[i])) {
                 if (!stillInCurrentRange) {
@@ -226,7 +229,8 @@ function RightComponent({displayedFile, setActiveAndDisplayed, isActiveDisplayed
                     placeDecoration(currentRow.startLineNumber - 1, "end");
                 }
                 symbol = "end";
-            } else if (editor.getModel().getValueInRange(currentRow).trim().length === 0 && (symbol === "start" || symbol === "line")) {
+            } else if (editor.getModel().getValueInRange(currentRow).trim().length === 0
+                && (symbol === "start" || symbol === "line")) {
                 placeDecoration(currentRow.startLineNumber, "line");
                 symbol = "line";
             }
@@ -287,11 +291,13 @@ function RightComponent({displayedFile, setActiveAndDisplayed, isActiveDisplayed
                     let id = iteration.traceId;
                     let nextIteration = prompt("Please enter the iteration", iteration.iteration);
                     nextIteration = parseInt(nextIteration);
-                    if (nextIteration === null || nextIteration < 0 || nextIteration > jsonManager.getLastIterationNumber(iterationIndex)) {
+                    if (nextIteration === null || nextIteration < 0
+                        || nextIteration > jsonManager.getLastIterationNumber(iterationIndex)) {
                         nextIteration = iteration.iteration;
                     }
                     for (let i = 0; i < jsonManager.nodes.length; i++) {
-                        if (jsonManager.nodes[i].traceId === id && nextIteration === jsonManager.nodes[i].iteration && jsonManager.nodes[i].parentIndex === iteration.parentIndex) {
+                        if (jsonManager.nodes[i].traceId === id && nextIteration === jsonManager.nodes[i].iteration
+                            && jsonManager.nodes[i].parentIndex === iteration.parentIndex) {
                             changeIteration(i);
                             break;
                         }
@@ -347,7 +353,8 @@ function RightComponent({displayedFile, setActiveAndDisplayed, isActiveDisplayed
             if (isActiveDisplayed()) {
                 activeIterationIndices.forEach((iterationIndex) => {
                     let position = jsonManager.nodes[iterationIndex].link.range.getStartPosition();
-                    let content = `(` + jsonManager.nodes[iterationIndex].iteration + `/` + jsonManager.getLastIterationNumber(iterationIndex) + `)`;
+                    let content = `(` + jsonManager.nodes[iterationIndex].iteration + `/`
+                        + jsonManager.getLastIterationNumber(iterationIndex) + `)`;
                     hints.push({position, content});
                 });
             }

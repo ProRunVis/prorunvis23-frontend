@@ -55,7 +55,8 @@ class JsonManager {
                     currentNode.childrenIndices.forEach((childIndex) => {
                         if (childIndex === parentBeforeIndex) {
                             iterations.push(...iterationsBefore);
-                        } else if (this.nodes[childIndex].iteration === 1 && this.nodes[childIndex].traceId !== parentBeforeTraceId) {
+                        } else if (this.nodes[childIndex].iteration === 1
+                            && this.nodes[childIndex].traceId !== parentBeforeTraceId) {
                             iterations.push(childIndex);
                         }
                     });
@@ -144,7 +145,9 @@ class JsonManager {
                 skip = false;
                 this.skipIds.push(this.nodes[nodeIndex].traceId);
             }
-            if (!(this.activeIterationIndex + 1 > this.activeIterations.length) && this.nodes[nodeIndex].iteration === this.nodes[this.activeIterations[this.activeIterationIndex]].iteration) {
+            if (!(this.activeIterationIndex + 1 > this.activeIterations.length)
+                && this.nodes[nodeIndex].iteration
+                === this.nodes[this.activeIterations[this.activeIterationIndex]].iteration) {
                 this.activeIterationIndex++;
                 this.skipIds.push(this.nodes[nodeIndex].traceId);
                 skip = false;
@@ -225,7 +228,8 @@ class JsonManager {
         this.nodes[functionIndex].childrenIndices.forEach((childIndex) => {
             ranges = ranges.concat(this.getRanges(childIndex));
         });
-        ranges.sort((a, b) => ((a.startLineNumber < b.startLineNumber) ? -1 : (a.startLineNumber > b.startLineNumber) ? 1 : 0));
+        ranges.sort((a, b) => ((a.startLineNumber < b.startLineNumber) ?
+            -1 : (a.startLineNumber > b.startLineNumber) ? 1 : 0));
         return ranges;
     }
 

@@ -61,7 +61,7 @@ function LeftComponent({setDisplayedFile, setDisplayedToActive, passOnUploadedFi
                     if (!isDirectory && !existingNode) {
                         existingNode = {
                             name: nodeName,
-                            realPath: file.webkitRelativePath.slice(file.webkitRelativePath.indexOf('/') + 1, file.webkitRelativePath.length),
+                            realPath: file.webkitRelativePath,
                             index: i,
                             children: isDirectory ? [] : undefined // Add children only for directories
                         };
