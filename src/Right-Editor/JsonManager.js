@@ -21,19 +21,17 @@ class JsonManager {
                 this.nodes.push(new TraceNode(jsonData));
 
             });
-        //console.log(this.nodes);
             for(let i = 2; i < this.nodes.length; i++){
                 let node = this.nodes[i];
-                if(node.nodeType === "Throw") { //TODO fix for emtpy catch
+                if(node.nodeType === "Throw") {
                     node.outLinkPosition = new Position(0,0);
-                    if(undefined !== this.nodes[node.outIndex].ranges[0])
+                    if(undefined !== this.nodes[node.outIndex].ranges[0]) //if catch is empty and has no range
                         node.outLinkPosition = this.nodes[node.outIndex].ranges[0].getStartPosition();
                 }
                 if(node.nodeType === "Function") {
                     node.linkPosition = node.outLinks[node.outLinks.length - 1].range.getStartPosition();
                     node.outLinkPosition = node.link.range.getStartPosition();
                 }
-
                 if(node.nodeType === "Function" || node.nodeType === "Throw") {
                     let currentIndex = node.outIndex;
                     let currentNode = this.nodes[currentIndex];
@@ -64,40 +62,8 @@ class JsonManager {
                     }
                     this.nodes[i].outLoopIterations = iterations;
                     this.nodes[i].outFunctionIndex = currentIndex;
-
-                    //Go through all nodes and check for loop
-                    //if loop check for iter = 1
-                    //if iter = 1 add to iterations and do deep check for more loops
-
-                    //if parent loop add safe the iteration and trace id
-                    //check all loops of parent again and add iter = 1, falls trace id von loop = safed trace id swap iter 1 für block iterations von vorher aus
-
-                    //continue until parent node type is function-> do children check one last time
-
-                    /*const newNumbers = [
-                        ...activeIterationIndices.slice(0, insertPosition),
-                        ...iterationsInLoop,
-                        ...activeIterationIndices.slice(insertPosition + removeCounter) ];*/
-
-
-/*
-                    while(this.nodes[currentIndex].nodeType !== "Function") {
-                        if(this.nodes[currentIndex].nodeType === "Loop") {
-
-                            node.outLoopIterations.unshift(currentIndex);
-                            //TODO include the ones that are not part of parent structure
-
-
-
-                        }
-                        currentIndex = this.nodes[currentIndex].parentIndex;
-
-                    }
-
-                    */
                 }
             }
-                console.log(this.nodes);
     }
 
     /**
@@ -109,18 +75,9 @@ class JsonManager {
     }
 
     /**
-     *
-     */
-    iterationNodeIndicesToIterations(iterationIndices){
-        let iterations = [];
-        iterationIndices.forEach((iterationIndex) => {
-            iterations.push(this.nodes[iterationIndex].iteration);
-        });
-        return iterations;
-    }
-
-    /**
-     *
+     * Returns the number of the last iteration that belongs to the loop.
+     * @param iterationIndex index of a {@link TraceNode} with any iteration belonging to the loop to be analysed.
+     * @returns {*|null} number of last iteration.
      */
     getLastIterationNumber(iterationIndex){
         let iterationIndexId = this.nodes[iterationIndex].traceId;
@@ -138,12 +95,11 @@ class JsonManager {
      * assuming that all occurring loops have iteration set to one.
      * @param functionIndex Index of the currently active function.
      * @param iterationsIndices Iterations that are currently selected(beginning function -> end function).
-     * @param skipIds
      * @returns {*[]} Array with all the initially active iterations(filled with 1s) of this function.
      * Length equals how many loops are active.
      */
-    initIterations(functionIndex, iterationsIndices, skipIds){
-        this.skipIds = [...skipIds];
+    initIterations(functionIndex, iterationsIndices){
+        this.skipIds = [];
         this.activeIterations = [...iterationsIndices];
         this.activeIterationIndex = 0;
         this.nodes[functionIndex].childrenIndices.forEach((childIndex) => {
@@ -156,8 +112,6 @@ class JsonManager {
      * Recursively determines all active loops that have this node as a grandparent,
      * assuming that all occurring loops have iteration set to one.
      * @param nodeIndex node index of current node.
-     * @param iterationsIndices
-     * @param activeIterationIndex index of the next iteration in activeIterations that is tp be selected.
      * @returns {[*]} Array with all the initially active iterations(filled with 1s).
      * That have the current node as a grandparent and are part of this nodes function.
      */

@@ -23,23 +23,22 @@ import {languages} from "monaco-editor";
 function RightComponent({displayedFile, setActiveAndDisplayed, isActiveDisplayed, jsonManager}){
   // Constants --------------------------------------------------------------------------------------------------------
 
-  const [languageDispose, setLanguageDispose] = useState(null);
-
-  // State for the index of the active function in the editor
+  // State for the index of the active function in the editor.
   const [activeFunctionIndex, setActiveFunctionIndex] = useState(0);
 
+  //State for the indices of the loop iterations currently active.
   const [activeIterationIndices, setActiveIterationIndices] = useState([]);
 
   // State for the indices of the Nodes(other functions and throws)
-  // of the active function that can be used to jump to another node
+  // of the active function that can be used to jump to another node.
   const [jumpNodesIndices, setJumpNodesIndices] = useState([]);
 
   // State to determine
   // whether the file was changed through a jump, so a jump to the line of the current Node has to be performed
-  // or the file was changed using the file tree
+  // or the file was changed using the file tree.
   const [doPositionJump, setDoPositionJump] = useState(false);
 
-  // State to safe the line and column to jump to in the new or current file if a jump to a new Node is performed
+  // State to safe the line and column to jump to in the new or current file if a jump to a new Node is performed.
   const [jumpPosition, setJumpPosition] = useState(new monaco.Position(0,0));
 
   // Reference to the editor's container for performing DOM operations.
@@ -106,7 +105,8 @@ function RightComponent({displayedFile, setActiveAndDisplayed, isActiveDisplayed
   }
 
   /**
-   *
+   * Function to render a range in the current editor with an orange background.
+   * Used to show which part of the code is a loop and can be clicked to change the iteration.
    * @param range monaco.Range to be decorated.
    */
   function highlightLoop(range)
@@ -125,7 +125,9 @@ function RightComponent({displayedFile, setActiveAndDisplayed, isActiveDisplayed
   }
 
   /**
-   *
+   * Changes an iteration in activeIterationIndices to a new iteration number and adds potential new iterationIndices,
+   * that are included in the new iteration but were not executed before, to the activeIterationIndices list.
+   * @param newIterationIndex the new index of the new iteration {@link TraceNode}.
    */
   function changeIteration(newIterationIndex){ //index in nodes
     let insertPosition;
@@ -148,7 +150,7 @@ function RightComponent({displayedFile, setActiveAndDisplayed, isActiveDisplayed
         currentNode = jsonManager.nodes[currentNode.parentIndex];
       }
     }
-    let iterationsInLoop = [newIterationIndex, ...jsonManager.initIterations(newIterationIndex, [], [])];
+    let iterationsInLoop = [newIterationIndex, ...jsonManager.initIterations(newIterationIndex, [])];
 
     const newIterations = [
       ...activeIterationIndices.slice(0, insertPosition),
@@ -157,11 +159,6 @@ function RightComponent({displayedFile, setActiveAndDisplayed, isActiveDisplayed
 
     setActiveIterationIndices(newIterations);
   }
-
-  /**
-   * Current Iterations, remove every index that has the changed iteration as a parent
-   * Calc new Iterations for the changed iteration and insert where removed everything
-   */
 
   /**
    * Sets up an event listener that listens mouse clicks in the editor.
@@ -196,7 +193,7 @@ function RightComponent({displayedFile, setActiveAndDisplayed, isActiveDisplayed
             if (jump.link.range.containsPosition(position)) {
               setJumpPosition(jump.linkPosition);
               setDoPositionJump(true);
-              setActiveIterationIndices(jsonManager.initIterations(jumpIndex, [], []));
+              setActiveIterationIndices(jsonManager.initIterations(jumpIndex, []));
 
               setActiveFunctionIndex(jumpIndex);
             }
@@ -241,22 +238,33 @@ function RightComponent({displayedFile, setActiveAndDisplayed, isActiveDisplayed
   // ------------------------------------------------------------------------------------------------------------------
   // UseEffects
 
-
+  /**
+   * This effect is executed when json manager/project changes. It then gets the main function of that project
+   * and sets it as the active function and performs a file jump to the file that contains the new active function.
+   * It also initializes the loop displayed iterations.
+   */
   useEffect(() => {
     if(jsonManager) {
       setActiveFunctionIndex(jsonManager.getMain());
       setActiveAndDisplayed(jsonManager.nodes[1].link.file);
-      setActiveIterationIndices(jsonManager.initIterations(1, [], []));
+      setActiveIterationIndices(jsonManager.initIterations(1, []));
     }
   },[jsonManager]);
 
+  /**
+   * This effect is executed when the displayed file changes. It then loads that file into the editor.
+   */
   useEffect(() => {
     if(displayedFile) {
       loadJavaFile();
     }
   },[displayedFile]);
 
-
+  /**
+   * This effect is executed when the content of the java file, the currently displayed
+   * function or the currently displayed iterations change.
+   * So when anything displayed in the editor needs to be updated, it updates the editor accordingly.
+   */
   useEffect(() => {
     let newEditor;
     if (javaFileContent && editorContainerRef.current) {
@@ -286,10 +294,11 @@ function RightComponent({displayedFile, setActiveAndDisplayed, isActiveDisplayed
     }
   },[javaFileContent, activeIterationIndices, activeFunctionIndex]);
 
+  /**
+   * This effect is executed when the active function changes. It then performs a jump to the new active file.
+   */
   useEffect(() => {
     if(jsonManager) {
-      //setActiveIterationIndices(jsonManager.initIterations(activeFunctionIndex, activeIterationIndices, []));
-      setActiveAndDisplayed(jsonManager.nodes[activeFunctionIndex].link.file);
       setActiveAndDisplayed(jsonManager.nodes[activeFunctionIndex].link.file);
     }
   },[activeFunctionIndex]);
@@ -300,13 +309,17 @@ function RightComponent({displayedFile, setActiveAndDisplayed, isActiveDisplayed
     }
   },[activeIterationIndices]);
 
+  /**
+   * This effect is executed when the editor changes. It then gets the ranges that should be highlighted from the
+   * jsonManager and displays them in the editor if the current file is the one where the active Node is located.
+   * It then starts two event listeners for mouse clicks(loops and jumps)
+   * and sets the position of the editor to the active Node if it is part of the displayed file.
+   */
   useEffect(() => {
     if(jsonManager && editor) {
 
-
      let rangesToHighlight = [];
      rangesToHighlight = jsonManager.updateActiveRangesFunction(activeFunctionIndex, activeIterationIndices);
-
 
       if (isActiveDisplayed()) {
         setDoPositionJump(true);
@@ -327,8 +340,8 @@ function RightComponent({displayedFile, setActiveAndDisplayed, isActiveDisplayed
           if(jsonManager.nodes[jump].nodeType === "Function")
             highlightLink(jsonManager.nodes[jump].link.range);
         });
-        handleJumps();
 
+        handleJumps();
         handleIterationButton();
 
         activeIterationIndices.forEach((index) => {
@@ -349,29 +362,6 @@ function RightComponent({displayedFile, setActiveAndDisplayed, isActiveDisplayed
     }
 
   },[editor]);
-
-
-  /**
-   * This effect is executed when the editor changes. It then gets the ranges that should be highlighted from the
-   * jsonManager and displays them in the editor if the current file is the one where the active Node is located.
-   * It then starts the event listener for mouse clicks and sets the position of the editor to the active Node if it is
-   * part of the displayed file.
-   */
-
-
-  /**
-   * This effect is executed when the active function changes. It then sets editor to file that contains said function
-   * and updates the JumpNodeIndices.
-   */
-
-  /**
-   * This effect is executed when json manager/project changes. It then gets the main function of that project
-   * and sets it as the active function and performs a file jump to the file that contains the new active function.
-   */
-
-
-
-
 
   // Render editor
   return (
