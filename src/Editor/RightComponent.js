@@ -414,7 +414,7 @@ function RightComponent({displayedFile, setActiveAndDisplayed, isActiveDisplayed
                         ((a.startLineNumber < b.startLineNumber) ? -1 : (a.startLineNumber > b.startLineNumber) ? 1 : 0))
                         [jsonManager.nodes[jsonManager.nodes.length - 1].ranges.length - 1])
                     highlightEnd(rangesToHighlight[rangesToHighlight.length - 1]);
-                drawLine(rangesToHighlight);
+                //drawLine(rangesToHighlight);
                 jumpNodesIndices.forEach((jump) => {
                     if (jsonManager.nodes[jump].nodeType !== "Function" || jump === activeFunctionIndex) {
                         jsonManager.nodes[jump].outLinks.forEach((outLink) => {
