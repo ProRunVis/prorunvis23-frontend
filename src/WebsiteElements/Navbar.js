@@ -10,16 +10,16 @@ import "../Css/Navbar.css";
  * is styled with CSS for visual appeal and user interaction.
  */
 export default function Navbar() {
-  return (
-    <nav className="nav">
-      <img
-         src={logoImage}
-        className="nav--icon"
-        alt="A debugger logo"
-      />
-      <h3 className="nav--logo_text">Visualize your flow</h3>
-      <h4 className="nav--title"></h4>
-      <HelpButton />
-    </nav>
-  );
+    return (
+        <nav className="nav">
+            <img
+                src={logoImage}
+                className="nav--icon"
+                alt="A debugger logo"
+            />
+            <h3 className="nav--logo_text">Visualize your flow</h3>
+            <h4 className="nav--title"></h4>
+            <HelpButton/>
+        </nav>
+    );
 }
