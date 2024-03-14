@@ -3,13 +3,14 @@
     max-width: 600px;
     margin: 50px auto;
     padding: 20px;
-    background-color: white;
+    background-color: black;
+    color:  white;
     border-radius: 8px;
   }
   
   .modal-close-button {
-    background-color: #61DAFB;
-    color: white;
+    background-color: #ffc7b1e7 ;
+    color: black;
     border: none;
     padding: 10px 20px;
     font-size: 16px;
@@ -18,4 +19,8 @@
   
   .modal-content {
     margin-top: 20px;
+  }
+
+  .modal{
+
   }

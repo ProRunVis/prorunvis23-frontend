@@ -37,7 +37,7 @@ export default function HelpButton() {
             <button className="nav--help-button" onClick={openModal}>
                 Help
             </button>
-            <Modal
+            <Modal className="modal"
                 isOpen={modalIsOpen}
                 onRequestClose={closeModal}
                 contentLabel="Readme Modal"
