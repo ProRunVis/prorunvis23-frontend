@@ -193,6 +193,8 @@ function RightComponent({displayedFile, setActiveAndDisplayed, isActiveDisplayed
     let ongoing = false;
     for (let i = 0; i < ranges.length; i++) {
 
+      console.log("starts looping for line " + ranges[i]);
+
       if (i + 1 < ranges.length && ranges[i].startLineNumber === ranges[i + 1].startLineNumber) {
         continue;
       }
@@ -203,27 +205,30 @@ function RightComponent({displayedFile, setActiveAndDisplayed, isActiveDisplayed
       while(endLine.startLineNumber < ranges[i].endLineNumber) {
         placeDecoration(endLine.startLineNumber, "line");
         endLine = iterateLine(endLine);
+        console.log("loop 1");
       }
 
-      if (startLine.startLineNumber < endLine.startLineNumber) {
-        placeDecoration(startLine.startLineNumber, (ongoing) ? "line" : "start");
-      }
+      placeDecoration(startLine.startLineNumber, (ongoing) ? "line" : "start");
 
       startLine = new monaco.Range(ranges[i].endLineNumber, 0, ranges[i].endLineNumber + 1, 0);
       endLine = iterateLine(startLine);
 
       if (i !== ranges.length - 1) {
-        while (editor.getModel().getValueInRange(endLine).trim().length === 0) {
+        while (editor.getModel().getValueInRange(endLine).trim().length === 0
+               && endLine.startLineNumber < ranges[i + 1].startLineNumber) {
           endLine = iterateLine(endLine);
+          console.log("loop 2 " + endLine);
         }
       }
 
       if (i + 1 < ranges.length && endLine.startLineNumber === ranges[i + 1].startLineNumber) {
-        if (endLine.startLineNumber > ranges[i].startLineNumber + 1) {
-          while (startLine.startLineNumber < endLine.startLineNumber) {
-            placeDecoration(startLine.startLineNumber, "line");
-            startLine = iterateLine(startLine);
-          }
+        if (startLine.startLineNumber === ranges[i].startLineNumber) {
+          startLine = iterateLine(startLine);
+        }
+        while (startLine.startLineNumber < endLine.startLineNumber) {
+          placeDecoration(startLine.startLineNumber, "line");
+          startLine = iterateLine(startLine);
+          console.log("loop 3");
         }
         ongoing = true;
       } else {
