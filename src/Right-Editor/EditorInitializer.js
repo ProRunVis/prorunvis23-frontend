@@ -17,9 +17,10 @@ export class EditorInitializer {
    *
    * @param containerRef A reference to the container DOM element where the editor will be instantiated.
    * @param javaFileContent The initial Java code content to be loaded into the editor.
+   * @param hints list of InlayHints(monaco editor) to display in the editor.
    * @return The initialized Monaco Editor instance, or undefined if initialization fails.
    */
-  static initializeEditor(containerRef, javaFileContent) {
+  static initializeEditor(containerRef, javaFileContent, hints) {
     if (typeof javaFileContent !== 'string') {
       console.error('javaFileContent must be a string');
       return;
@@ -105,6 +106,24 @@ export class EditorInitializer {
       }
     });
 
+    // ----------------------------------Loop Indices ------------------------------------
+    const { dispose } = monaco.languages.registerInlayHintsProvider("java", {
+      provideInlayHints(model, range, token) {
+        let newHints = [];
+        hints.forEach((hint) => {
+          newHints.push({
+            kind: monaco.languages.InlayHintKind.Parameter,
+            position: {column: hint.position.column, lineNumber: hint.position.lineNumber},
+            label: hint.content,
+          });
+        });
+        return {
+          hints: newHints,
+          dispose: () => {},
+        };
+      },
+    });
+
     monaco.languages.register({ id: 'java' });   // Activates the syntax highlighting
 
     // -------------------------------------  All other function calls for the editor  ----------------------------
@@ -114,7 +133,7 @@ export class EditorInitializer {
 
     // Set dark theme
     monaco.editor.setTheme('vs-dark');
-    return editor
+    return {editor, dispose};
   }
 }
 export default EditorInitializer;

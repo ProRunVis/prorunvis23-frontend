@@ -16,10 +16,17 @@ export default function ReadmeModal({closeModal}) {
       <button className="modal-close-button" onClick={closeModal}>
         Close
       </button>
-      <div className="modal-content">
-        <h2>Readme</h2>
-        <p>there will be no help from elsewhere</p>
-      </div>
+        <div className="modal-content">
+            <h2>Tutorial</h2>
+            <p> Use the upload button to upload the root folder of a java project of your choosing. </p>
+            <p> The chosen project has to be in a separate folder with only the project in it. </p>
+            <p> It furthermore should not use any external libraries the program is currently not able to deal with those. </p>
+            <p> Your code then gets shown on the right side. </p>
+            <p> Green background indicates that a statement has been executed. </p>
+            <p> Blue background indicates a jump at that position to another part of the code, click it to go there. </p>
+            <p> Orange background indicates a loop that has been executed, click it to select the iteration that you want displayed. </p>
+            <p> The line on the left side of your code is shown to indicate what path the program took, so where it started and where it ended. </p>
+        </div>
     </div>
   );
 }

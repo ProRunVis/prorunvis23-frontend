@@ -41,7 +41,6 @@ function App() {
   useEffect(() => {
 
     const handleResize = debounce(() => {
-      console.log('Containergröße hat sich geändert');
 
     }, 100);
 

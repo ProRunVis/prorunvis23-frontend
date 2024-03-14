@@ -1,4 +1,5 @@
 import TraceNode from "./TraceNode";
+import {Position} from "monaco-editor";
 
 /**
  * Class that contains an array of {@link TraceNode}s and manages them. It gives access to several functions that
@@ -13,31 +14,54 @@ class JsonManager {
         this.nodes = [];
         this.activeIterations = [];
         this.skipIds = [];
+        this.activeIterationIndex = 0;
+
         let jsonData = JSON.parse(jsonString);
             jsonData.forEach((jsonData) => {
                 this.nodes.push(new TraceNode(jsonData));
+
             });
             for(let i = 2; i < this.nodes.length; i++){
                 let node = this.nodes[i];
-                if(node.nodeType === "Throw")
-                    // TODO add way to deal with empty catches
-                    node.outLinkPosition = this.nodes[node.outIndex].ranges[0].getStartPosition();
+                if(node.nodeType === "Throw") {
+                    node.outLinkPosition = new Position(0,0);
+                    if(undefined !== this.nodes[node.outIndex].ranges[0]) //if catch is empty and has no range
+                        node.outLinkPosition = this.nodes[node.outIndex].ranges[0].getStartPosition();
+                }
                 if(node.nodeType === "Function") {
                     node.linkPosition = node.outLinks[node.outLinks.length - 1].range.getStartPosition();
                     node.outLinkPosition = node.link.range.getStartPosition();
                 }
-
                 if(node.nodeType === "Function" || node.nodeType === "Throw") {
-                    let parentIndex = node.parentIndex;
-                    while(this.nodes[parentIndex].nodeType !== "Function") {
-                        if(this.nodes[parentIndex].nodeType === "Loop") {
-                            node.outLoopIterations.unshift[this.nodes[parentIndex].iteration];
-                            if(this.nodes[parentIndex].iteration !== 1)
-                                parentIndex = this.nodes[parentIndex].parentIndex;
+                    let currentIndex = node.outIndex;
+                    let currentNode = this.nodes[currentIndex];
+
+                    let parentBeforeIndex = 0;
+                    let iterationsBefore = 0;
+                    let iterations = [];
+                    let start = true;
+                    while(currentNode.nodeType !== "Function" || start) {
+                        if(!start) {
+                            currentIndex = this.nodes[currentIndex].parentIndex;
+                            currentNode = this.nodes[currentIndex];
                         }
-                        parentIndex = this.nodes[parentIndex].parentIndex
+                        iterations = [];
+                        if (currentNode.nodeType === "Loop") {
+                            iterations.push(currentIndex);
+                        }
+                        currentNode.childrenIndices.forEach((childIndex) => {
+                            if (childIndex === parentBeforeIndex) {
+                                iterations.push(...iterationsBefore);
+                            } else if (this.nodes[childIndex].iteration === 1 && this.nodes[childIndex].traceId !== this.nodes[parentBeforeIndex].traceId) {
+                                iterations.push(childIndex);
+                            }
+                        });
+                        parentBeforeIndex = currentIndex;
+                        iterationsBefore = iterations;
+                        start = false;
                     }
-                    this.nodes[i].outFunctionIndex = parentIndex;
+                    this.nodes[i].outLoopIterations = iterations;
+                    this.nodes[i].outFunctionIndex = currentIndex;
                 }
             }
     }
@@ -51,18 +75,37 @@ class JsonManager {
     }
 
     /**
+     * Returns the number of the last iteration that belongs to the loop.
+     * @param iterationIndex index of a {@link TraceNode} with any iteration belonging to the loop to be analysed.
+     * @returns {*|null} number of last iteration.
+     */
+    getLastIterationNumber(iterationIndex){
+        let iterationIndexId = this.nodes[iterationIndex].traceId;
+        let lastIteration = this.nodes[iterationIndex].iteration;
+
+        this.nodes[this.nodes[iterationIndex].parentIndex].childrenIndices.forEach((childIndex) => {
+            if(this.nodes[childIndex].traceId === iterationIndexId && this.nodes[childIndex].iteration > lastIteration)
+                lastIteration = this.nodes[childIndex].iteration;
+        });
+        return lastIteration;
+    }
+
+    /**
      * Determines how many loops are active in the current function,
      * assuming that all occurring loops have iteration set to one.
      * @param functionIndex Index of the currently active function.
+     * @param activeIterationIndices Iterations that are currently selected(beginning function -> end function).
      * @returns {*[]} Array with all the initially active iterations(filled with 1s) of this function.
      * Length equals how many loops are active.
      */
-    initIterations(functionIndex){
-        let iterations = [];
+    initIterations(functionIndex, activeIterationIndices){
+        this.skipIds = [];
+        this.activeIterations = [...activeIterationIndices];
+        this.activeIterationIndex = 0;
         this.nodes[functionIndex].childrenIndices.forEach((childIndex) => {
-            iterations = iterations.concat(this.getIterations(childIndex));
+            this.getIterations(childIndex);
         });
-        return iterations;
+        return this.activeIterations;
     }
 
     /**
@@ -73,30 +116,45 @@ class JsonManager {
      * That have the current node as a grandparent and are part of this nodes function.
      */
     getIterations(nodeIndex){
-        let iterations = [];
-        if(this.nodes[nodeIndex].iterations === 1){
-            iterations.push(1);
+        let end = false;
+        this.skipIds.forEach((skipId) => {
+            if(this.nodes[nodeIndex].traceId === skipId) {
+                end = true;
+            }
+        });
+        if(!end) {
+            let skip = true;
+            if (this.nodes[nodeIndex].nodeType !== "Function" && this.nodes[nodeIndex].nodeType !== "Loop")
+                skip = false;
+            if (this.activeIterationIndex + 1 > this.activeIterations.length && this.nodes[nodeIndex].iteration === 1) {
+                this.activeIterations.push(nodeIndex);
+                this.activeIterationIndex++;
+                skip = false;
+                this.skipIds.push(this.nodes[nodeIndex].traceId);            }
+            if (!(this.activeIterationIndex + 1 > this.activeIterations.length) && this.nodes[nodeIndex].iteration === this.nodes[this.activeIterations[this.activeIterationIndex]].iteration) {
+                this.activeIterationIndex++;
+                this.skipIds.push(this.nodes[nodeIndex].traceId);
+                skip = false;
+            }
+            if (!skip) {
+                this.nodes[nodeIndex].childrenIndices.forEach((childIndex) => {
+                    this.activeIterations.concat(this.getIterations(childIndex));
+                });
+            }
         }
-        if((!(this.nodes[nodeIndex].nodeType === "Loop") ||
-            this.nodes[nodeIndex].iteration === this.activeIterations[0]) &&
-            this.nodes[nodeIndex].nodeType !== "Function") {
-            this.nodes[nodeIndex].childrenIndices.forEach((childIndex) => {
-                iterations = iterations.concat(this.getIterations(childIndex));
-            });
-        }
-        return iterations;
-    }
+    };
 
     /**
      * Determines all function and throw nodes contained in the currently active function and calculates whether they
      * are currently active or not by looking at the active iterations.
      * @param functionIndex Index of the currently active function.
-     * @param activeIterations active loop iterations.
+     * @param activeIterationIndices active loop iterations.
      * @returns {*[]} An array with all the indices of the Function or Throw nodes
      * contained in the currently active function.
      */
-    updateJumpsFunction(functionIndex, activeIterations){
-        this.activeIterations = activeIterations;
+    updateJumpsFunction(functionIndex, activeIterationIndices){
+        this.skipIds = [];
+        this.activeIterations = [...activeIterationIndices];
         let jumps = [];
         jumps.push(functionIndex);
         this.nodes[functionIndex].childrenIndices.forEach((childIndex) => {
@@ -113,22 +171,26 @@ class JsonManager {
      */
     getJumps(nodeIndex) {
         let jumps = [];
+        let end = false;
         this.skipIds.forEach((skipId) => {
             if(this.nodes[nodeIndex].traceId === skipId)
-                return jumps;
+                end = true;
         });
+        if(end)
+            return jumps;
         if(this.nodes[nodeIndex].nodeType === "Function" || this.nodes[nodeIndex].nodeType === "Throw")
             jumps.push(nodeIndex);
         if((!(this.nodes[nodeIndex].nodeType === "Loop") ||
-                this.nodes[nodeIndex].iteration === this.activeIterations[0]) &&
-            this.nodes[nodeIndex].nodeType !== "Function") {
+                nodeIndex === this.activeIterations[0])) {
             if(this.nodes[nodeIndex].nodeType === "Loop") {
                 this.activeIterations.shift();
                 this.skipIds.push(this.nodes[nodeIndex].traceId);
             }
-            this.nodes[nodeIndex].childrenIndices.forEach((childIndex) => {
-                jumps = jumps.concat(this.getJumps(childIndex));
-            });
+            if(this.nodes[nodeIndex].nodeType !== "Function") {
+                this.nodes[nodeIndex].childrenIndices.forEach((childIndex) => {
+                    jumps = jumps.concat(this.getJumps(childIndex));
+                });
+            }
         }
         return jumps;
     }
@@ -137,12 +199,12 @@ class JsonManager {
      * Determines all ranges in the currently active function and calculates whether they
      * are currently active or not by looking at the active iterations.
      * @param functionIndex Index of the currently active function.
-     * @param activeIterations active loop iterations.
+     * @param activeIterationIndices active loop iterations.
      * @returns {*[]} An array with all the active ranges contained in the currently active function.
      */
     updateActiveRangesFunction(functionIndex, activeIterationIndices) {
         let ranges = [];
-        this.activeIterationIndices = activeIterationIndices;
+        this.activeIterations =  [...activeIterationIndices];
         this.skipIds = [];
         this.nodes[functionIndex].ranges.forEach((range) => {
             ranges.push(range);
@@ -165,19 +227,26 @@ class JsonManager {
         let end = false;
         this.skipIds.forEach((skipId) => {
             if(this.nodes[nodeIndex].traceId === skipId)
-                end = true;});
+                end = true;
+        });
         if(end)
             return ranges;
         if(this.nodes[nodeIndex].nodeType === "Function") {
-            ranges.push(this.nodes[nodeIndex].link.range);} else if(!(this.nodes[nodeIndex].nodeType === "Loop") ||
-            nodeIndex === this.activeIterationIndices[0]) {
+            ranges.push(this.nodes[nodeIndex].link.range);
+        } else if(this.nodes[nodeIndex].nodeType !== "Loop" ||
+                nodeIndex === this.activeIterations[0]) {
+
             if(this.nodes[nodeIndex].nodeType === "Loop") {
-                this.activeIterationIndices.shift();
-                this.skipIds.push(this.nodes[nodeIndex].traceId);}
+                this.activeIterations.shift();
+                this.skipIds.push(this.nodes[nodeIndex].traceId);
+            }
             this.nodes[nodeIndex].ranges.forEach((range) => {
-                ranges.push(range);});
+                ranges.push(range);
+            });
             this.nodes[nodeIndex].childrenIndices.forEach((childIndex) => {
-                ranges = ranges.concat(this.getRanges(childIndex));});}
+                ranges = ranges.concat(this.getRanges(childIndex));
+            });
+        }
         return ranges;
     }
 }
