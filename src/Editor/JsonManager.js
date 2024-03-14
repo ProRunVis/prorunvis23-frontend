@@ -19,14 +19,15 @@ class JsonManager {
         data = jsonString;
             data.forEach((jsonData) => {
                 this.nodes.push(new TraceNode(jsonData));
-
         });
         for (let i = 2; i < this.nodes.length; i++) {
             let node = this.nodes[i];
             if (node.nodeType === "Throw") {
                 node.outLinkPosition = new Position(0, 0);
-                if (undefined !== this.nodes[node.outIndex].ranges[0]) //if catch is empty and has no range
-                    node.outLinkPosition = this.nodes[node.outIndex].ranges[0].getStartPosition();
+                if (this.nodes[node.outIndex].ranges.length !== 0) //if catch is empty and has no range
+                    node.outLinkPosition = this.nodes[node.outIndex].ranges.sort((a, b) =>
+                        ((a.startLineNumber < b.startLineNumber) ?
+                        -1 : (a.startLineNumber > b.startLineNumber) ? 1 : 0))[0].getStartPosition();
             }
             if (node.nodeType === "Function") {
                 node.linkPosition = node.outLinks[node.outLinks.length - 1].range.getStartPosition();
