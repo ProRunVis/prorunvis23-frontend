@@ -18,14 +18,10 @@ export class EditorInitializer {
    *
    * @param containerRef A reference to the container DOM element where the editor will be instantiated.
    * @param javaFileContent The initial Java code content to be loaded into the editor.
+   * @param hints list of InlayHints(monaco editor) to display in the editor.
    * @return The initialized Monaco Editor instance, or undefined if initialization fails.
    */
   static initializeEditor(containerRef, javaFileContent, hints) {
-    /*obj.hints.forEach((hint)=>{
-      console.log(hint);
-    });*/
-    //console.log(obj);
-
     if (typeof javaFileContent !== 'string') {
       console.error('javaFileContent must be a string');
       return;
@@ -112,48 +108,19 @@ export class EditorInitializer {
       }
     });
 
+    // ----------------------------------Loop Indices ------------------------------------
     const { dispose } = monaco.languages.registerInlayHintsProvider("java", {
-
       provideInlayHints(model, range, token) {
-        let hintss = [];
-        /*hintss.push({
-          kind: monaco.languages.InlayHintKind.Type,
-          position: { column: 13, lineNumber: 4 },
-          label: `: Number`,
-        });
-        hintss.push({
-          kind: monaco.languages.InlayHintKind.Type,
-          position: { column: 13, lineNumber: 2 },
-          label: `: Number`,
-        });
-        hintss.push({
-          kind: monaco.languages.InlayHintKind.Type,
-          position: { column: 16, lineNumber: 2 },
-          label: `: Number`,
-          whitespaceBefore: true, // see difference between a and b parameter
-        });
-        hintss.push({
-          kind: monaco.languages.InlayHintKind.Parameter,
-          position: { column: 18, lineNumber: 4 },
-          label: `a:`,
-        });
-        hintss.push({
-          kind: monaco.languages.InlayHintKind.Parameter,
-          position: { column: 21, lineNumber: 4 },
-          label: `b:`,
-          whitespaceAfter: true, // similar to whitespaceBefore
-        });*/
+        let newHints = [];
         hints.forEach((hint) => {
-          hintss.push({
+          newHints.push({
             kind: monaco.languages.InlayHintKind.Parameter,
             position: {column: hint.position.column, lineNumber: hint.position.lineNumber},
             label: hint.content,
           });
         });
-        //console.log("hereeee", hintss);
-
         return {
-          hints: hintss,
+          hints: newHints,
           dispose: () => {},
         };
       },
