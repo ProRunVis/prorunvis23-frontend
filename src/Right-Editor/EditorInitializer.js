@@ -1,5 +1,4 @@
 import * as monaco from 'monaco-editor/esm/vs/editor/editor.api';
-import {useEffect} from "react";
 
 /**
  * Initializes the Monaco Editor with specific settings for editing Java files.

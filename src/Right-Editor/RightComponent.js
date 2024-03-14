@@ -5,7 +5,6 @@ import "../Css/RightComponent.css"
 import PropTypes from "prop-types";
 import JsonManager from "./JsonManager";
 import * as monaco from "monaco-editor";
-import {languages} from "monaco-editor";
 
 /**
  * Represents the right component of the application, primarily responsible for

@@ -2,7 +2,6 @@ import React, { useEffect, useRef, useState, useMemo } from "react";
 import LeftComponent from "./Left-NavbarUpload/LeftComponent";
 import RightComponent from "./Right-Editor/RightComponent";
 import JsonManager from "./Right-Editor/JsonManager";
-//import SimpleDialogDemo from "./Right-Editor/Dialog";
 
 /**
  * Contains both the right and left component. It handles communication between the two, mainly regarding changes in

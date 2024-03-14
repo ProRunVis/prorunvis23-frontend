@@ -99,7 +99,6 @@ function LeftComponent({setDisplayedFile, setDisplayedToActive, passOnUploadedFi
     }
         = nodeData;
     if (realPath != null){
-      //console.log("Hier:" + realPath);
       setDisplayedFile(uploadedFiles[index]);
     }
   };
