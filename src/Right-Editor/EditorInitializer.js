@@ -35,6 +35,7 @@ export class EditorInitializer {
       glyphMargin: true,
       scrollBeyondLastLine: false,
       minimap: {enabled: false},
+      readOnly: true,
       wordWrap: 'off',
       automaticLayout: true,
       scrollbar: {

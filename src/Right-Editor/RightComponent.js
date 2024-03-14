@@ -176,46 +176,57 @@ function RightComponent({displayedFile, setActiveAndDisplayed, isActiveDisplayed
     setActiveIterationIndices(newIterations);
   }
 
-    /**
-     * Draws a line next to executed code and determines where that line should start and stop.
-     * @param ranges executed ranges to be marked.
-     */
-    function drawLine(ranges) {
-        let currentRow = new monaco.Range(ranges[0].startLineNumber, 0, ranges[0].startLineNumber + 1, 0);
-        let symbol = "end";
-        let stillInCurrentRange = false;
-        for (let i = 0; i < ranges.length;) {
-            if (ranges[i].startLineNumber > currentRow.startLineNumber) {
-                stillInCurrentRange = false;
-                currentRow = new monaco.Range(currentRow.startLineNumber + 1, 0, currentRow.endLineNumber + 1, 0);
-            }
-            if (currentRow.containsRange(ranges[i])) {
-                if (!stillInCurrentRange) {
-                    symbol = (symbol === "line" || symbol === "start") ? "line" : "start";
-                }
-                if (i === ranges.length - 1) {
-                    if (symbol === "start") {
-                        symbol = "one-line";
-                    } else {
-                        symbol = "end";
-                    }
-                }
-                placeDecoration(currentRow.startLineNumber, symbol);
-                stillInCurrentRange = true;
-                i++;
-            } else if (!(editor.getModel().getValueInRange(currentRow).trim().length === 0)) {
-                if (symbol === "start") {
-                    placeDecoration(currentRow.startLineNumber - 1, "one-line");
-                } else if (symbol === "line") {
-                    placeDecoration(currentRow.startLineNumber - 1, "end");
-                }
-                symbol = "end";
-            } else if (editor.getModel().getValueInRange(currentRow).trim().length === 0 && (symbol === "start" || symbol === "line")) {
-                placeDecoration(currentRow.startLineNumber, "line");
-                symbol = "line";
-            }
+  function iterateLine(range) {
+    return new monaco.Range(range.startLineNumber + 1, 0, range.endLineNumber + 1, 0);
+  }
+
+  /**
+   * Draws a line next to executed code and determines where that line should start and stop.
+   * @param ranges executed ranges to be marked.
+   */
+  function drawLine(ranges) {
+    let ongoing = false;
+    for (let i = 0; i < ranges.length; i++) {
+
+      if (i + 1 < ranges.length && ranges[i].startLineNumber === ranges[i + 1].startLineNumber) {
+        continue;
+      }
+
+      console.log(ongoing + " for range " + ranges[i]);
+
+      let startLine = new monaco.Range(ranges[i].startLineNumber, 0, ranges[i].startLineNumber + 1, 0);
+      let endLine = iterateLine(startLine);
+
+      while(endLine.startLineNumber < ranges[i].endLineNumber) {
+        placeDecoration(endLine.startLineNumber, "line");
+        endLine = iterateLine(endLine);
+      }
+
+      startLine = new monaco.Range(ranges[i].endLineNumber, 0, ranges[i].endLineNumber + 1, 0);
+      endLine = iterateLine(startLine);
+
+      while(i !== ranges.length - 1 && editor.getModel().getValueInRange(endLine).trim().length === 0) {
+        endLine = iterateLine(endLine);
+      }
+
+      if (i + 1 < ranges.length && endLine.startLineNumber === ranges[i + 1].startLineNumber) {
+        placeDecoration(ranges[i].startLineNumber, (ongoing) ? "line" : "start");
+        while (startLine.startLineNumber < endLine.startLineNumber && !startLine.strictContainsRange(ranges[i])) {
+          placeDecoration(startLine.startLineNumber, "line");
+          startLine = iterateLine(startLine);
         }
+        ongoing = true;
+      } else {
+        if (startLine.startLineNumber > ranges[i].startLineNumber) {
+          placeDecoration(ranges[i].startLineNumber, (ongoing) ? "line" : "start");
+        } else {
+          placeDecoration(ranges[i].endLineNumber, (ongoing) ? "end" : "one-line");
+        }
+        ongoing = false;
+      }
+      console.log("endLine landed at " + endLine);
     }
+  }
 
   /**
    * Sets up an event listener that listens mouse clicks in the editor.
