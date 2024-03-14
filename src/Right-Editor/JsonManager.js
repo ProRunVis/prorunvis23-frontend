@@ -126,37 +126,29 @@ class JsonManager {
                 end = true;
             }
         });
-        if (!end) {
-            let skip = true;
-            if (this.nodes[nodeIndex].nodeType === "Function") {
-                return [];
-            }
-            if (this.nodes[nodeIndex].nodeType !== "Function" && this.nodes[nodeIndex].nodeType !== "Loop")
-                skip = false;
-            if (this.nodes[nodeIndex].nodeType !== "Loop") {
-                this.nodes[nodeIndex].childrenIndices.forEach((childIndex) => {
-                    this.activeIterations.concat(this.getIterations(childIndex));
-                });
-                return [];
-            }
-            if (this.activeIterationIndex + 1 > this.activeIterations.length && this.nodes[nodeIndex].iteration === 1) {
-                this.activeIterations.push(nodeIndex);
-                this.activeIterationIndex++;
-                skip = false;
-                this.skipIds.push(this.nodes[nodeIndex].traceId);
-            }
-            if (!(this.activeIterationIndex + 1 > this.activeIterations.length)
-                && this.nodes[nodeIndex].iteration
-                === this.nodes[this.activeIterations[this.activeIterationIndex]].iteration) {
-                this.activeIterationIndex++;
-                this.skipIds.push(this.nodes[nodeIndex].traceId);
-                skip = false;
-            }
-            if (!skip) {
-                this.nodes[nodeIndex].childrenIndices.forEach((childIndex) => {
-                    this.activeIterations.concat(this.getIterations(childIndex));
-                });
-            }
+        if (end || this.nodes[nodeIndex].nodeType === "Function") {
+            return [];
+        }
+        let skip = true;
+        if (this.nodes[nodeIndex].nodeType !== "Loop")
+            skip = false;
+        if (this.activeIterationIndex + 1 > this.activeIterations.length && this.nodes[nodeIndex].iteration === 1) {
+            this.activeIterations.push(nodeIndex);
+            this.activeIterationIndex++;
+            skip = false;
+            this.skipIds.push(this.nodes[nodeIndex].traceId);
+        }
+        if (!(this.activeIterationIndex + 1 > this.activeIterations.length)
+            && this.nodes[nodeIndex].iteration
+            === this.nodes[this.activeIterations[this.activeIterationIndex]].iteration) {
+            this.activeIterationIndex++;
+            this.skipIds.push(this.nodes[nodeIndex].traceId);
+            skip = false;
+        }
+        if (!skip) {
+            this.nodes[nodeIndex].childrenIndices.forEach((childIndex) => {
+                this.activeIterations.concat(this.getIterations(childIndex));
+            });
         }
     };
 
