@@ -28,7 +28,7 @@ export default function ReadmeModal({closeModal}) {
                     there. </p>
                 <p> Orange background indicates a loop that has been executed, click it to select the iteration that you
                     want displayed. </p>
-                <p> (Soon) The line on the left side of your code is shown to indicate what path the program took, so where it
+                <p> The line on the left side of your code is shown to indicate what path the program took, so where it
                     started and where it ended. </p>
             </div>
         </div>
