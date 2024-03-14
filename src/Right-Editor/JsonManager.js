@@ -15,12 +15,13 @@ class JsonManager {
         this.activeIterations = [];
         this.skipIds = [];
         this.activeIterationIndex = 0;
-
-        let jsonData = JSON.parse(jsonString);
-            jsonData.forEach((jsonData) => {
+        let data = [];
+        data = jsonString;
+            data.forEach((jsonData) => {
                 this.nodes.push(new TraceNode(jsonData));
 
             });
+
             for(let i = 2; i < this.nodes.length; i++){
                 let node = this.nodes[i];
                 if(node.nodeType === "Throw") {
