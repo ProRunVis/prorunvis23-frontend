@@ -51,9 +51,19 @@ function ContainerRightLeft() {
      * TODO Create link and fetch to the backend here currently using hardcoded example json
      * @param files project files to be traced.
      */
-    function passOnUploadedFiles(files) {
-        setUploadedFiles(files);
-    }
+    async function passOnUploadedFiles(files){
+            setUploadedFiles(files);
+
+            await fetch("/api/upload",{
+                method: "POST",
+                body: new FormData(document.getElementById("upload-form"))
+            });
+
+            await fetch("/api/process")
+                .then((response) => response.json())
+                .then((jsonData) => setJsonManager(new JsonManager(jsonData)));
+            }
+
 
     return <>
         <LeftComponent setDisplayedFile={setDisplayedFile} setDisplayedToActive={setDisplayedToActive}

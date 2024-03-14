@@ -119,7 +119,7 @@ function LeftComponent({setDisplayedFile, setDisplayedToActive, passOnUploadedFi
                 <div>
                     <button onClick={setDisplayedToActive}>{'Jump to active function'} </button>
                     <div className="upload-button-container">
-                        <form className="text-box" encType="multipart/form-data">
+                        <form  id="upload-form" className="text-box" encType="multipart/form-data">
                             <input
                                 type="file"
                                 name="file"
