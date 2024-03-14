@@ -22,7 +22,7 @@ function ContainerRightLeft(){
      */
     function setActiveAndDisplayed(path){
         uploadedFiles.forEach((uploadedFile) => {
-            if(path === uploadedFile.webkitRelativePath.slice(uploadedFile.webkitRelativePath.indexOf('/') + 1, uploadedFile.webkitRelativePath.length)){
+            if(path === uploadedFile.webkitRelativePath){
                 setDisplayedFile(uploadedFile);
                 setActiveFile(uploadedFile);
             }
@@ -51,9 +51,19 @@ function ContainerRightLeft(){
      * TODO Create link and fetch to the backend here currently using hardcoded example json
      * @param files project files to be traced.
      */
-    function passOnUploadedFiles(files){
+    async function passOnUploadedFiles(files){
             setUploadedFiles(files);
+
+            await fetch("/api/upload",{
+                method: "POST",
+                body: new FormData(document.getElementById("upload-form"))
+            });
+
+            await fetch("/api/process")
+                .then((response) => response.json())
+                .then((jsonData) => setJsonManager(new JsonManager(jsonData)));
             }
+
 
     return <>
     <LeftComponent setDisplayedFile={setDisplayedFile} setDisplayedToActive={setDisplayedToActive} passOnUploadedFiles={passOnUploadedFiles}/>
