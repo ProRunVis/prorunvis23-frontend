@@ -4,7 +4,6 @@ import EditorInitializer from "./EditorInitializer";
 import "../Css/RightComponent.css"
 import PropTypes from "prop-types";
 import JsonManager from "./JsonManager";
-import * as monaco from "monaco-editor";
 
 /**
  * Represents the right component of the application, primarily responsible for
@@ -49,8 +48,6 @@ function RightComponent({displayedFile, setActiveAndDisplayed, isActiveDisplayed
   // State for the content of the Java file to be displayed in the editor.
   const [javaFileContent, setJavaFileContent] = useState("");
 
-  //const [popupManager, setPopupManager] = useState(new PopupManager('test', 10));
-
   /**
    *  Asynchronous function to load the content of the Java test file.
    */
@@ -81,6 +78,26 @@ function RightComponent({displayedFile, setActiveAndDisplayed, isActiveDisplayed
           }
         }
       ]);
+  }
+
+  /**
+   * Adds a symbol on the current line next to the line number. Which one is dictated by {@link drawLine}.
+   * @param startLineNumber number in which the symbol is drawn.
+   * @param symbol symbol that is drawn.
+   */
+  function placeDecoration(startLineNumber, symbol) {
+    editor.createDecorationsCollection([
+      {
+        range: new monaco.Range(startLineNumber, 1, startLineNumber, 1),
+        options: {
+          glyphMarginClassName: symbol,
+          glyphMargin: {
+            position: monaco.editor.GlyphMarginLane.Right,
+          },
+        },
+      },
+    ]);
+
   }
 
   /**
@@ -158,6 +175,47 @@ function RightComponent({displayedFile, setActiveAndDisplayed, isActiveDisplayed
 
     setActiveIterationIndices(newIterations);
   }
+
+    /**
+     * Draws a line next to executed code and determines where that line should start and stop.
+     * @param ranges executed ranges to be marked.
+     */
+    function drawLine(ranges) {
+        let currentRow = new monaco.Range(ranges[0].startLineNumber, 0, ranges[0].startLineNumber + 1, 0);
+        let symbol = "end";
+        let stillInCurrentRange = false;
+        for (let i = 0; i < ranges.length;) {
+            if (ranges[i].startLineNumber > currentRow.startLineNumber) {
+                stillInCurrentRange = false;
+                currentRow = new monaco.Range(currentRow.startLineNumber + 1, 0, currentRow.endLineNumber + 1, 0);
+            }
+            if (currentRow.containsRange(ranges[i])) {
+                if (!stillInCurrentRange) {
+                    symbol = (symbol === "line" || symbol === "start") ? "line" : "start";
+                }
+                if (i === ranges.length - 1) {
+                    if (symbol === "start") {
+                        symbol = "one-line";
+                    } else {
+                        symbol = "end";
+                    }
+                }
+                placeDecoration(currentRow.startLineNumber, symbol);
+                stillInCurrentRange = true;
+                i++;
+            } else if (!(editor.getModel().getValueInRange(currentRow).trim().length === 0)) {
+                if (symbol === "start") {
+                    placeDecoration(currentRow.startLineNumber - 1, "one-line");
+                } else if (symbol === "line") {
+                    placeDecoration(currentRow.startLineNumber - 1, "end");
+                }
+                symbol = "end";
+            } else if (editor.getModel().getValueInRange(currentRow).trim().length === 0 && (symbol === "start" || symbol === "line")) {
+                placeDecoration(currentRow.startLineNumber, "line");
+                symbol = "line";
+            }
+        }
+    }
 
   /**
    * Sets up an event listener that listens mouse clicks in the editor.
@@ -325,6 +383,7 @@ function RightComponent({displayedFile, setActiveAndDisplayed, isActiveDisplayed
         rangesToHighlight.forEach((rangeToHighlight) => {
           highlightActive(rangeToHighlight);
         });
+        drawLine(rangesToHighlight);
         jumpNodesIndices.forEach((jump) => {
           if (jsonManager.nodes[jump].nodeType !== "Function" || jump === activeFunctionIndex) {
             jsonManager.nodes[jump].outLinks.forEach((outLink) => {

@@ -94,13 +94,13 @@ class JsonManager {
      * Determines how many loops are active in the current function,
      * assuming that all occurring loops have iteration set to one.
      * @param functionIndex Index of the currently active function.
-     * @param iterationsIndices Iterations that are currently selected(beginning function -> end function).
+     * @param activeIterationIndices Iterations that are currently selected(beginning function -> end function).
      * @returns {*[]} Array with all the initially active iterations(filled with 1s) of this function.
      * Length equals how many loops are active.
      */
-    initIterations(functionIndex, iterationsIndices){
+    initIterations(functionIndex, activeIterationIndices){
         this.skipIds = [];
-        this.activeIterations = [...iterationsIndices];
+        this.activeIterations = [...activeIterationIndices];
         this.activeIterationIndex = 0;
         this.nodes[functionIndex].childrenIndices.forEach((childIndex) => {
             this.getIterations(childIndex);
@@ -212,6 +212,7 @@ class JsonManager {
         this.nodes[functionIndex].childrenIndices.forEach((childIndex) => {
             ranges = ranges.concat(this.getRanges(childIndex));
         });
+        ranges.sort((a, b) => ((a.startLineNumber < b.startLineNumber) ? -1 : (a.startLineNumber > b.startLineNumber) ? 1 : 0));
         return ranges;
     }
 

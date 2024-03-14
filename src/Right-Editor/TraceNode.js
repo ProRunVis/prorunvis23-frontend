@@ -127,8 +127,8 @@ class SourceRange
      * @param range monaco.Range.
      * @param file string of a relative file path.
      */
-    constructor(range, file){
+    constructor(range, filepath){
         this.range = range;
-        this.file = file;
+        this.filepath = filepath;
     }
 }

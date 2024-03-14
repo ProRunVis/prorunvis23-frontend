@@ -3,3 +3,11 @@
 .active { background-color: green; }
 .link { background-color: blue; }
 .loop { background-color: navajowhite; }
+.start {
+    content: url(../Images/start.png);}
+.line {
+    content: url(../Images/line.png);}
+.end {
+    content: url(../Images/end.png);}
+.one-line {
+    content: url(../Images/oneLine.png);}

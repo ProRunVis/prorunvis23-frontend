@@ -33,11 +33,10 @@ export class EditorInitializer {
       language: 'java',
       theme: 'java-theme',
       glyphMargin: true,
-      scrollBeyondLastLine: true,
-      minimap: { enabled: false },
+      scrollBeyondLastLine: false,
+      minimap: {enabled: false},
       wordWrap: 'off',
       automaticLayout: true,
-      readOnly: true,
       scrollbar: {
         alwaysConsumeMouseWheel: true
       },
