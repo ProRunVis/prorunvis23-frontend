@@ -193,46 +193,82 @@ function RightComponent({displayedFile, setActiveAndDisplayed, isActiveDisplayed
     }
 
     /**
+     * Adds a symbol on the current line next to the line number. Which one is dictated by {@link drawLine}.
+     * @param startLineNumber number in which the symbol is drawn.
+     * @param symbol symbol that is drawn.
+     */
+    function placeDecoration(startLineNumber, symbol) {
+        editor.createDecorationsCollection([
+            {
+                range: new monaco.Range(startLineNumber, 1, startLineNumber, 1),
+                options: {
+                    glyphMarginClassName: symbol,
+                    glyphMargin: {
+                        position: monaco.editor.GlyphMarginLane.Right,
+                    },
+                },
+            },
+        ]);
+    }
+
+    /**
+     * support-function to increment a line by one row.
+     * @param range range to be incremented.
+     * @returns {monaco.Range} incremented range.
+     */
+    function iterateLine(range) {
+        return new monaco.Range(range.startLineNumber + 1, 0, range.endLineNumber + 1, 0);
+    }
+
+    /**
      * Draws a line next to executed code and determines where that line should start and stop.
      * @param ranges executed ranges to be marked.
      */
     function drawLine(ranges) {
-        let currentRow = new monaco.Range(
-            ranges[0].startLineNumber, 0, ranges[0].startLineNumber + 1, 0);
-        let symbol = "end";
-        let stillInCurrentRange = false;
-        for (let i = 0; i < ranges.length;) {
-            if (ranges[i].startLineNumber > currentRow.startLineNumber) {
-                stillInCurrentRange = false;
-                currentRow = new monaco.Range(
-                    currentRow.startLineNumber + 1, 0,
-                    currentRow.endLineNumber + 1, 0);
+        let ongoing = false;
+        for (let i = 0; i < ranges.length; i++) {
+
+            console.log("starts looping for line " + ranges[i]);
+
+            if (i + 1 < ranges.length && ranges[i].startLineNumber === ranges[i + 1].startLineNumber) {
+                continue;
             }
-            if (currentRow.containsRange(ranges[i])) {
-                if (!stillInCurrentRange) {
-                    symbol = (symbol === "line" || symbol === "start") ? "line" : "start";
+
+            let startLine = new monaco.Range(ranges[i].startLineNumber, 0, ranges[i].startLineNumber + 1, 0);
+            let endLine = iterateLine(startLine);
+
+            while(endLine.startLineNumber < ranges[i].endLineNumber) {
+                placeDecoration(endLine.startLineNumber, "line");
+                endLine = iterateLine(endLine);
+                console.log("loop 1");
+            }
+
+            placeDecoration(startLine.startLineNumber, (ongoing) ? "line" : "start");
+
+            startLine = new monaco.Range(ranges[i].endLineNumber, 0, ranges[i].endLineNumber + 1, 0);
+            endLine = iterateLine(startLine);
+
+            if (i !== ranges.length - 1) {
+                while (editor.getModel().getValueInRange(endLine).trim().length === 0
+                && endLine.startLineNumber < ranges[i + 1].startLineNumber) {
+                    endLine = iterateLine(endLine);
+                    console.log("loop 2 " + endLine);
                 }
-                if (i === ranges.length - 1) {
-                    if (symbol === "start") {
-                        symbol = "one-line";
-                    } else {
-                        symbol = "end";
-                    }
+            }
+
+            if (i + 1 < ranges.length && endLine.startLineNumber === ranges[i + 1].startLineNumber) {
+                if (startLine.startLineNumber === ranges[i].startLineNumber) {
+                    startLine = iterateLine(startLine);
                 }
-                placeDecoration(currentRow.startLineNumber, symbol);
-                stillInCurrentRange = true;
-                i++;
-            } else if (!(editor.getModel().getValueInRange(currentRow).trim().length === 0)) {
-                if (symbol === "start") {
-                    placeDecoration(currentRow.startLineNumber - 1, "one-line");
-                } else if (symbol === "line") {
-                    placeDecoration(currentRow.startLineNumber - 1, "end");
+                while (startLine.startLineNumber < endLine.startLineNumber) {
+                    placeDecoration(startLine.startLineNumber, "line");
+                    startLine = iterateLine(startLine);
+                    console.log("loop 3");
                 }
-                symbol = "end";
-            } else if (editor.getModel().getValueInRange(currentRow).trim().length === 0
-                && (symbol === "start" || symbol === "line")) {
-                placeDecoration(currentRow.startLineNumber, "line");
-                symbol = "line";
+                ongoing = true;
+            } else {
+                placeDecoration(ranges[i].endLineNumber, (ongoing) ? "end" : "one-line");
+                ongoing = false;
             }
         }
     }
@@ -414,7 +450,7 @@ function RightComponent({displayedFile, setActiveAndDisplayed, isActiveDisplayed
                         ((a.startLineNumber < b.startLineNumber) ? -1 : (a.startLineNumber > b.startLineNumber) ? 1 : 0))
                         [jsonManager.nodes[jsonManager.nodes.length - 1].ranges.length - 1])
                     highlightEnd(rangesToHighlight[rangesToHighlight.length - 1]);
-                //drawLine(rangesToHighlight);
+                drawLine(rangesToHighlight);
                 jumpNodesIndices.forEach((jump) => {
                     if (jsonManager.nodes[jump].nodeType !== "Function" || jump === activeFunctionIndex) {
                         jsonManager.nodes[jump].outLinks.forEach((outLink) => {
