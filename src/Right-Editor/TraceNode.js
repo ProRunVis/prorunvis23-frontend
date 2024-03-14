@@ -125,10 +125,10 @@ class SourceRange
     /**
      * Creates an instance of this class.
      * @param range monaco.Range.
-     * @param file string of a relative file path.
+     * @param filepath string of a relative file path.
      */
     constructor(range, filepath){
         this.range = range;
-        this.filepath = filepath;
+        this.file = filepath;
     }
 }
