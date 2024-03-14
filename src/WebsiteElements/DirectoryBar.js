@@ -15,7 +15,7 @@ import PropTypes from "prop-types";
  * @returns {Element} The left component containing the upload button and dir bar.
  * @constructor
  */
-function LeftComponent({setDisplayedFile, setDisplayedToActive, passOnUploadedFiles}) {
+function DirectoryBar({setDisplayedFile, setDisplayedToActive, passOnUploadedFiles}) {
     // State for the list of files uploaded by the user.
     const [uploadedFiles, setUploadedFiles] = useState([]);
     // State for the structured data used by FolderTree to display the directory and files.
@@ -148,10 +148,10 @@ function LeftComponent({setDisplayedFile, setDisplayedToActive, passOnUploadedFi
     );
 }
 
-LeftComponent.propTypes = {
+DirectoryBar.propTypes = {
     setDisplayedFile: PropTypes.instanceOf(Function),
     setDisplayedToActive: PropTypes.instanceOf(Function),
     passOnUploadedFiles: PropTypes.instanceOf(Function)
 };
 
-export default LeftComponent;
+export default DirectoryBar;

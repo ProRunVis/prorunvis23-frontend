@@ -11,7 +11,7 @@ import './Css/index.css';
 import App from './App.js';
 
 // Imports the function reportWebVitals for measuring the performance of the web application.
-import reportWebVitals from './Left-NavbarUpload/ReportWebVitals.js';
+import reportWebVitals from './ReportWebVitals.js';
 
 // Determines the DOM-Element with the ID 'root' that is used as an anchor point for the React application.
 const rootElement = document.getElementById('root');

@@ -1,7 +1,7 @@
 import React, {useEffect, useRef, useState, useMemo} from "react";
-import LeftComponent from "./Left-NavbarUpload/LeftComponent";
-import RightComponent from "./Right-Editor/RightComponent";
-import JsonManager from "./Right-Editor/JsonManager";
+import DirectoryBar from "./WebsiteElements/DirectoryBar";
+import RightComponent from "./Editor/RightComponent";
+import JsonManager from "./Editor/JsonManager";
 
 /**
  * Contains both the right and left component. It handles communication between the two, mainly regarding changes in
@@ -10,7 +10,7 @@ import JsonManager from "./Right-Editor/JsonManager";
  * @returns {Element} Right and Left Component
  * @constructor
  */
-function ContainerRightLeft() {
+function WebsiteContainer() {
     const [displayedFile, setDisplayedFile] = useState(null);
     const [activeFile, setActiveFile] = useState(null);
     const [jsonManager, setJsonManager] = useState(null);
@@ -66,11 +66,11 @@ function ContainerRightLeft() {
 
 
     return <>
-        <LeftComponent setDisplayedFile={setDisplayedFile} setDisplayedToActive={setDisplayedToActive}
-                       passOnUploadedFiles={passOnUploadedFiles}/>
+        <DirectoryBar setDisplayedFile={setDisplayedFile} setDisplayedToActive={setDisplayedToActive}
+                      passOnUploadedFiles={passOnUploadedFiles}/>
         <RightComponent displayedFile={displayedFile} setActiveAndDisplayed={setActiveAndDisplayed}
                         isActiveDisplayed={isActiveDisplayed} jsonManager={jsonManager}/>
     </>
 }
 
-export default ContainerRightLeft;
+export default WebsiteContainer;

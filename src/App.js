@@ -1,6 +1,6 @@
 import React, {useEffect, useRef} from 'react';
-import Navbar from "./Left-NavbarUpload/Navbar";
-import ContainerRightLeft from "./ContainerRightLeft";
+import Navbar from "./WebsiteElements/Navbar";
+import WebsiteContainer from "./WebsiteContainer";
 
 /**
  * Observes Left/RightContainer for correct resizing. Prohibits sending too many requests to DOM, which causes a Runtime Error.
@@ -56,7 +56,7 @@ function App() {
             <header className="App-header">
                 <Navbar/>
                 <div ref={contentRef} className="content">
-                    <ContainerRightLeft/>
+                    <WebsiteContainer/>
                 </div>
 
             </header>
