@@ -176,6 +176,11 @@ function RightComponent({displayedFile, setActiveAndDisplayed, isActiveDisplayed
     setActiveIterationIndices(newIterations);
   }
 
+  /**
+   * support-function to increment a line by one row.
+   * @param range range to be incremented.
+   * @returns {monaco.Range} incremented range.
+   */
   function iterateLine(range) {
     return new monaco.Range(range.startLineNumber + 1, 0, range.endLineNumber + 1, 0);
   }
@@ -192,8 +197,6 @@ function RightComponent({displayedFile, setActiveAndDisplayed, isActiveDisplayed
         continue;
       }
 
-      console.log(ongoing + " for range " + ranges[i]);
-
       let startLine = new monaco.Range(ranges[i].startLineNumber, 0, ranges[i].startLineNumber + 1, 0);
       let endLine = iterateLine(startLine);
 
@@ -202,29 +205,31 @@ function RightComponent({displayedFile, setActiveAndDisplayed, isActiveDisplayed
         endLine = iterateLine(endLine);
       }
 
+      if (startLine.startLineNumber < endLine.startLineNumber) {
+        placeDecoration(startLine.startLineNumber, (ongoing) ? "line" : "start");
+      }
+
       startLine = new monaco.Range(ranges[i].endLineNumber, 0, ranges[i].endLineNumber + 1, 0);
       endLine = iterateLine(startLine);
 
-      while(i !== ranges.length - 1 && editor.getModel().getValueInRange(endLine).trim().length === 0) {
-        endLine = iterateLine(endLine);
+      if (i !== ranges.length - 1) {
+        while (editor.getModel().getValueInRange(endLine).trim().length === 0) {
+          endLine = iterateLine(endLine);
+        }
       }
 
       if (i + 1 < ranges.length && endLine.startLineNumber === ranges[i + 1].startLineNumber) {
-        placeDecoration(ranges[i].startLineNumber, (ongoing) ? "line" : "start");
-        while (startLine.startLineNumber < endLine.startLineNumber && !startLine.strictContainsRange(ranges[i])) {
-          placeDecoration(startLine.startLineNumber, "line");
-          startLine = iterateLine(startLine);
+        if (endLine.startLineNumber > ranges[i].startLineNumber + 1) {
+          while (startLine.startLineNumber < endLine.startLineNumber) {
+            placeDecoration(startLine.startLineNumber, "line");
+            startLine = iterateLine(startLine);
+          }
         }
         ongoing = true;
       } else {
-        if (startLine.startLineNumber > ranges[i].startLineNumber) {
-          placeDecoration(ranges[i].startLineNumber, (ongoing) ? "line" : "start");
-        } else {
-          placeDecoration(ranges[i].endLineNumber, (ongoing) ? "end" : "one-line");
-        }
+        placeDecoration(ranges[i].endLineNumber, (ongoing) ? "end" : "one-line");
         ongoing = false;
       }
-      console.log("endLine landed at " + endLine);
     }
   }
 
