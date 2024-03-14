@@ -2,7 +2,7 @@
 import React from 'react';
 
 // Imports the ReactDom module from 'react-dom/client'(refers to newest react version).
-import { createRoot } from 'react-dom/client';
+import {createRoot} from 'react-dom/client';
 
 // Imports CSS-File for styling.
 import './Css/index.css';
@@ -20,13 +20,13 @@ const rootElement = document.getElementById('root');
 if (rootElement) {
     // Creates the Root-Element through 'createRoot' from 'react-dom/client'.
     const root = createRoot(rootElement);
-    
+
     // Uses 'root.render()', to render the app-component inside the <React.StrictMode>-wrapper.
     // <React.StrictMode> is used to activate additional tests and warnings for the app.
     root.render(
-      <React.StrictMode>
-        <App />
-      </React.StrictMode>
+        <React.StrictMode>
+            <App/>
+        </React.StrictMode>
     );
 }
 

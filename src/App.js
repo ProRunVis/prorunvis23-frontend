@@ -1,21 +1,20 @@
-import React, { useEffect, useRef } from 'react';
+import React, {useEffect, useRef} from 'react';
 import Navbar from "./Left-NavbarUpload/Navbar";
 import ContainerRightLeft from "./ContainerRightLeft";
 
 /**
  * Observes Left/RightContainer for correct resizing. Prohibits sending too many requests to DOM, which causes a Runtime Error.
- * TODO Causes Error when you resize the browser window too fast (strg - || +).
-  */
+ */
 const debounce = (func, wait) => {
-  let timeout;
-  return function executedFunction(...args) {
-    const later = () => {
-      clearTimeout(timeout);
-      func(...args);
+    let timeout;
+    return function executedFunction(...args) {
+        const later = () => {
+            clearTimeout(timeout);
+            func(...args);
+        };
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
     };
-    clearTimeout(timeout);
-    timeout = setTimeout(later, wait);
-  };
 };
 
 /**
@@ -36,32 +35,33 @@ const debounce = (func, wait) => {
  *         is monitored for size changes, demonstrating dynamic resize handling.
  */
 function App() {
-  const contentRef = useRef(null);
+    const contentRef = useRef(null);
 
-  useEffect(() => {
+    useEffect(() => {
 
-    const handleResize = debounce(() => {
+        const handleResize = debounce(() => {
 
-    }, 100);
+        }, 100);
 
-    const observer = new ResizeObserver(handleResize);
-    if(contentRef.current) {
-      observer.observe(contentRef.current);
-    }
+        const observer = new ResizeObserver(handleResize);
+        if (contentRef.current) {
+            observer.observe(contentRef.current);
+        }
 
-    return () => observer.disconnect(); // Cleanup-Function and disconnects
-  }, []);
+        return () => observer.disconnect(); // Cleanup-Function and disconnects
+    }, []);
 
-  return (
-      <div className="App">
-        <header className="App-header">
-          <Navbar />
-          <div ref={contentRef} className="content">
-            <ContainerRightLeft />
-          </div>
+    return (
+        <div className="App">
+            <header className="App-header">
+                <Navbar/>
+                <div ref={contentRef} className="content">
+                    <ContainerRightLeft/>
+                </div>
 
-        </header>
-      </div>
-  );
+            </header>
+        </div>
+    );
 }
+
 export default App;

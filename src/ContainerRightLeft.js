@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState, useMemo } from "react";
+import React, {useEffect, useRef, useState, useMemo} from "react";
 import LeftComponent from "./Left-NavbarUpload/LeftComponent";
 import RightComponent from "./Right-Editor/RightComponent";
 import JsonManager from "./Right-Editor/JsonManager";
@@ -10,7 +10,7 @@ import JsonManager from "./Right-Editor/JsonManager";
  * @returns {Element} Right and Left Component
  * @constructor
  */
-function ContainerRightLeft(){
+function ContainerRightLeft() {
     const [displayedFile, setDisplayedFile] = useState(null);
     const [activeFile, setActiveFile] = useState(null);
     const [jsonManager, setJsonManager] = useState(null);
@@ -20,9 +20,9 @@ function ContainerRightLeft(){
      * Changes both the current active and current displayed file to the file located at the given filepath.
      * @param path string of file path relative to the project root.
      */
-    function setActiveAndDisplayed(path){
+    function setActiveAndDisplayed(path) {
         uploadedFiles.forEach((uploadedFile) => {
-            if(path === uploadedFile.webkitRelativePath.slice(uploadedFile.webkitRelativePath.indexOf('/') + 1, uploadedFile.webkitRelativePath.length)){
+            if (path === uploadedFile.webkitRelativePath.slice(uploadedFile.webkitRelativePath.indexOf('/') + 1, uploadedFile.webkitRelativePath.length)) {
                 setDisplayedFile(uploadedFile);
                 setActiveFile(uploadedFile);
             }
@@ -32,7 +32,7 @@ function ContainerRightLeft(){
     /**
      * Resets the displayed file to the currently active file.
      */
-    function setDisplayedToActive(){
+    function setDisplayedToActive() {
         setDisplayedFile(activeFile);
     }
 
@@ -40,8 +40,8 @@ function ContainerRightLeft(){
      * Determines whether the currently displayed file is also the active file.
      * @returns {boolean} result of the above.
      */
-    function isActiveDisplayed(){
-        if(activeFile == null || displayedFile == null)
+    function isActiveDisplayed() {
+        if (activeFile == null || displayedFile == null)
             return false;
         return activeFile === displayedFile;
     }
@@ -51,13 +51,16 @@ function ContainerRightLeft(){
      * TODO Create link and fetch to the backend here currently using hardcoded example json
      * @param files project files to be traced.
      */
-    function passOnUploadedFiles(files){
-            setUploadedFiles(files);
-            }
+    function passOnUploadedFiles(files) {
+        setUploadedFiles(files);
+    }
 
     return <>
-    <LeftComponent setDisplayedFile={setDisplayedFile} setDisplayedToActive={setDisplayedToActive} passOnUploadedFiles={passOnUploadedFiles}/>
-    <RightComponent displayedFile={displayedFile} setActiveAndDisplayed={setActiveAndDisplayed} isActiveDisplayed={isActiveDisplayed} jsonManager={jsonManager}/>
+        <LeftComponent setDisplayedFile={setDisplayedFile} setDisplayedToActive={setDisplayedToActive}
+                       passOnUploadedFiles={passOnUploadedFiles}/>
+        <RightComponent displayedFile={displayedFile} setActiveAndDisplayed={setActiveAndDisplayed}
+                        isActiveDisplayed={isActiveDisplayed} jsonManager={jsonManager}/>
     </>
 }
+
 export default ContainerRightLeft;
