@@ -26,7 +26,7 @@
     flex-direction: column;
     justify-content: flex-start;
     align-items: stretch;
-    width: 100%;
+    width: 96%;
     flex-basis: 75%;
     margin-top : 0px;
     /* Corrects from 'right' to 'flex-start' */
