@@ -19,7 +19,7 @@ import {json} from "react-router-dom";
  * @returns {Element} The right component of the website containing the editor.
  * @constructor
  */
-function RightComponent({displayedFile, setActiveAndDisplayed, isActiveDisplayed, jsonManager}) {
+function EditorManager({displayedFile, setActiveAndDisplayed, isActiveDisplayed, jsonManager}) {
     // Constants --------------------------------------------------------------------------------------------------------
 
     // State for the index of the active function in the editor.
@@ -461,10 +461,10 @@ function RightComponent({displayedFile, setActiveAndDisplayed, isActiveDisplayed
     );
 }
 
-RightComponent.propTypes = {
+EditorManager.propTypes = {
     displayedFile: PropTypes.instanceOf(File),
     setActiveAndDisplayed: PropTypes.instanceOf(Function),
     isActiveDisplayed: PropTypes.instanceOf(Function),
     jsonManager: PropTypes.instanceOf(JsonManager)
 };
-export default RightComponent;
+export default EditorManager;
