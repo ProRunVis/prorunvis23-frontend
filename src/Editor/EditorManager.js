@@ -414,20 +414,31 @@ function EditorManager({displayedFile, setActiveAndDisplayed, isActiveDisplayed,
                         ((a.startLineNumber < b.startLineNumber) ? -1 : (a.startLineNumber > b.startLineNumber) ? 1 : 0))
                         [jsonManager.nodes[jsonManager.nodes.length - 1].ranges.length - 1])
                     highlightEnd(rangesToHighlight[rangesToHighlight.length - 1]);
+
                 //drawLine(rangesToHighlight);
-                jumpNodesIndices.forEach((jump) => {
-                    if (jsonManager.nodes[jump].nodeType !== "Function" || jump === activeFunctionIndex) {
-                        jsonManager.nodes[jump].outLinks.forEach((outLink) => {
-                            highlightLink(outLink.range);
-                        });
+                jumpNodesIndices.forEach((jumpIndex) => {
+                    if (jsonManager.nodes[jumpIndex].nodeType !== "Function" || jumpIndex === activeFunctionIndex) {
+                        if(jsonManager.nodes[jumpIndex].nodeType === "Function" && jsonManager.nodes[jumpIndex].outLinks.length === 2){
+                            highlightLink(jsonManager.nodes[jumpIndex].outLinks[1].range);
+                            jsonManager.updateActiveRangesFunction(activeFunctionIndex, activeIterationIndices).forEach((range) => {
+                                if (range.contains(jsonManager.nodes[jumpIndex].outLinks[0].range)) {
+                                    highlightLink(jsonManager.nodes[jumpIndex].outLinks[0].range);
+                                }
+                            });
+                        }
+                        else {
+                            jsonManager.nodes[jumpIndex].outLinks.forEach((outLink) => {
+                                highlightLink(outLink.range);
+                            });
+                        }
                     }
                     // We do not want to mark for the link of the current function since it might be in another file
                     // and is not part of the currently active function
-                    if (jump === activeFunctionIndex) {
+                    if (jumpIndex === activeFunctionIndex) {
                         return;
                     }
-                    if (jsonManager.nodes[jump].nodeType === "Function")
-                        highlightLink(jsonManager.nodes[jump].link.range);
+                    if (jsonManager.nodes[jumpIndex].nodeType === "Function")
+                        highlightLink(jsonManager.nodes[jumpIndex].link.range);
                 });
 
                 handleJumps();
