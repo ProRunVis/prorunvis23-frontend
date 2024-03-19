@@ -250,6 +250,25 @@ function EditorManager({displayedFile, setActiveAndDisplayed, isActiveDisplayed,
                     return;
                 let jump = jsonManager.nodes[jumpIndex];
                 if (jump.nodeType !== "Function" || jumpIndex === activeFunctionIndex) {
+                    if(jsonManager.nodes[jumpIndex].nodeType === "Function" && jsonManager.nodes[jumpIndex].outLinks.length === 2){
+                        if (jsonManager.nodes[jumpIndex].outLinks[1].range.containsPosition(position)) {
+                            setJumpPosition(jump.outLinkPosition);
+                            setDoPositionJump(true);
+                            setActiveIterationIndices(jump.outLoopIterations);
+                            setActiveFunctionIndex(jump.outFunctionIndex);
+                        }
+
+
+                        jsonManager.updateActiveRangesFunction(activeFunctionIndex, activeIterationIndices).forEach((range) => {
+                            if (range.containsPosition(jsonManager.nodes[jumpIndex].outLinks[0].range)) {
+                                setJumpPosition(jump.outLinkPosition);
+                                setDoPositionJump(true);
+                                setActiveIterationIndices(jump.outLoopIterations);
+                                setActiveFunctionIndex(jump.outFunctionIndex);
+                            }
+                        });
+                    }
+                    else{
                     jump.outLinks.forEach((outLink) => {
                         if (outLink.range.containsPosition(position)) {
                             setJumpPosition(jump.outLinkPosition);
@@ -258,6 +277,7 @@ function EditorManager({displayedFile, setActiveAndDisplayed, isActiveDisplayed,
                             setActiveFunctionIndex(jump.outFunctionIndex);
                         }
                     });
+                    }
                 }
                 // We do not want to check for the link of the current function since it might be in another file
                 // and is not part of the currently active function
