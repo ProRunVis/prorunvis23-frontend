@@ -422,7 +422,7 @@ function EditorManager({displayedFile, setActiveAndDisplayed, isActiveDisplayed,
                         if(jsonManager.nodes[jumpIndex].nodeType === "Function" && jsonManager.nodes[jumpIndex].outLinks.length === 2){
                             highlightLink(jsonManager.nodes[jumpIndex].outLinks[1].range);
                             jsonManager.updateActiveRangesFunction(activeFunctionIndex, activeIterationIndices).forEach((range) => {
-                                if (range === jsonManager.nodes[jumpIndex].outLinks[0].range)) {
+                                if (range === jsonManager.nodes[jumpIndex].outLinks[0].range) {
                                     highlightLink(jsonManager.nodes[jumpIndex].outLinks[0].range);
                                 }
                             });
