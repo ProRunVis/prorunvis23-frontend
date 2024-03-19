@@ -261,7 +261,7 @@ function EditorManager({displayedFile, setActiveAndDisplayed, isActiveDisplayed,
 
 
                         jsonManager.updateActiveRangesFunction(activeFunctionIndex, activeIterationIndices).forEach((range) => {
-                            if (range.containsPosition(jsonManager.nodes[jumpIndex].outLinks[0].range)) {
+                            if (range.containsRange(jsonManager.nodes[jumpIndex].outLinks[0].range)) {
                                 setJumpPosition(jump.outLinkPosition);
                                 setDoPositionJump(true);
                                 setActiveIterationIndices(jump.outLoopIterations);
@@ -443,7 +443,7 @@ function EditorManager({displayedFile, setActiveAndDisplayed, isActiveDisplayed,
                         if(jsonManager.nodes[jumpIndex].nodeType === "Function" && jsonManager.nodes[jumpIndex].outLinks.length === 2){
                             highlightLink(jsonManager.nodes[jumpIndex].outLinks[1].range);
                             jsonManager.updateActiveRangesFunction(activeFunctionIndex, activeIterationIndices).forEach((range) => {
-                                if (range.containsPosition(jsonManager.nodes[jumpIndex].outLinks[0].range)) {
+                                if (range.containsRange(jsonManager.nodes[jumpIndex].outLinks[0].range)) {
                                     highlightLink(jsonManager.nodes[jumpIndex].outLinks[0].range);
                                 }
                             });
