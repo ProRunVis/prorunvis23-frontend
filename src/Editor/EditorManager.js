@@ -261,7 +261,7 @@ function EditorManager({displayedFile, setActiveAndDisplayed, isActiveDisplayed,
 
 
                         jsonManager.updateActiveRangesFunction(activeFunctionIndex, activeIterationIndices).forEach((range) => {
-                            if (range.containsRange(jsonManager.nodes[jumpIndex].outLinks[0].range)) {
+                            if (range.containsPosition(jsonManager.nodes[jumpIndex].outLinks[0].range.getStartPosition())) {
                                 setJumpPosition(jump.outLinkPosition);
                                 setDoPositionJump(true);
                                 setActiveIterationIndices(jump.outLoopIterations);
