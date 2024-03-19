@@ -261,11 +261,13 @@ function EditorManager({displayedFile, setActiveAndDisplayed, isActiveDisplayed,
 
 
                         jsonManager.updateActiveRangesFunction(activeFunctionIndex, activeIterationIndices).forEach((range) => {
-                            if (range.containsPosition(jsonManager.nodes[jumpIndex].outLinks[0].range.getStartPosition())) {
-                                setJumpPosition(jump.outLinkPosition);
-                                setDoPositionJump(true);
-                                setActiveIterationIndices(jump.outLoopIterations);
-                                setActiveFunctionIndex(jump.outFunctionIndex);
+                            if (range.containsRange(jsonManager.nodes[jumpIndex].outLinks[0].range)) {
+                                if(jump.outLinks[0].range.containsPosition(position)) {
+                                    setJumpPosition(jump.outLinkPosition);
+                                    setDoPositionJump(true);
+                                    setActiveIterationIndices(jump.outLoopIterations);
+                                    setActiveFunctionIndex(jump.outFunctionIndex);
+                                }
                             }
                         });
                     }
