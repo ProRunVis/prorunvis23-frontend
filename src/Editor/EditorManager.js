@@ -418,10 +418,11 @@ function EditorManager({displayedFile, setActiveAndDisplayed, isActiveDisplayed,
                 //drawLine(rangesToHighlight);
                 jumpNodesIndices.forEach((jumpIndex) => {
                     if (jsonManager.nodes[jumpIndex].nodeType !== "Function" || jumpIndex === activeFunctionIndex) {
+                        console.log("bugfix active");
                         if(jsonManager.nodes[jumpIndex].nodeType === "Function" && jsonManager.nodes[jumpIndex].outLinks.length === 2){
                             highlightLink(jsonManager.nodes[jumpIndex].outLinks[1].range);
                             jsonManager.updateActiveRangesFunction(activeFunctionIndex, activeIterationIndices).forEach((range) => {
-                                if (range.contains(jsonManager.nodes[jumpIndex].outLinks[0].range)) {
+                                if (range === jsonManager.nodes[jumpIndex].outLinks[0].range)) {
                                     highlightLink(jsonManager.nodes[jumpIndex].outLinks[0].range);
                                 }
                             });
