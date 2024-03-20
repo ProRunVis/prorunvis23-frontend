@@ -251,7 +251,7 @@ function EditorManager({displayedFile, setActiveAndDisplayed, isActiveDisplayed,
                 let jump = jsonManager.nodes[jumpIndex];
                 if (jump.nodeType !== "Function" || jumpIndex === activeFunctionIndex) {
 
-                    if(jump.nodeType === "Function" && jump.outLinks.length === 2){
+                    if (jump.nodeType === "Function" && jump.outLinks.length === 2) {
                         if (jump.outLinks[1].range.containsPosition(position)) {
                             setJumpPosition(jump.outLinkPosition);
                             setDoPositionJump(true);
@@ -262,7 +262,7 @@ function EditorManager({displayedFile, setActiveAndDisplayed, isActiveDisplayed,
 
                         jsonManager.updateActiveRangesFunction(activeFunctionIndex, activeIterationIndices).forEach((range) => {
                             if (range.containsRange(jsonManager.nodes[jumpIndex].outLinks[0].range)) {
-                                if(jump.outLinks[0].range.containsPosition(position)) {
+                                if (jump.outLinks[0].range.containsPosition(position)) {
                                     setJumpPosition(jump.outLinkPosition);
                                     setDoPositionJump(true);
                                     setActiveIterationIndices(jump.outLoopIterations);
@@ -270,16 +270,15 @@ function EditorManager({displayedFile, setActiveAndDisplayed, isActiveDisplayed,
                                 }
                             }
                         });
-                    }
-                    else{
-                    jump.outLinks.forEach((outLink) => {
-                        if (outLink.range.containsPosition(position)) {
-                            setJumpPosition(jump.outLinkPosition);
-                            setDoPositionJump(true);
-                            setActiveIterationIndices(jump.outLoopIterations);
-                            setActiveFunctionIndex(jump.outFunctionIndex);
-                        }
-                    });
+                    } else {
+                        jump.outLinks.forEach((outLink) => {
+                            if (outLink.range.containsPosition(position)) {
+                                setJumpPosition(jump.outLinkPosition);
+                                setDoPositionJump(true);
+                                setActiveIterationIndices(jump.outLoopIterations);
+                                setActiveFunctionIndex(jump.outFunctionIndex);
+                            }
+                        });
                     }
                 }
                 // We do not want to check for the link of the current function since it might be in another file
@@ -432,25 +431,21 @@ function EditorManager({displayedFile, setActiveAndDisplayed, isActiveDisplayed,
                     highlightActive(rangeToHighlight);
                 });
 
-                if (rangesToHighlight[rangesToHighlight.length - 1] ===
-                    jsonManager.nodes[jsonManager.nodes.length - 1].ranges.sort((a, b) =>
-                        ((a.startLineNumber < b.startLineNumber) ? -1 : (a.startLineNumber > b.startLineNumber) ? 1 : 0))
-                        [jsonManager.nodes[jsonManager.nodes.length - 1].ranges.length - 1])
-                    highlightEnd(rangesToHighlight[rangesToHighlight.length - 1]);
+                if(activeFunctionIndex === jsonManager.lastRangeFunctionIndex)
+                    highlightEnd(jsonManager.lastRange);
 
                 //drawLine(rangesToHighlight);
                 jumpNodesIndices.forEach((jumpIndex) => {
                     if (jsonManager.nodes[jumpIndex].nodeType !== "Function" || jumpIndex === activeFunctionIndex) {
                         console.log("bugfix active");
-                        if(jsonManager.nodes[jumpIndex].nodeType === "Function" && jsonManager.nodes[jumpIndex].outLinks.length === 2){
+                        if (jsonManager.nodes[jumpIndex].nodeType === "Function" && jsonManager.nodes[jumpIndex].outLinks.length === 2) {
                             highlightLink(jsonManager.nodes[jumpIndex].outLinks[1].range);
                             jsonManager.updateActiveRangesFunction(activeFunctionIndex, activeIterationIndices).forEach((range) => {
                                 if (range.containsRange(jsonManager.nodes[jumpIndex].outLinks[0].range)) {
                                     highlightLink(jsonManager.nodes[jumpIndex].outLinks[0].range);
                                 }
                             });
-                        }
-                        else {
+                        } else {
                             jsonManager.nodes[jumpIndex].outLinks.forEach((outLink) => {
                                 highlightLink(outLink.range);
                             });

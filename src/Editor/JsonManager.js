@@ -17,8 +17,8 @@ class JsonManager {
         this.activeIterationIndex = 0;
         let data = [];
         data = jsonString;
-            data.forEach((jsonData) => {
-                this.nodes.push(new TraceNode(jsonData));
+        data.forEach((jsonData) => {
+            this.nodes.push(new TraceNode(jsonData));
         });
         for (let i = 2; i < this.nodes.length; i++) {
             let node = this.nodes[i];
@@ -27,7 +27,7 @@ class JsonManager {
                 if (this.nodes[node.outIndex].ranges.length !== 0) //if catch is empty and has no range
                     node.outLinkPosition = this.nodes[node.outIndex].ranges.sort((a, b) =>
                         ((a.startLineNumber < b.startLineNumber) ?
-                        -1 : (a.startLineNumber > b.startLineNumber) ? 1 : 0))[0].getStartPosition();
+                            -1 : (a.startLineNumber > b.startLineNumber) ? 1 : 0))[0].getStartPosition();
             }
             if (node.nodeType === "Function") {
                 node.linkPosition = node.outLinks[node.outLinks.length - 1].range.getStartPosition();
@@ -69,6 +69,44 @@ class JsonManager {
                 this.nodes[i].outFunctionIndex = currentIndex;
             }
         }
+
+        let currentIndex = jsonManager.nodes.length - 1;
+        let currentNode = jsonManager.nodes[currentIndex];
+        let lastRange = jsonManager.nodes[jsonManager.nodes.length - 1].ranges.sort((a, b) =>
+            ((a.startLineNumber < b.startLineNumber) ? -1 : (a.startLineNumber > b.startLineNumber) ? 1 : 0))
+            [jsonManager.nodes[jsonManager.nodes.length - 1].ranges.length - 1];
+        let fallback = 0;
+        let lastRangeIsLink = false;
+        let lastRangeNodeIndex = currentIndex;
+
+        let isFunction = currentNode.nodeType === "Function";
+        while (currentIndex !== 1) {
+            while (!isFunction) {
+                currentIndex = currentNode.parentIndex;
+                currentNode = jsonManager.nodes[currentIndex];
+                let currentLastRange = currentNode.ranges.sort((a, b) =>
+                    ((a.startLineNumber < b.startLineNumber) ? -1 : (a.startLineNumber > b.startLineNumber) ? 1 : 0))[currentNode.ranges.length - 1];
+                if (currentLastRange.getEndPosition().endColumn > lastRange.getEndPosition().endColumn || currentLastRange.getEndPosition().endLineNumber > lastRange.getEndPosition().endLineNumber) {
+                    lastRange = currentLastRange;
+                    lastRangeIsLink = false;
+                    lastRangeNodeIndex = currentIndex;
+                }
+                if (currentNode.nodeType === "Function") {
+                    isFunction = true;
+                }
+            }
+            if (!lastRangeIsLink) {
+                fallback = lastRange;
+            }
+            lastRangeIsLink = true;
+            lastRange = currentNode.link.range;
+            isFunction = false;
+        }
+        if (lastRangeIsLink) {
+            lastRange = fallback;
+        }
+        this.lastRange = lastRange;
+        this.lastRangeFunctionIndex = this.getParentFunction(lastRangeNodeIndex);
     }
 
     /**
@@ -77,6 +115,18 @@ class JsonManager {
      */
     getMain() {
         return 1;
+    }
+
+    getParentFunction(nodeIndex){
+        if(nodeIndex < 1 || nodeIndex > this.nodes.length - 1)
+            return -1;
+        let currentIndex = nodeIndex;
+        let currentNode = this.nodes(currentIndex);
+        while(currentNode.nodeType !== "Function"){
+            currentIndex = currentNode.parentIndex;
+            currentNode = this.nodes(currentIndex);
+        }
+        return currentIndex;
     }
 
     /**
