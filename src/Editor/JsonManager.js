@@ -121,10 +121,10 @@ class JsonManager {
         if(nodeIndex < 1 || nodeIndex > this.nodes.length - 1)
             return -1;
         let currentIndex = nodeIndex;
-        let currentNode = this.nodes(currentIndex);
+        let currentNode = this.nodes[currentIndex];
         while(currentNode.nodeType !== "Function"){
             currentIndex = currentNode.parentIndex;
-            currentNode = this.nodes(currentIndex);
+            currentNode = this.nodes[currentIndex];
         }
         return currentIndex;
     }
