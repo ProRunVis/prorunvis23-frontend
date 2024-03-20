@@ -76,7 +76,7 @@ function RightComponent({displayedFile, setActiveAndDisplayed, isActiveDisplayed
                     endLineNumber: range.endLineNumber,
                     endColumn: range.endColumn
                 }
-            }
+            },
         ]);
     }
 
@@ -85,7 +85,7 @@ function RightComponent({displayedFile, setActiveAndDisplayed, isActiveDisplayed
      * Used to show which part of the code got is a link and can be clicked to jump to another Node.
      * @param range monaco.Range to be decorated.
      */
-    function highlightLink(range) {
+    function highlightLink(range, linkOrOutLink) {
         editor.createDecorationsCollection([
             {
                 options: {className: "link"},
@@ -95,7 +95,21 @@ function RightComponent({displayedFile, setActiveAndDisplayed, isActiveDisplayed
                     endLineNumber: range.endLineNumber,
                     endColumn: range.endColumn
                 }
-            }
+            },
+            {
+                options: {
+                    glyphMarginClassName: ((linkOrOutLink === 1) ? "link" : "outlink") + "-symbol",
+                    glyphMargin: {
+                        position: monaco.editor.GlyphMarginLane.Right,
+                        range: {
+                            startLineNumber: range.startLineNumber,
+                            startColumn: range.startColumn,
+                            endLineNumber: range.startLineNumber,
+                            endColumn: range.startColumn
+                        }
+                    },
+                },
+            },
         ]);
     }
 
@@ -105,6 +119,7 @@ function RightComponent({displayedFile, setActiveAndDisplayed, isActiveDisplayed
      * @param range monaco.Range to be decorated.
      */
     function highlightLoop(range) {
+        setNodeSymbol(range, "loop-symbol");
         editor.createDecorationsCollection([
             {
                 options: {className: "loop"},
@@ -114,7 +129,21 @@ function RightComponent({displayedFile, setActiveAndDisplayed, isActiveDisplayed
                     endLineNumber: range.endLineNumber,
                     endColumn: range.endColumn
                 }
-            }
+            },
+            {
+                options: {
+                    glyphMarginClassName: "loop-symbol",
+                    glyphMargin: {
+                        position: monaco.editor.GlyphMarginLane.Right,
+                        range: {
+                            startLineNumber: range.startLineNumber,
+                            startColumn: range.startColumn,
+                            endLineNumber: range.startLineNumber,
+                            endColumn: range.startColumn
+                        },
+                    },
+                },
+            },
         ]);
     }
 
@@ -185,6 +214,12 @@ function RightComponent({displayedFile, setActiveAndDisplayed, isActiveDisplayed
                     glyphMarginClassName: symbol,
                     glyphMargin: {
                         position: monaco.editor.GlyphMarginLane.Left,
+                        range: {
+                            startLineNumber: startLineNumber,
+                            startColumn: 1,
+                            endLineNumber: startLineNumber,
+                            endColumn: 1,
+                        },
                     },
                 },
             },
@@ -194,15 +229,15 @@ function RightComponent({displayedFile, setActiveAndDisplayed, isActiveDisplayed
     function setNodeSymbol(range, symbol) {
         editor.createDecorationsCollection([
             {
-                range: range,
+                range: new monaco.Range(range.startLineNumber, 1, range.startLineNumber, 1),
                 options: {
                     GlyphMarginClassName: symbol,
                     glyphMargin: {
-                        position: monaco.editor.GlyphMarginLane.Right
-                    }
-                }
-            }
-        ])
+                        position: monaco.editor.GlyphMarginLane.Right,
+                    },
+                },
+            },
+        ]);
     }
 
     /**
@@ -281,7 +316,6 @@ function RightComponent({displayedFile, setActiveAndDisplayed, isActiveDisplayed
                 let jump = jsonManager.nodes[jumpIndex];
                 if (jump.nodeType !== "Function" || jumpIndex === activeFunctionIndex) {
                     jump.outLinks.forEach((outLink) => {
-                        setNodeSymbol(outLink.range, "outlink-symbol");
                         if (outLink.range.containsPosition(position)) {
                             setJumpPosition(jump.outLinkPosition);
                             setDoPositionJump(true);
@@ -296,7 +330,6 @@ function RightComponent({displayedFile, setActiveAndDisplayed, isActiveDisplayed
                     return;
                 }
                 if (jump.nodeType === "Function") {
-                    setNodeSymbol(jump.link.range, "link-symbol");
                     if (jump.link.range.containsPosition(position)) {
                         setJumpPosition(jump.linkPosition);
                         setDoPositionJump(true);
@@ -318,7 +351,6 @@ function RightComponent({displayedFile, setActiveAndDisplayed, isActiveDisplayed
             const position = e.target.position;
             activeIterationIndices.forEach((iterationIndex) => {
                 let iteration = jsonManager.nodes[iterationIndex];
-                setNodeSymbol(iteration.link.range, "loop-symbol");
                 if (iteration.link.range.containsPosition(position)) {
                     let id = iteration.traceId;
                     let nextIteration = prompt("Please enter the iteration", iteration.iteration);
@@ -431,7 +463,6 @@ function RightComponent({displayedFile, setActiveAndDisplayed, isActiveDisplayed
      */
     useEffect(() => {
         if (jsonManager && editor) {
-
             let rangesToHighlight = [];
             rangesToHighlight = jsonManager.updateActiveRangesFunction(activeFunctionIndex, activeIterationIndices);
 
@@ -450,7 +481,7 @@ function RightComponent({displayedFile, setActiveAndDisplayed, isActiveDisplayed
                 jumpNodesIndices.forEach((jump) => {
                     if (jsonManager.nodes[jump].nodeType !== "Function" || jump === activeFunctionIndex) {
                         jsonManager.nodes[jump].outLinks.forEach((outLink) => {
-                            highlightLink(outLink.range);
+                            highlightLink(outLink.range, 2);
                         });
                     }
                     // We do not want to mark for the link of the current function since it might be in another file
@@ -459,7 +490,7 @@ function RightComponent({displayedFile, setActiveAndDisplayed, isActiveDisplayed
                         return;
                     }
                     if (jsonManager.nodes[jump].nodeType === "Function")
-                        highlightLink(jsonManager.nodes[jump].link.range);
+                        highlightLink(jsonManager.nodes[jump].link.range, 1);
                 });
 
                 handleJumps();
