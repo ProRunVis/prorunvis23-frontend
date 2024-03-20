@@ -70,11 +70,11 @@ class JsonManager {
             }
         }
 
-        let currentIndex = jsonManager.nodes.length - 1;
-        let currentNode = jsonManager.nodes[currentIndex];
-        let lastRange = jsonManager.nodes[jsonManager.nodes.length - 1].ranges.sort((a, b) =>
+        let currentIndex = this.nodes.length - 1;
+        let currentNode = this.nodes[currentIndex];
+        let lastRange = this.nodes[this.nodes.length - 1].ranges.sort((a, b) =>
             ((a.startLineNumber < b.startLineNumber) ? -1 : (a.startLineNumber > b.startLineNumber) ? 1 : 0))
-            [jsonManager.nodes[jsonManager.nodes.length - 1].ranges.length - 1];
+            [this.nodes[this.nodes.length - 1].ranges.length - 1];
         let fallback = 0;
         let lastRangeIsLink = false;
         let lastRangeNodeIndex = currentIndex;
@@ -83,7 +83,7 @@ class JsonManager {
         while (currentIndex !== 1) {
             while (!isFunction) {
                 currentIndex = currentNode.parentIndex;
-                currentNode = jsonManager.nodes[currentIndex];
+                currentNode = this.nodes[currentIndex];
                 let currentLastRange = currentNode.ranges.sort((a, b) =>
                     ((a.startLineNumber < b.startLineNumber) ? -1 : (a.startLineNumber > b.startLineNumber) ? 1 : 0))[currentNode.ranges.length - 1];
                 if (currentLastRange.getEndPosition().endColumn > lastRange.getEndPosition().endColumn || currentLastRange.getEndPosition().endLineNumber > lastRange.getEndPosition().endLineNumber) {
