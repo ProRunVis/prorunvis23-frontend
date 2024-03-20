@@ -81,26 +81,6 @@ function RightComponent({displayedFile, setActiveAndDisplayed, isActiveDisplayed
     }
 
     /**
-     * Adds a symbol on the current line next to the line number. Which one is dictated by {@link drawLine}.
-     * @param startLineNumber number in which the symbol is drawn.
-     * @param symbol symbol that is drawn.
-     */
-    function placeDecoration(startLineNumber, symbol) {
-        editor.createDecorationsCollection([
-            {
-                range: new monaco.Range(startLineNumber, 1, startLineNumber, 1),
-                options: {
-                    glyphMarginClassName: symbol,
-                    glyphMargin: {
-                        position: monaco.editor.GlyphMarginLane.Right,
-                    },
-                },
-            },
-        ]);
-
-    }
-
-    /**
      * Function to render a range in the current editor with a blue background.
      * Used to show which part of the code got is a link and can be clicked to jump to another Node.
      * @param range monaco.Range to be decorated.
@@ -197,18 +177,32 @@ function RightComponent({displayedFile, setActiveAndDisplayed, isActiveDisplayed
      * @param startLineNumber number in which the symbol is drawn.
      * @param symbol symbol that is drawn.
      */
-    function placeDecoration(startLineNumber, symbol) {
+    function placeLinePiece(startLineNumber, symbol) {
         editor.createDecorationsCollection([
             {
                 range: new monaco.Range(startLineNumber, 1, startLineNumber, 1),
                 options: {
                     glyphMarginClassName: symbol,
                     glyphMargin: {
-                        position: monaco.editor.GlyphMarginLane.Right,
+                        position: monaco.editor.GlyphMarginLane.Left,
                     },
                 },
             },
         ]);
+    }
+
+    function setNodeSymbol(range, symbol) {
+        editor.createDecorationsCollection([
+            {
+                range: range,
+                options: {
+                    GlyphMarginClassName: symbol,
+                    glyphMargin: {
+                        position: monaco.editor.GlyphMarginLane.Right
+                    }
+                }
+            }
+        ])
     }
 
     /**
@@ -238,12 +232,12 @@ function RightComponent({displayedFile, setActiveAndDisplayed, isActiveDisplayed
             let endLine = iterateLine(startLine);
 
             while(endLine.startLineNumber < ranges[i].endLineNumber) {
-                placeDecoration(endLine.startLineNumber, "line");
+                placeLinePiece(endLine.startLineNumber, "line");
                 endLine = iterateLine(endLine);
                 console.log("loop 1");
             }
 
-            placeDecoration(startLine.startLineNumber, (ongoing) ? "line" : "start");
+            placeLinePiece(startLine.startLineNumber, (ongoing) ? "line" : "start");
 
             startLine = new monaco.Range(ranges[i].endLineNumber, 0, ranges[i].endLineNumber + 1, 0);
             endLine = iterateLine(startLine);
@@ -261,13 +255,13 @@ function RightComponent({displayedFile, setActiveAndDisplayed, isActiveDisplayed
                     startLine = iterateLine(startLine);
                 }
                 while (startLine.startLineNumber < endLine.startLineNumber) {
-                    placeDecoration(startLine.startLineNumber, "line");
+                    placeLinePiece(startLine.startLineNumber, "line");
                     startLine = iterateLine(startLine);
                     console.log("loop 3");
                 }
                 ongoing = true;
             } else {
-                placeDecoration(ranges[i].endLineNumber, (ongoing) ? "end" : "one-line");
+                placeLinePiece(ranges[i].endLineNumber, (ongoing) ? "end" : "one-line");
                 ongoing = false;
             }
         }
@@ -287,6 +281,7 @@ function RightComponent({displayedFile, setActiveAndDisplayed, isActiveDisplayed
                 let jump = jsonManager.nodes[jumpIndex];
                 if (jump.nodeType !== "Function" || jumpIndex === activeFunctionIndex) {
                     jump.outLinks.forEach((outLink) => {
+                        setNodeSymbol(outLink.range, "outlink-symbol");
                         if (outLink.range.containsPosition(position)) {
                             setJumpPosition(jump.outLinkPosition);
                             setDoPositionJump(true);
@@ -301,13 +296,13 @@ function RightComponent({displayedFile, setActiveAndDisplayed, isActiveDisplayed
                     return;
                 }
                 if (jump.nodeType === "Function") {
+                    setNodeSymbol(jump.link.range, "link-symbol");
                     if (jump.link.range.containsPosition(position)) {
                         setJumpPosition(jump.linkPosition);
                         setDoPositionJump(true);
                         setActiveIterationIndices(jsonManager.initIterations(jumpIndex, []));
                         setActiveFunctionIndex(jumpIndex);
                     }
-
                 }
             });
         });
@@ -323,6 +318,7 @@ function RightComponent({displayedFile, setActiveAndDisplayed, isActiveDisplayed
             const position = e.target.position;
             activeIterationIndices.forEach((iterationIndex) => {
                 let iteration = jsonManager.nodes[iterationIndex];
+                setNodeSymbol(iteration.link.range, "loop-symbol");
                 if (iteration.link.range.containsPosition(position)) {
                     let id = iteration.traceId;
                     let nextIteration = prompt("Please enter the iteration", iteration.iteration);

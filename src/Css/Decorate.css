@@ -30,3 +30,15 @@
 .one-line {
     content: url(../Images/oneLine.png);
 }
+
+.link-symbol{
+    content: url(../Images/link.png);
+}
+
+.outlink-symbol{
+    content: url(../Images/outlink.png);
+}
+
+.loop-symbol{
+    content: url(../Images/loop.png);
+}
