@@ -78,7 +78,6 @@ class JsonManager {
         let fallback = 0;
         let lastRangeIsLink = false;
         let lastRangeNodeIndex = currentIndex;
-
         let isFunction = currentNode.nodeType === "Function";
         while (currentIndex !== 1) {
             while (!isFunction) {
@@ -86,7 +85,7 @@ class JsonManager {
                 currentNode = this.nodes[currentIndex];
                 let currentLastRange = currentNode.ranges.sort((a, b) =>
                     ((a.startLineNumber < b.startLineNumber) ? -1 : (a.startLineNumber > b.startLineNumber) ? 1 : 0))[currentNode.ranges.length - 1];
-                if (currentLastRange.getEndPosition().endColumn < lastRange.getEndPosition().endColumn || currentLastRange.getEndPosition().endLineNumber < lastRange.getEndPosition().endLineNumber) {
+                if (currentLastRange.endColumn < lastRange.endColumn || currentLastRange.endLineNumber < lastRange.endLineNumber) {
                     lastRange = currentLastRange;
                     lastRangeIsLink = false;
                     lastRangeNodeIndex = currentIndex;
