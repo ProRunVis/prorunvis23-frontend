@@ -119,7 +119,12 @@ class JsonManager {
                 ((a.startLineNumber < b.startLineNumber) ? -1 : (a.startLineNumber > b.startLineNumber) ? 1 : 0))
                 [this.nodes[currentFunction].ranges.length - 1],"nodeIndex": 1}];
             let links = [];
+
+            this.getLastRanges(currentFunction, lastRanges, links);
+            /*
             this.nodes[currentFunction].childrenIndices.forEach((childIndex) => {
+                //Für jedes child auch wieder alle childs durchgehen
+                //Für loops letzte iteration?
                 if (this.nodes[childIndex].nodeType !== "Function") {
                     lastRanges.push({"range": this.nodes[childIndex].ranges.sort((a, b) =>
                         ((a.startLineNumber < b.startLineNumber) ? -1 : (a.startLineNumber > b.startLineNumber) ? 1 : 0))
@@ -127,7 +132,7 @@ class JsonManager {
                 } else {
                     links.push(childIndex);
                 }
-            });
+            });*/
             console.log("last Ranges", lastRanges);
             lastRange = lastRanges.sort((a, b) =>
                 ((a.range.startLineNumber < b.range.startLineNumber) ? -1 : (a.range.startLineNumber > b.range.startLineNumber) ? 1 : 0))[lastRanges.length - 1];
@@ -142,6 +147,21 @@ class JsonManager {
         }
         this.lastRange = lastRange;
         console.log(this.nodes);
+    }
+
+    getLastRanges(nodeIndex, lastRanges, links){
+        this.nodes[nodeIndex].childrenIndices.forEach((childIndex) => {
+            //Für jedes child auch wieder alle childs durchgehen
+            //Für loops letzte iteration?
+            if (this.nodes[childIndex].nodeType !== "Function") {
+                lastRanges.push({"range": this.nodes[childIndex].ranges.sort((a, b) =>
+                        ((a.startLineNumber < b.startLineNumber) ? -1 : (a.startLineNumber > b.startLineNumber) ? 1 : 0))
+                        [this.nodes[childIndex].ranges.length - 1],"nodeIndex": childIndex});
+                this.getLastRanges(childIndex, lastRanges, links);
+            } else {
+                links.push(childIndex);
+            }
+        });
     }
 
     /**
@@ -304,7 +324,7 @@ class JsonManager {
             ranges.push(range);
         });
         this.nodes[functionIndex].childrenIndices.forEach((childIndex) => {
-            ranges = ranges.concat(this.getRanges(childIndex));
+            ranges = ranges.concat(this.getActiveRanges(childIndex));
         });
         ranges.sort((a, b) => ((a.startLineNumber < b.startLineNumber) ?
             -1 : (a.startLineNumber > b.startLineNumber) ? 1 : 0));
@@ -317,7 +337,7 @@ class JsonManager {
      * @param nodeIndex node index of current node.
      * @returns {*[]} An array with all ranges of the current node and all child nodes that are part of the function.
      */
-    getRanges(nodeIndex) {
+    getActiveRanges(nodeIndex) {
         let ranges = [];
         let end = false;
         this.skipIds.forEach((skipId) => {
@@ -339,7 +359,7 @@ class JsonManager {
                 ranges.push(range);
             });
             this.nodes[nodeIndex].childrenIndices.forEach((childIndex) => {
-                ranges = ranges.concat(this.getRanges(childIndex));
+                ranges = ranges.concat(this.getActiveRanges(childIndex));
             });
         }
         return ranges;
