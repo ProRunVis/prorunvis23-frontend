@@ -302,13 +302,11 @@ function EditorManager({displayedFile, setActiveAndDisplayed, isActiveDisplayed,
 
     /**
      *
-     * @param ranges
+     * @param range
      * @returns {*[]}
      */
-    function splitRangesByLine(ranges) {
+    function splitRangeByLine(range) {
         const result = [];
-
-        ranges.forEach(range => {
             const startLineNumber = range.startLineNumber;
             const endLineNumber = range.endLineNumber;
             const model = editor.getModel();
@@ -321,7 +319,6 @@ function EditorManager({displayedFile, setActiveAndDisplayed, isActiveDisplayed,
 
                 result.push(new monaco.Range(lineNumber, startColumn, lineNumber, endColumn));
             }
-        });
 
         return result;
     }
@@ -455,8 +452,7 @@ function EditorManager({displayedFile, setActiveAndDisplayed, isActiveDisplayed,
             if (isActiveDisplayed()) {
                 setDoPositionJump(true);
                 rangesToHighlight.forEach((rangeToHighlight) => {
-                    let splitRangesToHighlight = splitRangesByLine(rangeToHighlight);
-                    splitRangesToHighlight.forEach((splitRangeToHighlight) => {
+                    splitRangeByLine(rangeToHighlight).forEach((splitRangeToHighlight) => {
                         highlightActive(splitRangeToHighlight);
                     });
                 });
