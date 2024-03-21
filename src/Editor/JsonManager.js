@@ -86,7 +86,7 @@ class JsonManager {
                 currentNode = this.nodes[currentIndex];
                 let currentLastRange =
                 currentNode.ranges.sort((a, b) => ((a.startLineNumber < b.startLineNumber) ? -1 : (a.startLineNumber > b.startLineNumber) ? 1 : 0))[currentNode.ranges.length - 1];
-                if (currentLastRange.endColumn < lastRange.endColumn || currentLastRange.endLineNumber < lastRange.endLineNumber) {
+                if (currentLastRange.endColumn <= lastRange.endColumn || currentLastRange.endLineNumber <= lastRange.endLineNumber) {
                     lastRange = currentLastRange;
                     lastRangeIsLink = false;
                     lastRangeNodeIndex = currentIndex;
