@@ -113,14 +113,30 @@ class JsonManager {
 
         let lastRangeIsLink = true;
         let lastRange;
-        while(lastRangeIsLink) {
+        while (lastRangeIsLink) {
             let currentFunction = 1;
-            let lastRanges = [{"range": this.nodes[currentFunction].ranges.sort((a, b) =>
-                ((a.startLineNumber < b.startLineNumber) ? -1 : (a.startLineNumber > b.startLineNumber) ? 1 : 0))
-                [this.nodes[currentFunction].ranges.length - 1],"nodeIndex": 1}];
+            let lastRanges = [{
+                "range": this.nodes[currentFunction].ranges.sort((a, b) =>
+                    ((a.startLineNumber < b.startLineNumber) ? -1 : (a.startLineNumber > b.startLineNumber) ? 1 : 0))
+                    [this.nodes[currentFunction].ranges.length - 1], "nodeIndex": 1
+            }];
             let links = [];
 
-            this.getLastRanges(currentFunction, lastRanges, links);
+
+            this.nodes[currentFunction].childrenIndices.forEach((childIndex) => {
+                //Für jedes child auch wieder alle childs durchgehen
+                //Für loops letzte iteration?
+                if (this.nodes[childIndex].nodeType !== "Function") {
+                    lastRanges.push({
+                        "range": this.nodes[childIndex].ranges.sort((a, b) =>
+                            ((a.startLineNumber < b.startLineNumber) ? -1 : (a.startLineNumber > b.startLineNumber) ? 1 : 0))
+                            [this.nodes[childIndex].ranges.length - 1], "nodeIndex": childIndex
+                    });
+                    this.getLastRanges(childIndex, lastRanges, links);
+                } else {
+                    links.push(childIndex);
+                }
+            });
             /*
             this.nodes[currentFunction].childrenIndices.forEach((childIndex) => {
                 //Für jedes child auch wieder alle childs durchgehen
@@ -149,14 +165,16 @@ class JsonManager {
         console.log(this.nodes);
     }
 
-    getLastRanges(nodeIndex, lastRanges, links){
+    getLastRanges(nodeIndex, lastRanges, links) {
         this.nodes[nodeIndex].childrenIndices.forEach((childIndex) => {
             //Für jedes child auch wieder alle childs durchgehen
             //Für loops letzte iteration?
             if (this.nodes[childIndex].nodeType !== "Function") {
-                lastRanges.push({"range": this.nodes[childIndex].ranges.sort((a, b) =>
+                lastRanges.push({
+                    "range": this.nodes[childIndex].ranges.sort((a, b) =>
                         ((a.startLineNumber < b.startLineNumber) ? -1 : (a.startLineNumber > b.startLineNumber) ? 1 : 0))
-                        [this.nodes[childIndex].ranges.length - 1],"nodeIndex": childIndex});
+                        [this.nodes[childIndex].ranges.length - 1], "nodeIndex": childIndex
+                });
                 this.getLastRanges(childIndex, lastRanges, links);
             } else {
                 links.push(childIndex);
@@ -172,12 +190,12 @@ class JsonManager {
         return 1;
     }
 
-    getParentFunction(nodeIndex){
-        if(nodeIndex < 1 || nodeIndex > this.nodes.length - 1)
+    getParentFunction(nodeIndex) {
+        if (nodeIndex < 1 || nodeIndex > this.nodes.length - 1)
             return -1;
         let currentIndex = nodeIndex;
         let currentNode = this.nodes[currentIndex];
-        while(currentNode.nodeType !== "Function"){
+        while (currentNode.nodeType !== "Function") {
             currentIndex = currentNode.parentIndex;
             currentNode = this.nodes[currentIndex];
         }
