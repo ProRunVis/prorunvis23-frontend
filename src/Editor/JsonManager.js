@@ -1,5 +1,5 @@
 import TraceNode from "./TraceNode";
-import {Position} from "monaco-editor";
+import {editor, Position} from "monaco-editor";
 
 /**
  * Class that contains an array of {@link TraceNode}s and manages them. It gives access to several functions that

@@ -5,6 +5,7 @@ import "../Css/RightComponent.css"
 import PropTypes from "prop-types";
 import JsonManager from "./JsonManager";
 import {json} from "react-router-dom";
+import {editor} from "monaco-editor";
 
 /**
  * Represents the right component of the application, primarily responsible for
@@ -428,7 +429,19 @@ function EditorManager({displayedFile, setActiveAndDisplayed, isActiveDisplayed,
             if (isActiveDisplayed()) {
                 setDoPositionJump(true);
                 rangesToHighlight.forEach((rangeToHighlight) => {
-                    highlightActive(rangeToHighlight);
+
+
+                    const rangeToHighlightSplit = [];
+                    for (let lineNumber = rangeToHighlightSplit.startLineNumber; lineNumber <= rangeToHighlightSplit.endLineNumber; lineNumber++) {
+                        const startColumn = lineNumber === rangeToHighlightSplit.startLineNumber ? rangeToHighlightSplit.startColumn : 1;
+                        const endColumn = lineNumber === rangeToHighlightSplit.endLineNumber ? rangeToHighlightSplit.endColumn : editor.getLineMaxColumn(lineNumber);
+
+                        rangeToHighlightSplit.push(new monaco.Range(lineNumber, startColumn, lineNumber, endColumn));
+                    }
+
+                    rangeToHighlightSplit.forEach((rangeToHighlight) => {
+                        highlightActive(rangeToHighlight);
+                    });
                 });
                 /*console.log("last range ", jsonManager.lastRange);
                 if (jsonManager.lastRange !== undefined && activeFunctionIndex === jsonManager.getParentFunction(jsonManager.lastRange.nodeIndex)) {
