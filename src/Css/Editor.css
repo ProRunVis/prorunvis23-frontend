@@ -10,7 +10,7 @@
 .right-container {
     display: flex;
     flex-direction: column; /* Vertical alignment of children */
-    justify-content: flex-start; /* Alignment is applied from the start of the container */
+    justify-content: stretch; /* Alignment is applied from the start of the container */
     align-items: stretch; /* Stretch the children to fill the container vertically */
     flex: 3;
     flex-basis: 75%;
@@ -24,7 +24,7 @@
     flex: 1;
     display: flex;
     flex-direction: column;
-    justify-content: flex-start;
+    justify-content: stretch;
     align-items: stretch;
     width: 100%;
     flex-basis: 75%;
