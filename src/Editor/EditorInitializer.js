@@ -107,6 +107,20 @@ export class EditorInitializer {
             }
         });
 
+        window.MonacoEnvironment = {
+            getWorkerUrl: function (moduleId, label) {
+                return `data:text/javascript;charset=utf-8,${encodeURIComponent(`
+            self.MonacoEnvironment = {
+                baseUrl: ''
+            };
+
+            self.onmessage = function (e) {
+                // Handle message received from the main thread
+            };
+        `)}`;
+            }
+        };
+
         // ----------------------------------Loop Indices ------------------------------------
         const {dispose} = monaco.languages.registerInlayHintsProvider("java", {
             provideInlayHints(model, range, token) {
