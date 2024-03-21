@@ -430,9 +430,17 @@ function EditorManager({displayedFile, setActiveAndDisplayed, isActiveDisplayed,
                 rangesToHighlight.forEach((rangeToHighlight) => {
                     highlightActive(rangeToHighlight);
                 });
-                console.log(jsonManager.lastRangeFunctionIndex, "  ", jsonManager.lastRange);
-                if(activeFunctionIndex === jsonManager.lastRangeFunctionIndex && jsonManager.lastRange !== undefined)
-                    highlightEnd(jsonManager.lastRange);
+                console.log("last range ", jsonManager.lastRange);
+                if (jsonManager.lastRange !== undefined && activeFunctionIndex === jsonManager.getParentFunction(jsonManager.lastRange.nodeIndex)) {
+                    if (jsonManager.nodes[jsonManager.lastRange.nodeIndex].nodeType === "Loop") {
+                        activeIterationIndices.forEach((activeIterationIndex) => {
+                            if(activeIterationIndex === jsonManager.lastRange.nodeIndex)
+                                highlightEnd(jsonManager.lastRange.range);
+                        });
+                    } else {
+                        highlightEnd(jsonManager.lastRange.range);
+                    }
+                }
 
                 //drawLine(rangesToHighlight);
                 jumpNodesIndices.forEach((jumpIndex) => {

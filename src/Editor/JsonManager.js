@@ -69,7 +69,7 @@ class JsonManager {
                 this.nodes[i].outFunctionIndex = currentIndex;
             }
         }
-
+        /*
         let currentIndex = this.nodes.length - 1;
         let currentNode = this.nodes[currentIndex];
         let lastRange = //this.nodes[this.nodes.length - 1].ranges
@@ -109,7 +109,36 @@ class JsonManager {
         }
         this.lastRange = lastRange;
         this.lastRangeFunctionIndex = this.getParentFunction(lastRangeNodeIndex);
+        */
 
+        let lastRangeIsLink = true;
+        let lastRange;
+        while(lastRangeIsLink) {
+            let currentFunction = 1;
+            let lastRanges = [this.nodes[currentFunction].ranges.sort((a, b) =>
+                ((a.startLineNumber < b.startLineNumber) ? -1 : (a.startLineNumber > b.startLineNumber) ? 1 : 0))
+                [this.nodes[currentFunction].ranges.length - 1]];
+            let links = [];
+            this.nodes[currentFunction].childrenIndices.forEach((childIndex) => {
+                if (this.nodes[childIndex].nodeType !== "Function") {
+                    lastRanges.push({"range": this.nodes[childIndex].ranges.sort((a, b) =>
+                        ((a.startLineNumber < b.startLineNumber) ? -1 : (a.startLineNumber > b.startLineNumber) ? 1 : 0))
+                        [this.nodes[childIndex].ranges.length - 1],"nodeIndex": childIndex});
+                } else {
+                    links.push(childIndex);
+                }
+            });
+            lastRange = lastRanges.sort((a, b) =>
+                ((a.range.startLineNumber < b.range.startLineNumber) ? -1 : (a.range.startLineNumber > b.range.startLineNumber) ? 1 : 0))[lastRanges.length - 1];
+            lastRangeIsLink = false;
+            links.forEach((link) => {
+                if (lastRange.contains(link.range)) {
+                    currentFunction = link;
+                    lastRangeIsLink = true;
+                }
+            });
+        }
+        this.lastRange = lastRange;
         console.log(this.nodes);
     }
 
