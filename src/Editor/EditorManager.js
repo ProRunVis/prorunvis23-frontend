@@ -434,7 +434,7 @@ function EditorManager({displayedFile, setActiveAndDisplayed, isActiveDisplayed,
                     const rangeToHighlightSplit = [];
                     for (let lineNumber = rangeToHighlight.startLineNumber; lineNumber <= rangeToHighlight.endLineNumber; lineNumber++) {
                         const startColumn = lineNumber === rangeToHighlight.startLineNumber ? rangeToHighlight.startColumn : 1;
-                        const endColumn = lineNumber === rangeToHighlight.endLineNumber ? rangeToHighlight.endColumn : editor.getLineMaxColumn(lineNumber);
+                        const endColumn = lineNumber === rangeToHighlight.endLineNumber ? rangeToHighlight.endColumn : editor.getModel().getLineMaxColumn(lineNumber);
 
                         rangeToHighlightSplit.push(new monaco.Range(lineNumber, startColumn, lineNumber, endColumn));
                     }
