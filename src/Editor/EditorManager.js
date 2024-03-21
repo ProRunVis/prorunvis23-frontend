@@ -430,7 +430,7 @@ function EditorManager({displayedFile, setActiveAndDisplayed, isActiveDisplayed,
                 rangesToHighlight.forEach((rangeToHighlight) => {
                     highlightActive(rangeToHighlight);
                 });
-
+                console.log(jsonManager.lastRangeFunctionIndex, "  ", jsonManager.lastRange);
                 if(activeFunctionIndex === jsonManager.lastRangeFunctionIndex && jsonManager.lastRange !== undefined)
                     highlightEnd(jsonManager.lastRange);
 
