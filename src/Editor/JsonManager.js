@@ -72,8 +72,9 @@ class JsonManager {
 
         let currentIndex = this.nodes.length - 1;
         let currentNode = this.nodes[currentIndex];
-        let lastRange = this.nodes[this.nodes.length - 1].ranges.sort((a, b) =>
-            ((a.startLineNumber < b.startLineNumber) ? -1 : (a.startLineNumber > b.startLineNumber) ? 1 : 0))
+        let lastRange = this.nodes[this.nodes.length - 1].ranges
+            //this.nodes[this.nodes.length - 1].ranges.sort((a, b) =>
+            //((a.startLineNumber < b.startLineNumber) ? -1 : (a.startLineNumber > b.startLineNumber) ? 1 : 0))
             [this.nodes[this.nodes.length - 1].ranges.length - 1];
         let fallback = 0;
         let lastRangeIsLink = false;
@@ -83,8 +84,9 @@ class JsonManager {
             while (!isFunction) {
                 currentIndex = currentNode.parentIndex;
                 currentNode = this.nodes[currentIndex];
-                let currentLastRange = currentNode.ranges.sort((a, b) =>
-                    ((a.startLineNumber < b.startLineNumber) ? -1 : (a.startLineNumber > b.startLineNumber) ? 1 : 0))[currentNode.ranges.length - 1];
+                let currentLastRange = currentNode.ranges[currentNode.ranges.length - 1];
+                //currentNode.ranges.sort((a, b) =>
+                  //  ((a.startLineNumber < b.startLineNumber) ? -1 : (a.startLineNumber > b.startLineNumber) ? 1 : 0))[currentNode.ranges.length - 1];
                 if (currentLastRange.endColumn < lastRange.endColumn || currentLastRange.endLineNumber < lastRange.endLineNumber) {
                     lastRange = currentLastRange;
                     lastRangeIsLink = false;
