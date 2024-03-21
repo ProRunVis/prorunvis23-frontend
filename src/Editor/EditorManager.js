@@ -301,6 +301,32 @@ function EditorManager({displayedFile, setActiveAndDisplayed, isActiveDisplayed,
     }
 
     /**
+     *
+     * @param ranges
+     * @returns {*[]}
+     */
+    function splitRangesByLine(ranges) {
+        const result = [];
+
+        ranges.forEach(range => {
+            const startLineNumber = range.startLineNumber;
+            const endLineNumber = range.endLineNumber;
+            const model = editor.getModel();
+
+            for (let lineNumber = startLineNumber; lineNumber <= endLineNumber; lineNumber++) {
+                const lineContent = model.getLineContent(lineNumber);
+                const firstNonWhitespace = lineContent.search(/\S/); // Find index of first non-whitespace character
+                const startColumn = lineNumber === startLineNumber ? range.startColumn : Math.max(1, firstNonWhitespace + 1);
+                const endColumn = lineNumber === endLineNumber ? range.endColumn : model.getLineMaxColumn(lineNumber);
+
+                result.push(new monaco.Range(lineNumber, startColumn, lineNumber, endColumn));
+            }
+        });
+
+        return result;
+    }
+
+    /**
      * Sets up an event listener that listens mouse clicks in the editor.
      * If the mouse is clicked it checks whether the mouse position is on a loop keyword,
      * if so it opens a prompt that asks fot a new iteration to be displayed.
@@ -429,17 +455,7 @@ function EditorManager({displayedFile, setActiveAndDisplayed, isActiveDisplayed,
             if (isActiveDisplayed()) {
                 setDoPositionJump(true);
                 rangesToHighlight.forEach((rangeToHighlight) => {
-
-
-                    const rangeToHighlightSplit = [];
-                    for (let lineNumber = rangeToHighlight.startLineNumber; lineNumber <= rangeToHighlight.endLineNumber; lineNumber++) {
-                        const startColumn = lineNumber === rangeToHighlight.startLineNumber ? rangeToHighlight.startColumn : 1;
-                        const endColumn = lineNumber === rangeToHighlight.endLineNumber ? rangeToHighlight.endColumn : editor.getModel().getLineMaxColumn(lineNumber);
-
-                        rangeToHighlightSplit.push(new monaco.Range(lineNumber, startColumn, lineNumber, endColumn));
-                    }
-
-                    rangeToHighlightSplit.forEach((rangeToHighlight) => {
+                    splitRangesByLine(rangeToHighlight).forEach((rangeToHighlight) => {
                         highlightActive(rangeToHighlight);
                     });
                 });
