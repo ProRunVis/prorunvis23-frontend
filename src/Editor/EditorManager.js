@@ -455,8 +455,9 @@ function EditorManager({displayedFile, setActiveAndDisplayed, isActiveDisplayed,
             if (isActiveDisplayed()) {
                 setDoPositionJump(true);
                 rangesToHighlight.forEach((rangeToHighlight) => {
-                    splitRangesByLine(rangeToHighlight).forEach((rangeToHighlight) => {
-                        highlightActive(rangeToHighlight);
+                    let splitRangesToHighlight = splitRangesByLine(rangeToHighlight);
+                    splitRangesToHighlight.forEach((splitRangeToHighlight) => {
+                        highlightActive(splitRangeToHighlight);
                     });
                 });
                 /*console.log("last range ", jsonManager.lastRange);
