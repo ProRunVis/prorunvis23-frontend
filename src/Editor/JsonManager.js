@@ -133,7 +133,7 @@ class JsonManager {
                 ((a.range.startLineNumber < b.range.startLineNumber) ? -1 : (a.range.startLineNumber > b.range.startLineNumber) ? 1 : 0))[lastRanges.length - 1];
             lastRangeIsLink = false;
             links.forEach((link) => {
-                if (lastRange.range.containsRange(this.nodes[link].range)) {
+                if (lastRange.range.containsRange(this.nodes[link].link.range)) {
                     currentFunction = link;
                     lastRangeIsLink = true;
                 }
