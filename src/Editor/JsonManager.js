@@ -111,7 +111,7 @@ class JsonManager {
         this.lastRangeFunctionIndex = this.getParentFunction(lastRangeNodeIndex);
         */
 
-        let lastRangeIsLink = true;
+        /*let lastRangeIsLink = true;
         let lastRange;
         while (lastRangeIsLink) {
             let currentFunction = 1;
@@ -136,7 +136,7 @@ class JsonManager {
                 } else {
                     links.push(childIndex);
                 }
-            });
+            });*/
             /*
             this.nodes[currentFunction].childrenIndices.forEach((childIndex) => {
                 //Für jedes child auch wieder alle childs durchgehen
@@ -149,6 +149,8 @@ class JsonManager {
                     links.push(childIndex);
                 }
             });*/
+
+        /*
             console.log("last Ranges", lastRanges);
             lastRange = lastRanges.sort((a, b) =>
                 ((a.range.startLineNumber < b.range.startLineNumber) ? -1 : (a.range.startLineNumber > b.range.startLineNumber) ? 1 : 0))[lastRanges.length - 1];
@@ -161,7 +163,7 @@ class JsonManager {
                 }
             });
         }
-        this.lastRange = lastRange;
+        this.lastRange = lastRange;*/
         console.log(this.nodes);
     }
 
