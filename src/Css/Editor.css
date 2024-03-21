@@ -32,7 +32,7 @@
     /* Corrects from 'right' to 'flex-start' */
     /* Adjust the container dynamically */
     box-sizing: border-box;
-    min-height: 500px;
+    min-height: 50vh;
     /* Minimum height */
     /* Adjusted for a even distribution */
     /* Centers the container */
