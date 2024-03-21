@@ -128,6 +128,7 @@ class JsonManager {
                     links.push(childIndex);
                 }
             });
+            console.log("last Ranges", lastRanges);
             lastRange = lastRanges.sort((a, b) =>
                 ((a.range.startLineNumber < b.range.startLineNumber) ? -1 : (a.range.startLineNumber > b.range.startLineNumber) ? 1 : 0))[lastRanges.length - 1];
             lastRangeIsLink = false;
