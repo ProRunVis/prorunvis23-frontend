@@ -431,8 +431,8 @@ function EditorManager({displayedFile, setActiveAndDisplayed, isActiveDisplayed,
                     highlightActive(rangeToHighlight);
                 });
 
-                if(activeFunctionIndex === jsonManager.lastRangeFunctionIndex)
-                    highlightEnd(jsonManager.lastRange);
+                /*if(activeFunctionIndex === jsonManager.lastRangeFunctionIndex)
+                    highlightEnd(jsonManager.lastRange);*/
 
                 //drawLine(rangesToHighlight);
                 jumpNodesIndices.forEach((jumpIndex) => {
