@@ -115,9 +115,9 @@ class JsonManager {
         let lastRange;
         while(lastRangeIsLink) {
             let currentFunction = 1;
-            let lastRanges = [this.nodes[currentFunction].ranges.sort((a, b) =>
+            let lastRanges = [{"range": this.nodes[currentFunction].ranges.sort((a, b) =>
                 ((a.startLineNumber < b.startLineNumber) ? -1 : (a.startLineNumber > b.startLineNumber) ? 1 : 0))
-                [this.nodes[currentFunction].ranges.length - 1]];
+                [this.nodes[currentFunction].ranges.length - 1],"nodeIndex": 1}];
             let links = [];
             this.nodes[currentFunction].childrenIndices.forEach((childIndex) => {
                 if (this.nodes[childIndex].nodeType !== "Function") {
