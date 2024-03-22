@@ -301,9 +301,9 @@ function EditorManager({displayedFile, setActiveAndDisplayed, isActiveDisplayed,
     }
 
     /**
-     *
-     * @param range
-     * @returns {*[]}
+     * Split a range into its lines.
+     * @param range the range to be split.
+     * @returns {*[]} An array with the new ranges of the split up range.
      */
     function splitRangeByLine(range) {
         const result = [];
@@ -456,22 +456,9 @@ function EditorManager({displayedFile, setActiveAndDisplayed, isActiveDisplayed,
                         highlightActive(splitRangeToHighlight);
                     });
                 });
-                /*console.log("last range ", jsonManager.lastRange);
-                if (jsonManager.lastRange !== undefined && activeFunctionIndex === jsonManager.getParentFunction(jsonManager.lastRange.nodeIndex)) {
-                    if (jsonManager.nodes[jsonManager.lastRange.nodeIndex].nodeType === "Loop") {
-                        activeIterationIndices.forEach((activeIterationIndex) => {
-                            if(activeIterationIndex === jsonManager.lastRange.nodeIndex)
-                                highlightEnd(jsonManager.lastRange.range);
-                        });
-                    } else {
-                        highlightEnd(jsonManager.lastRange.range);
-                    }
-                }*/
-
-                //drawLine(rangesToHighlight);
+                drawLine(rangesToHighlight);
                 jumpNodesIndices.forEach((jumpIndex) => {
                     if (jsonManager.nodes[jumpIndex].nodeType !== "Function" || jumpIndex === activeFunctionIndex) {
-                        console.log("bugfix active");
                         if (jsonManager.nodes[jumpIndex].nodeType === "Function" && jsonManager.nodes[jumpIndex].outLinks.length === 2) {
                             highlightLink(jsonManager.nodes[jumpIndex].outLinks[1].range);
                             jsonManager.updateActiveRangesFunction(activeFunctionIndex, activeIterationIndices).forEach((range) => {
