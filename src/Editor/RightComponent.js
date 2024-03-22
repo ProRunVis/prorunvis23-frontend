@@ -193,6 +193,12 @@ function RightComponent({displayedFile, setActiveAndDisplayed, isActiveDisplayed
         ]);
     }
 
+    /**
+     * This function is responsible for placing symbols in every line that contains notable
+     * aspects, such as links or loop heads.
+     * @param range the row in which the symbol is inserted
+     * @param symbol symbol that should be placed
+     */
     function setNodeSymbol(range, symbol) {
 
         var widgetRight = {
