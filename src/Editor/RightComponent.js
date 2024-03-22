@@ -4,7 +4,9 @@ import EditorInitializer from "./EditorInitializer";
 import "../Css/RightComponent.css"
 import PropTypes from "prop-types";
 import JsonManager from "./JsonManager";
-import {json} from "react-router-dom";
+import loopImage from "../Images/loop.png"
+import linkImage from "../Images/link.png"
+import outlinkImage from "../Images/outlink.png"
 
 /**
  * Represents the right component of the application, primarily responsible for
@@ -84,6 +86,7 @@ function RightComponent({displayedFile, setActiveAndDisplayed, isActiveDisplayed
      * Function to render a range in the current editor with a blue background.
      * Used to show which part of the code got is a link and can be clicked to jump to another Node.
      * @param range monaco.Range to be decorated.
+     * @param linkOrOutLink clarify if a link or outlink symbol should be added
      */
     function highlightLink(range, linkOrOutLink) {
         editor.createDecorationsCollection([
@@ -96,21 +99,8 @@ function RightComponent({displayedFile, setActiveAndDisplayed, isActiveDisplayed
                     endColumn: range.endColumn
                 }
             },
-            {
-                options: {
-                    glyphMarginClassName: ((linkOrOutLink === 1) ? "link" : "outlink") + "-symbol",
-                    glyphMargin: {
-                        position: monaco.editor.GlyphMarginLane.Right,
-                        range: {
-                            startLineNumber: range.startLineNumber,
-                            startColumn: range.startColumn,
-                            endLineNumber: range.startLineNumber,
-                            endColumn: range.startColumn
-                        }
-                    },
-                },
-            },
         ]);
+        setNodeSymbol(range, linkOrOutLink);
     }
 
     /**
@@ -119,7 +109,6 @@ function RightComponent({displayedFile, setActiveAndDisplayed, isActiveDisplayed
      * @param range monaco.Range to be decorated.
      */
     function highlightLoop(range) {
-        setNodeSymbol(range, "loop-symbol");
         editor.createDecorationsCollection([
             {
                 options: {className: "loop"},
@@ -130,21 +119,8 @@ function RightComponent({displayedFile, setActiveAndDisplayed, isActiveDisplayed
                     endColumn: range.endColumn
                 }
             },
-            {
-                options: {
-                    glyphMarginClassName: "loop-symbol",
-                    glyphMargin: {
-                        position: monaco.editor.GlyphMarginLane.Right,
-                        range: {
-                            startLineNumber: range.startLineNumber,
-                            startColumn: range.startColumn,
-                            endLineNumber: range.startLineNumber,
-                            endColumn: range.startColumn
-                        },
-                    },
-                },
-            },
         ]);
+        setNodeSymbol(range, "loop");
     }
 
     /**
@@ -212,32 +188,50 @@ function RightComponent({displayedFile, setActiveAndDisplayed, isActiveDisplayed
                 range: new monaco.Range(startLineNumber, 1, startLineNumber, 1),
                 options: {
                     glyphMarginClassName: symbol,
-                    glyphMargin: {
-                        position: monaco.editor.GlyphMarginLane.Left,
-                        range: {
-                            startLineNumber: startLineNumber,
-                            startColumn: 1,
-                            endLineNumber: startLineNumber,
-                            endColumn: 1,
-                        },
-                    },
                 },
             },
         ]);
     }
 
     function setNodeSymbol(range, symbol) {
-        editor.createDecorationsCollection([
-            {
-                range: new monaco.Range(range.startLineNumber, 1, range.startLineNumber, 1),
-                options: {
-                    GlyphMarginClassName: symbol,
-                    glyphMargin: {
-                        position: monaco.editor.GlyphMarginLane.Right,
-                    },
-                },
+
+        var widgetRight = {
+            domNode: (function () {
+                var domNode = document.createElement("img");
+                if (symbol === "loop") {
+                    domNode.src = loopImage;
+                } else if (symbol === "link") {
+                    domNode.src = linkImage;
+                } else {
+                    domNode.src = outlinkImage;
+                }
+                console.log(domNode);
+                return domNode;
+            })(),
+
+            getId: function () {
+                return range.toString();
             },
-        ]);
+
+            getDomNode: function () {
+                return this.domNode
+            },
+
+            getPosition: function () {
+                return {
+                    lane: monaco.editor.GlyphMarginLane.Right,
+                    range: {
+                        startLineNumber: range.startLineNumber,
+                        startColumn: 1,
+                        endLineNumber: range.startLineNumber,
+                        endColumn: 1,
+                    },
+                }
+            }
+        };
+
+        editor.addGlyphMarginWidget(widgetRight);
+        editor.layoutGlyphMarginWidget(widgetRight);
     }
 
     /**
@@ -481,7 +475,7 @@ function RightComponent({displayedFile, setActiveAndDisplayed, isActiveDisplayed
                 jumpNodesIndices.forEach((jump) => {
                     if (jsonManager.nodes[jump].nodeType !== "Function" || jump === activeFunctionIndex) {
                         jsonManager.nodes[jump].outLinks.forEach((outLink) => {
-                            highlightLink(outLink.range, 2);
+                            highlightLink(outLink.range, "outlink");
                         });
                     }
                     // We do not want to mark for the link of the current function since it might be in another file
@@ -490,7 +484,7 @@ function RightComponent({displayedFile, setActiveAndDisplayed, isActiveDisplayed
                         return;
                     }
                     if (jsonManager.nodes[jump].nodeType === "Function")
-                        highlightLink(jsonManager.nodes[jump].link.range, 1);
+                        highlightLink(jsonManager.nodes[jump].link.range, "link");
                 });
 
                 handleJumps();
