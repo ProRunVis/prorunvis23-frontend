@@ -1,5 +1,5 @@
 import TraceNode from "./TraceNode";
-import {Position} from "monaco-editor";
+import {editor, Position} from "monaco-editor";
 
 /**
  * Class that contains an array of {@link TraceNode}s and manages them. It gives access to several functions that
@@ -17,16 +17,17 @@ class JsonManager {
         this.activeIterationIndex = 0;
         let data = [];
         data = jsonString;
-            data.forEach((jsonData) => {
-                this.nodes.push(new TraceNode(jsonData));
-
+        data.forEach((jsonData) => {
+            this.nodes.push(new TraceNode(jsonData));
         });
         for (let i = 2; i < this.nodes.length; i++) {
             let node = this.nodes[i];
             if (node.nodeType === "Throw") {
                 node.outLinkPosition = new Position(0, 0);
-                if (undefined !== this.nodes[node.outIndex].ranges[0]) //if catch is empty and has no range
-                    node.outLinkPosition = this.nodes[node.outIndex].ranges[0].getStartPosition();
+                if (this.nodes[node.outIndex].ranges.length !== 0) //if catch is empty and has no range
+                    node.outLinkPosition = this.nodes[node.outIndex].ranges.sort((a, b) =>
+                        ((a.startLineNumber < b.startLineNumber) ?
+                            -1 : (a.startLineNumber > b.startLineNumber) ? 1 : 0))[0].getStartPosition();
             }
             if (node.nodeType === "Function") {
                 node.linkPosition = node.outLinks[node.outLinks.length - 1].range.getStartPosition();
@@ -76,6 +77,18 @@ class JsonManager {
      */
     getMain() {
         return 1;
+    }
+
+    getParentFunction(nodeIndex) {
+        if (nodeIndex < 1 || nodeIndex > this.nodes.length - 1)
+            return -1;
+        let currentIndex = nodeIndex;
+        let currentNode = this.nodes[currentIndex];
+        while (currentNode.nodeType !== "Function") {
+            currentIndex = currentNode.parentIndex;
+            currentNode = this.nodes[currentIndex];
+        }
+        return currentIndex;
     }
 
     /**
@@ -218,7 +231,7 @@ class JsonManager {
             ranges.push(range);
         });
         this.nodes[functionIndex].childrenIndices.forEach((childIndex) => {
-            ranges = ranges.concat(this.getRanges(childIndex));
+            ranges = ranges.concat(this.getActiveRanges(childIndex));
         });
         ranges.sort((a, b) => ((a.startLineNumber < b.startLineNumber) ?
             -1 : (a.startLineNumber > b.startLineNumber) ? 1 : 0));
@@ -231,7 +244,7 @@ class JsonManager {
      * @param nodeIndex node index of current node.
      * @returns {*[]} An array with all ranges of the current node and all child nodes that are part of the function.
      */
-    getRanges(nodeIndex) {
+    getActiveRanges(nodeIndex) {
         let ranges = [];
         let end = false;
         this.skipIds.forEach((skipId) => {
@@ -253,7 +266,7 @@ class JsonManager {
                 ranges.push(range);
             });
             this.nodes[nodeIndex].childrenIndices.forEach((childIndex) => {
-                ranges = ranges.concat(this.getRanges(childIndex));
+                ranges = ranges.concat(this.getActiveRanges(childIndex));
             });
         }
         return ranges;

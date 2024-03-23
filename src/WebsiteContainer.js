@@ -1,6 +1,6 @@
 import React, {useEffect, useRef, useState, useMemo} from "react";
 import DirectoryBar from "./WebsiteElements/DirectoryBar";
-import RightComponent from "./Editor/RightComponent";
+import EditorManager from "./Editor/EditorManager";
 import JsonManager from "./Editor/JsonManager";
 
 /**
@@ -21,6 +21,7 @@ function WebsiteContainer() {
      * @param path string of file path relative to the project root.
      */
     function setActiveAndDisplayed(path) {
+        console.log("active is displayed");
         uploadedFiles.forEach((uploadedFile) => {
             if (path === uploadedFile.webkitRelativePath) {
                 setDisplayedFile(uploadedFile);
@@ -68,8 +69,8 @@ function WebsiteContainer() {
     return <>
         <DirectoryBar setDisplayedFile={setDisplayedFile} setDisplayedToActive={setDisplayedToActive}
                       passOnUploadedFiles={passOnUploadedFiles}/>
-        <RightComponent displayedFile={displayedFile} setActiveAndDisplayed={setActiveAndDisplayed}
-                        isActiveDisplayed={isActiveDisplayed} jsonManager={jsonManager}/>
+        <EditorManager displayedFile={displayedFile} setActiveAndDisplayed={setActiveAndDisplayed}
+                       isActiveDisplayed={isActiveDisplayed} jsonManager={jsonManager}/>
     </>
 }
 

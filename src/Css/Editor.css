@@ -2,48 +2,34 @@
 .content {
   display: flex;
   flex-direction: row;
-  justify-content: space-between;  
+  justify-content: stretch;
   align-items: stretch;
-  height: 90dvh;
+  height: 90vh; /* Adjusted height to use viewport height */
 }
 
 .right-container {
-    display: flex;
-    flex-direction: column; /* Vertical alignment of children */
-    justify-content: flex-start; /* Alignment is applied from the start of the container */
-    align-items: stretch; /* Stretch the children to fill the container vertically */
-    flex: 3;
-    flex-basis: 75%;
-    /* min-height: 100vh; */
-    background-color:  black;
-    color: white;
-    box-sizing: border-box;
-  
-  }
-  .editor-container {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-    align-items: stretch;
-    width: 96%;
-    flex-basis: 75%;
-    margin-top : 0px;
-    /* Corrects from 'right' to 'flex-start' */
-    /* Adjust the container dynamically */
-    box-sizing: border-box;
-    min-height: 500px;
-    /* Minimum height */
-    /* Adjusted for a even distribution */
-    /* Centers the container */
-    box-shadow: 0 0 10px black;
-    position: relative;
-    /* Children are placed absolut*/
-  }
+  display: flex;
+  flex-direction: column;
+  flex: 3;
+  background-color: black;
+  color: white;
+  box-sizing: border-box;
+  overflow-y: auto; /* Enable vertical scroll if content overflows */
+}
+
+.editor-container {
+  flex: 1;
+  width: 100%;
+  min-height: 0; /* Allow the container to shrink when needed */
+  box-sizing: border-box;
+  box-shadow: 0 0 10px black;
+  position: relative;
+}
 
 
 
-  /* Popup, if element is clicked */
+
+/* Popup, if element is clicked */
 .popup {
   position: absolute;
   background-color: white;
