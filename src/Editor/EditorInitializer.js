@@ -126,6 +126,21 @@ export class EditorInitializer {
             },
         });
 
+        //Sets up a monaco worker environment (uses the default provided by monaco).
+        window.MonacoEnvironment = {
+            getWorkerUrl: function (moduleId, label) {
+                return `data:text/javascript;charset=utf-8,${encodeURIComponent(`
+            self.MonacoEnvironment = {
+                baseUrl: ''
+            };
+
+            self.onmessage = function (e) {
+                // Handle message received from the main thread
+            };
+        `)}`;
+            }
+        };
+
         monaco.languages.register({id: 'java'});   // Activates the syntax highlighting
 
         // -------------------------------------  All other function calls for the editor  ----------------------------
@@ -135,6 +150,7 @@ export class EditorInitializer {
 
         // Set dark theme
         monaco.editor.setTheme('vs-dark');
+
         return {editor, dispose};
     }
 }

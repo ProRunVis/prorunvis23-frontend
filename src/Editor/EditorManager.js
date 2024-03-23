@@ -1,12 +1,14 @@
 import React, {useEffect, useRef, useState, useMemo} from "react";
 import '../Css/Decorate.css';
 import EditorInitializer from "./EditorInitializer";
-import "../Css/RightComponent.css"
+import "../Css/Editor.css"
 import PropTypes from "prop-types";
 import JsonManager from "./JsonManager";
 import loopImage from "../Images/loop.png"
 import linkImage from "../Images/link.png"
 import outlinkImage from "../Images/outlink.png"
+import {json} from "react-router-dom";
+import {editor} from "monaco-editor";
 
 /**
  * Represents the right component of the application, primarily responsible for
@@ -21,7 +23,7 @@ import outlinkImage from "../Images/outlink.png"
  * @returns {Element} The right component of the website containing the editor.
  * @constructor
  */
-function RightComponent({displayedFile, setActiveAndDisplayed, isActiveDisplayed, jsonManager}) {
+function EditorManager({displayedFile, setActiveAndDisplayed, isActiveDisplayed, jsonManager}) {
     // Constants --------------------------------------------------------------------------------------------------------
 
     // State for the index of the active function in the editor.
@@ -315,14 +317,36 @@ function RightComponent({displayedFile, setActiveAndDisplayed, isActiveDisplayed
                     return;
                 let jump = jsonManager.nodes[jumpIndex];
                 if (jump.nodeType !== "Function" || jumpIndex === activeFunctionIndex) {
-                    jump.outLinks.forEach((outLink) => {
-                        if (outLink.range.containsPosition(position)) {
+
+                    if (jump.nodeType === "Function" && jump.outLinks.length === 2) {
+                        if (jump.outLinks[1].range.containsPosition(position)) {
                             setJumpPosition(jump.outLinkPosition);
                             setDoPositionJump(true);
                             setActiveIterationIndices(jump.outLoopIterations);
                             setActiveFunctionIndex(jump.outFunctionIndex);
                         }
-                    });
+
+
+                        jsonManager.updateActiveRangesFunction(activeFunctionIndex, activeIterationIndices).forEach((range) => {
+                            if (range.containsRange(jsonManager.nodes[jumpIndex].outLinks[0].range)) {
+                                if (jump.outLinks[0].range.containsPosition(position)) {
+                                    setJumpPosition(jump.outLinkPosition);
+                                    setDoPositionJump(true);
+                                    setActiveIterationIndices(jump.outLoopIterations);
+                                    setActiveFunctionIndex(jump.outFunctionIndex);
+                                }
+                            }
+                        });
+                    } else {
+                        jump.outLinks.forEach((outLink) => {
+                            if (outLink.range.containsPosition(position)) {
+                                setJumpPosition(jump.outLinkPosition);
+                                setDoPositionJump(true);
+                                setActiveIterationIndices(jump.outLoopIterations);
+                                setActiveFunctionIndex(jump.outFunctionIndex);
+                            }
+                        });
+                    }
                 }
                 // We do not want to check for the link of the current function since it might be in another file
                 // and is not part of the currently active function
@@ -339,6 +363,29 @@ function RightComponent({displayedFile, setActiveAndDisplayed, isActiveDisplayed
                 }
             });
         });
+    }
+
+    /**
+     * Split a range into its lines.
+     * @param range the range to be split.
+     * @returns {*[]} An array with the new ranges of the split up range.
+     */
+    function splitRangeByLine(range) {
+        const result = [];
+            const startLineNumber = range.startLineNumber;
+            const endLineNumber = range.endLineNumber;
+            const model = editor.getModel();
+
+            for (let lineNumber = startLineNumber; lineNumber <= endLineNumber; lineNumber++) {
+                const lineContent = model.getLineContent(lineNumber);
+                const firstNonWhitespace = lineContent.search(/\S/); // Find index of first non-whitespace character
+                const startColumn = lineNumber === startLineNumber ? range.startColumn : Math.max(1, firstNonWhitespace + 1);
+                const endColumn = lineNumber === endLineNumber ? range.endColumn : model.getLineMaxColumn(lineNumber);
+
+                result.push(new monaco.Range(lineNumber, startColumn, lineNumber, endColumn));
+            }
+
+        return result;
     }
 
     /**
@@ -469,28 +516,33 @@ function RightComponent({displayedFile, setActiveAndDisplayed, isActiveDisplayed
             if (isActiveDisplayed()) {
                 setDoPositionJump(true);
                 rangesToHighlight.forEach((rangeToHighlight) => {
-                    highlightActive(rangeToHighlight);
+                    splitRangeByLine(rangeToHighlight).forEach((splitRangeToHighlight) => {
+                        highlightActive(splitRangeToHighlight);
+                    });
                 });
-
-                if (rangesToHighlight[rangesToHighlight.length - 1] ===
-                    jsonManager.nodes[jsonManager.nodes.length - 1].ranges.sort((a, b) =>
-                        ((a.startLineNumber < b.startLineNumber) ? -1 : (a.startLineNumber > b.startLineNumber) ? 1 : 0))
-                        [jsonManager.nodes[jsonManager.nodes.length - 1].ranges.length - 1])
-                    highlightEnd(rangesToHighlight[rangesToHighlight.length - 1]);
                 drawLine(rangesToHighlight);
-                jumpNodesIndices.forEach((jump) => {
-                    if (jsonManager.nodes[jump].nodeType !== "Function" || jump === activeFunctionIndex) {
-                        jsonManager.nodes[jump].outLinks.forEach((outLink) => {
-                            highlightLink(outLink.range, "outlink");
-                        });
+                jumpNodesIndices.forEach((jumpIndex) => {
+                    if (jsonManager.nodes[jumpIndex].nodeType !== "Function" || jumpIndex === activeFunctionIndex) {
+                        if (jsonManager.nodes[jumpIndex].nodeType === "Function" && jsonManager.nodes[jumpIndex].outLinks.length === 2) {
+                            highlightLink(jsonManager.nodes[jumpIndex].outLinks[1].range);
+                            jsonManager.updateActiveRangesFunction(activeFunctionIndex, activeIterationIndices).forEach((range) => {
+                                if (range.containsRange(jsonManager.nodes[jumpIndex].outLinks[0].range)) {
+                                    highlightLink(jsonManager.nodes[jumpIndex].outLinks[0].range, "outlink");
+                                }
+                            });
+                        } else {
+                            jsonManager.nodes[jumpIndex].outLinks.forEach((outLink) => {
+                                highlightLink(outLink.range, "outlink");
+                            });
+                        }
                     }
                     // We do not want to mark for the link of the current function since it might be in another file
                     // and is not part of the currently active function
-                    if (jump === activeFunctionIndex) {
+                    if (jumpIndex === activeFunctionIndex) {
                         return;
                     }
-                    if (jsonManager.nodes[jump].nodeType === "Function")
-                        highlightLink(jsonManager.nodes[jump].link.range, "link");
+                    if (jsonManager.nodes[jumpIndex].nodeType === "Function")
+                        highlightLink(jsonManager.nodes[jumpIndex].link.range, "link");
                 });
 
                 handleJumps();
@@ -524,10 +576,10 @@ function RightComponent({displayedFile, setActiveAndDisplayed, isActiveDisplayed
     );
 }
 
-RightComponent.propTypes = {
+EditorManager.propTypes = {
     displayedFile: PropTypes.instanceOf(File),
     setActiveAndDisplayed: PropTypes.instanceOf(Function),
     isActiveDisplayed: PropTypes.instanceOf(Function),
     jsonManager: PropTypes.instanceOf(JsonManager)
 };
-export default RightComponent;
+export default EditorManager;
