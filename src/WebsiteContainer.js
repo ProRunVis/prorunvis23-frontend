@@ -21,7 +21,6 @@ function WebsiteContainer() {
      * @param path string of file path relative to the project root.
      */
     function setActiveAndDisplayed(path) {
-        console.log("active is displayed");
         uploadedFiles.forEach((uploadedFile) => {
             if (path === uploadedFile.webkitRelativePath) {
                 setDisplayedFile(uploadedFile);
