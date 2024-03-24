@@ -259,8 +259,6 @@ function EditorManager({displayedFile, setActiveAndDisplayed, isActiveDisplayed,
         let ongoing = false;
         for (let i = 0; i < ranges.length; i++) {
 
-            console.log("starts looping for line " + ranges[i]);
-
             if (i + 1 < ranges.length && ranges[i].startLineNumber === ranges[i + 1].startLineNumber) {
                 continue;
             }
@@ -271,7 +269,6 @@ function EditorManager({displayedFile, setActiveAndDisplayed, isActiveDisplayed,
             while(endLine.startLineNumber < ranges[i].endLineNumber) {
                 placeLinePiece(endLine.startLineNumber, "line");
                 endLine = iterateLine(endLine);
-                console.log("loop 1");
             }
 
             placeLinePiece(startLine.startLineNumber, (ongoing) ? "line" : "start");
@@ -283,7 +280,6 @@ function EditorManager({displayedFile, setActiveAndDisplayed, isActiveDisplayed,
                 while (editor.getModel().getValueInRange(endLine).trim().length === 0
                 && endLine.startLineNumber < ranges[i + 1].startLineNumber) {
                     endLine = iterateLine(endLine);
-                    console.log("loop 2 " + endLine);
                 }
             }
 
@@ -294,7 +290,6 @@ function EditorManager({displayedFile, setActiveAndDisplayed, isActiveDisplayed,
                 while (startLine.startLineNumber < endLine.startLineNumber) {
                     placeLinePiece(startLine.startLineNumber, "line");
                     startLine = iterateLine(startLine);
-                    console.log("loop 3");
                 }
                 ongoing = true;
             } else {
