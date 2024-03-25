@@ -194,25 +194,6 @@ function EditorManager({displayedFile, setActiveAndDisplayed, isActiveDisplayed,
     }
 
     /**
-     * Adds a symbol on the current line next to the line number. Which one is dictated by {@link drawLine}.
-     * @param startLineNumber number in which the symbol is drawn.
-     * @param symbol symbol that is drawn.
-     */
-    function placeDecoration(startLineNumber, symbol) {
-        editor.createDecorationsCollection([
-            {
-                range: new monaco.Range(startLineNumber, 1, startLineNumber, 1),
-                options: {
-                    glyphMarginClassName: symbol,
-                    glyphMargin: {
-                        position: monaco.editor.GlyphMarginLane.Right,
-                    },
-                },
-            },
-        ]);
-    }
-
-    /**
      * support-function to increment a line by one row.
      * @param range range to be incremented.
      * @returns {monaco.Range} incremented range.
