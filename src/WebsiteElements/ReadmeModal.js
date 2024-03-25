@@ -32,9 +32,9 @@ export default function ReadmeModal({closeModal}) {
                 it to
                 select the iteration that you
                 want displayed. </p>
-            <p style={{backgroundColor: "red"}}> <b>Red</b> background indicates that this is the last code segment that
+            <!--p style={{backgroundColor: "red"}}> <b>Red</b> background indicates that this is the last code segment that
                 got
-                executed. </p>
+                executed. </p-->
             <p> The <b>line</b> on the left side of your code is shown to indicate what path the program took.
                 It is decorated with <b>elements</b> that help you to identify specific code structures such as loops or
                     function calls.</p></div>,
