@@ -4,6 +4,9 @@ import EditorInitializer from "./EditorInitializer";
 import "../Css/Editor.css"
 import PropTypes from "prop-types";
 import JsonManager from "./JsonManager";
+import loopImage from "../Images/loop.png"
+import linkImage from "../Images/link.png"
+import outlinkImage from "../Images/outlink.png"
 import {json} from "react-router-dom";
 import {editor} from "monaco-editor";
 
@@ -77,36 +80,17 @@ function EditorManager({displayedFile, setActiveAndDisplayed, isActiveDisplayed,
                     endLineNumber: range.endLineNumber,
                     endColumn: range.endColumn
                 }
-            }
-        ]);
-    }
-
-    /**
-     * Adds a symbol on the current line next to the line number. Which one is dictated by {@link drawLine}.
-     * @param startLineNumber number in which the symbol is drawn.
-     * @param symbol symbol that is drawn.
-     */
-    function placeDecoration(startLineNumber, symbol) {
-        editor.createDecorationsCollection([
-            {
-                range: new monaco.Range(startLineNumber, 1, startLineNumber, 1),
-                options: {
-                    glyphMarginClassName: symbol,
-                    glyphMargin: {
-                        position: monaco.editor.GlyphMarginLane.Right,
-                    },
-                },
             },
         ]);
-
     }
 
     /**
      * Function to render a range in the current editor with a blue background.
      * Used to show which part of the code got is a link and can be clicked to jump to another Node.
      * @param range monaco.Range to be decorated.
+     * @param linkOrOutLink clarify if a link or outlink symbol should be added
      */
-    function highlightLink(range) {
+    function highlightLink(range, linkOrOutLink) {
         editor.createDecorationsCollection([
             {
                 options: {className: "link"},
@@ -116,8 +100,9 @@ function EditorManager({displayedFile, setActiveAndDisplayed, isActiveDisplayed,
                     endLineNumber: range.endLineNumber,
                     endColumn: range.endColumn
                 }
-            }
+            },
         ]);
+        setNodeSymbol(range, linkOrOutLink);
     }
 
     /**
@@ -135,8 +120,9 @@ function EditorManager({displayedFile, setActiveAndDisplayed, isActiveDisplayed,
                     endLineNumber: range.endLineNumber,
                     endColumn: range.endColumn
                 }
-            }
+            },
         ]);
+        setNodeSymbol(range, "loop");
     }
 
     /**
@@ -194,6 +180,69 @@ function EditorManager({displayedFile, setActiveAndDisplayed, isActiveDisplayed,
     }
 
     /**
+     * Adds a symbol on the current line next to the line number. Which one is dictated by {@link drawLine}.
+     * @param startLineNumber number in which the symbol is drawn.
+     * @param symbol symbol that is drawn.
+     */
+    function placeLinePiece(startLineNumber, symbol) {
+        editor.createDecorationsCollection([
+            {
+                range: new monaco.Range(startLineNumber, 1, startLineNumber, 1),
+                options: {
+                    glyphMarginClassName: symbol,
+                },
+            },
+        ]);
+    }
+
+    /**
+     * This function is responsible for placing symbols in every line that contains notable
+     * aspects, such as links or loop heads.
+     * @param range the row in which the symbol is inserted
+     * @param symbol symbol that should be placed
+     */
+    function setNodeSymbol(range, symbol) {
+
+        var widgetRight = {
+            domNode: (function () {
+                var domNode = document.createElement("img");
+                if (symbol === "loop") {
+                    domNode.src = loopImage;
+                } else if (symbol === "link") {
+                    domNode.src = linkImage;
+                } else {
+                    domNode.src = outlinkImage;
+                }
+                console.log(domNode);
+                return domNode;
+            })(),
+
+            getId: function () {
+                return range.toString();
+            },
+
+            getDomNode: function () {
+                return this.domNode
+            },
+
+            getPosition: function () {
+                return {
+                    lane: monaco.editor.GlyphMarginLane.Right,
+                    range: {
+                        startLineNumber: range.startLineNumber,
+                        startColumn: 1,
+                        endLineNumber: range.startLineNumber,
+                        endColumn: 1,
+                    },
+                }
+            }
+        };
+
+        editor.addGlyphMarginWidget(widgetRight);
+        editor.layoutGlyphMarginWidget(widgetRight);
+    }
+
+    /**
      * support-function to increment a line by one row.
      * @param range range to be incremented.
      * @returns {monaco.Range} incremented range.
@@ -218,11 +267,11 @@ function EditorManager({displayedFile, setActiveAndDisplayed, isActiveDisplayed,
             let endLine = iterateLine(startLine);
 
             while(endLine.startLineNumber < ranges[i].endLineNumber) {
-                placeDecoration(endLine.startLineNumber, "line");
+                placeLinePiece(endLine.startLineNumber, "line");
                 endLine = iterateLine(endLine);
             }
 
-            placeDecoration(startLine.startLineNumber, (ongoing) ? "line" : "start");
+            placeLinePiece(startLine.startLineNumber, (ongoing) ? "line" : "start");
 
             startLine = new monaco.Range(ranges[i].endLineNumber, 0, ranges[i].endLineNumber + 1, 0);
             endLine = iterateLine(startLine);
@@ -239,12 +288,12 @@ function EditorManager({displayedFile, setActiveAndDisplayed, isActiveDisplayed,
                     startLine = iterateLine(startLine);
                 }
                 while (startLine.startLineNumber < endLine.startLineNumber) {
-                    placeDecoration(startLine.startLineNumber, "line");
+                    placeLinePiece(startLine.startLineNumber, "line");
                     startLine = iterateLine(startLine);
                 }
                 ongoing = true;
             } else {
-                placeDecoration(ranges[i].endLineNumber, (ongoing) ? "end" : "one-line");
+                placeLinePiece(ranges[i].endLineNumber, (ongoing) ? "end" : "one-line");
                 ongoing = false;
             }
         }
@@ -306,7 +355,6 @@ function EditorManager({displayedFile, setActiveAndDisplayed, isActiveDisplayed,
                         setActiveIterationIndices(jsonManager.initIterations(jumpIndex, []));
                         setActiveFunctionIndex(jumpIndex);
                     }
-
                 }
             });
         });
@@ -457,7 +505,6 @@ function EditorManager({displayedFile, setActiveAndDisplayed, isActiveDisplayed,
      */
     useEffect(() => {
         if (jsonManager && editor) {
-
             let rangesToHighlight = [];
             rangesToHighlight = jsonManager.updateActiveRangesFunction(activeFunctionIndex, activeIterationIndices);
 
@@ -475,12 +522,12 @@ function EditorManager({displayedFile, setActiveAndDisplayed, isActiveDisplayed,
                             highlightLink(jsonManager.nodes[jumpIndex].outLinks[1].range);
                             jsonManager.updateActiveRangesFunction(activeFunctionIndex, activeIterationIndices).forEach((range) => {
                                 if (range.containsRange(jsonManager.nodes[jumpIndex].outLinks[0].range)) {
-                                    highlightLink(jsonManager.nodes[jumpIndex].outLinks[0].range);
+                                    highlightLink(jsonManager.nodes[jumpIndex].outLinks[0].range, "outlink");
                                 }
                             });
                         } else {
                             jsonManager.nodes[jumpIndex].outLinks.forEach((outLink) => {
-                                highlightLink(outLink.range);
+                                highlightLink(outLink.range, "outlink");
                             });
                         }
                     }
@@ -490,7 +537,7 @@ function EditorManager({displayedFile, setActiveAndDisplayed, isActiveDisplayed,
                         return;
                     }
                     if (jsonManager.nodes[jumpIndex].nodeType === "Function")
-                        highlightLink(jsonManager.nodes[jumpIndex].link.range);
+                        highlightLink(jsonManager.nodes[jumpIndex].link.range, "link");
                 });
 
                 handleJumps();
