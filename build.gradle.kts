@@ -1,8 +1,8 @@
-import com.moowork.gradle.node.npm.NpmTask
+import com.github.gradle.node.npm.task.NpmTask
 
 
 plugins{
-    id("com.github.node-gradle.node") version "2.2.0"
+    id("com.github.node-gradle.node") version "3.0.1"
 }
 
 apply(plugin = "base")
@@ -13,12 +13,12 @@ node{
 }
 
 tasks.register<NpmTask>("appNpmInstall"){
-    setWorkingDir(file("${project.projectDir}"))
-    setArgs(listOf("install", "react-folder-tree@5.1.1", "--force"))
+    workingDir.set(file("${project.projectDir}"))
+    args.set(listOf("install", "react-folder-tree@5.1.1", "--force"))
 }
 tasks.register<NpmTask>("appNpmBuild") {
-    setWorkingDir(file("${project.projectDir}"))
-    setArgs(listOf("run", "build"))
+    workingDir.set(file("${project.projectDir}"))
+    args.set(listOf("run", "build"))
 }
 
 
