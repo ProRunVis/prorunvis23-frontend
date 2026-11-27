@@ -1,25 +1,7 @@
 import * as monaco from 'monaco-editor/esm/vs/editor/editor.api';
 
-/**
- * Initializes the Monaco Editor with specific settings for editing Java files.
- * This class provides static methods to configure the editor, including setting
- * up the theme, syntax highlighting, and adjusting the editor's height based on its content.
- * It also demonstrates how to use Monaco Editor's API to create a more interactive
- * and user-friendly code editor environment.
- */
 export class EditorInitializer {
 
-    /**
-     * Initializes the Monaco Editor in the provided container with the given Java file content.
-     * This method sets up the editor with predefined options such as language, theme, and various
-     * editor behaviors like word wrapping and automatic layout adjustments. It also defines a custom
-     * theme and syntax highlighting rules specifically tailored for Java code.
-     *
-     * @param containerRef A reference to the container DOM element where the editor will be instantiated.
-     * @param javaFileContent The initial Java code content to be loaded into the editor.
-     * @param hints list of InlayHints(monaco editor) to display in the editor.
-     * @return The initialized Monaco Editor instance, or undefined if initialization fails.
-     */
     static initializeEditor(containerRef, javaFileContent, hints) {
         if (typeof javaFileContent !== 'string') {
             console.error('javaFileContent must be a string');
@@ -28,25 +10,8 @@ export class EditorInitializer {
         if (!containerRef.current) {
             return;
         }
-        const editor = monaco.editor.create(containerRef.current, {  // Creates a new editor
-            value: javaFileContent,
-            language: 'java',
-            theme: 'java-theme',
-            glyphMargin: true,
-            scrollBeyondLastLine: false,
-            minimap: {enabled: false},
-            wordWrap: 'off',
-            readOnly: true,
-            automaticLayout: true,
-            scrollbar: {
-                alwaysConsumeMouseWheel: true
-            },
-        });
 
-        // ----------------------------------Syntax Highlighting ------------------------------------
-
-
-        monaco.editor.defineTheme('java-theme', {  // Style Properties of the editor
+        monaco.editor.defineTheme('java-theme-dark', {
             base: 'vs-dark',
             inherit: true,
             rules: [
@@ -74,7 +39,50 @@ export class EditorInitializer {
             }
         });
 
-        monaco.languages.setMonarchTokensProvider('java', {   // Syntax highlighting
+        monaco.editor.defineTheme('java-theme-light', {
+            base: 'vs',
+            inherit: true,
+            rules: [
+                {token: 'keyword', foreground: '4A0082', fontStyle: 'bold'},
+                {token: 'number', foreground: '065E40'},
+                {token: 'type', foreground: '1A5C6E'},
+                {token: 'string', foreground: '8B1010'},
+                {token: 'comment', foreground: '3E7030'},
+                {token: 'annotation', foreground: '8B6508'},
+                {token: 'operator', foreground: '333333'},
+                {token: 'delimiter', foreground: '333333'},
+                {token: 'namespace', foreground: '1A5C6E'},
+                {token: 'custom-system-out', foreground: 'B86E00'},
+                {token: 'custom-wrapper-class', foreground: 'C03000'},
+                {token: 'custom-exception-class', foreground: 'B00000'},
+            ],
+            colors: {
+                'editor.foreground': '#1E1E1E',
+                'editor.background': '#FFFFFF',
+                'editorCursor.foreground': '#333333',
+                'editor.lineHighlightBackground': '#F0F0F0',
+                'editorLineNumber.foreground': '#999999',
+                'editor.selectionBackground': '#ADD6FF',
+                'editor.inactiveSelectionBackground': '#E5EBF1',
+            }
+        });
+
+        const editor = monaco.editor.create(containerRef.current, {
+            value: javaFileContent,
+            language: 'java',
+            theme: 'java-theme-dark',
+            glyphMargin: true,
+            scrollBeyondLastLine: false,
+            minimap: {enabled: false},
+            wordWrap: 'off',
+            readOnly: true,
+            automaticLayout: true,
+            scrollbar: {
+                alwaysConsumeMouseWheel: true
+            },
+        });
+
+        monaco.languages.setMonarchTokensProvider('java', {
             tokenizer: {
                 root: [
                     [/\b(Integer|Double|Float|Long|Short|Byte|Boolean|Character|String)\b/, 'custom-wrapper-class'],
@@ -107,7 +115,6 @@ export class EditorInitializer {
             }
         });
 
-        // ----------------------------------Loop Indices ------------------------------------
         const {dispose} = monaco.languages.registerInlayHintsProvider("java", {
             provideInlayHints(model, range, token) {
                 let newHints = [];
@@ -126,7 +133,6 @@ export class EditorInitializer {
             },
         });
 
-        //Sets up a monaco worker environment (uses the default provided by monaco).
         window.MonacoEnvironment = {
             getWorkerUrl: function (moduleId, label) {
                 return `data:text/javascript;charset=utf-8,${encodeURIComponent(`
@@ -135,21 +141,17 @@ export class EditorInitializer {
             };
 
             self.onmessage = function (e) {
-                // Handle message received from the main thread
             };
         `)}`;
             }
         };
 
-        monaco.languages.register({id: 'java'});   // Activates the syntax highlighting
+        monaco.languages.register({id: 'java'});
 
-        // -------------------------------------  All other function calls for the editor  ----------------------------
-
-        // Update the content
         editor.getModel().setValue(javaFileContent);
 
-        // Set dark theme
-        monaco.editor.setTheme('vs-dark');
+        const currentTheme = document.documentElement.getAttribute('data-theme');
+        monaco.editor.setTheme(currentTheme === 'light' ? 'java-theme-light' : 'java-theme-dark');
 
         return {editor, dispose};
     }

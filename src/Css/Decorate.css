@@ -1,18 +1,18 @@
 /* Decorations for the editor */
 .inactive {
-    background-color: rgba(128, 0, 0, 0.6);
+    background-color: var(--dec-inactive);
 }
 
 .active {
-    background-color: rgba(0, 128, 0, 0.6);
+    background-color: var(--dec-active);
 }
 
 .link {
-    background-color: rgba(0, 0, 188, 0.6);
+    background-color: var(--dec-link);
 }
 
 .loop {
-    background-color: rgba(128, 0, 128, 0.6);
+    background-color: var(--dec-loop);
 }
 
 .start {
