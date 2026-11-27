@@ -3,14 +3,14 @@
     max-width: 600px;
     margin: 50px auto;
     padding: 20px;
-    background-color: black;
-    color:  white;
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
     border-radius: 8px;
   }
   
   .modal-close-button {
-    background-color: #ffc7b1e7 ;
-    color: black;
+    background-color: var(--accent-color);
+    color: var(--accent-text);
     border: none;
     padding: 10px 20px;
     font-size: 16px;
